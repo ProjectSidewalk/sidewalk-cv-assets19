@@ -1,9 +1,9 @@
 import csv
 import matplotlib.pyplot as plt
 import numpy as np
-import os
+import os.path
 
-path_to_csv = os.join('..', 'all_points.csv')
+path_to_csv = os.path.join('..', 'all_points.csv')
 
 xs = []
 ys = []
