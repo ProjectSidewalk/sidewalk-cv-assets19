@@ -80,4 +80,4 @@ def plot_each(include):
 	plt.show()
 
 
-plot_each((1, 2, 3, 4))
+plot_each((0, 1, 2, 3))
