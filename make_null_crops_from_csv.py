@@ -2,6 +2,10 @@ import os
 import csv
 from GSV import GSVImage
 from PIL import Image, ImageDraw
+try:
+    from xml.etree import cElementTree as ET
+except ImportError, e:
+    from xml.etree import ElementTree as ET
 
 # This script takes a file containing null crops
 # generated using create_null_crops.py
@@ -11,7 +15,7 @@ gsv_pano_path = "/vagrant/panos_drive_full/scrapes_dump/"
 input_csv = '/vagrant/random_null_crops.csv'
 # format is [pano_id, x, y, type, crop_size]
 
-output_dir = './null_crops/'
+output_dir = '/vagrant/null_crops/'
 
 def extract_panoyawdeg(path_to_metadata_xml):
     pano = {}
@@ -25,8 +29,11 @@ def extract_panoyawdeg(path_to_metadata_xml):
 
     return pano['projection_properties']['pano_yaw_deg']
 
+def round_str_to_int(str):
+	return int( round( float(str) ) )
 
-def make_single_crop(path_to_image, sv_image_x, sv_image_y, crop_size, output_filename):
+
+def make_single_crop(path_to_image, sv_image_x, sv_image_y, PanoYawDeg, crop_size, output_filename):
     im_width = GSVImage.GSVImage.im_width
     im_height = GSVImage.GSVImage.im_height
     im = Image.open(path_to_image)
@@ -61,26 +68,38 @@ def main():
 
 		for row in reader:
 			pano_id, x, y, f_type, crop_size = row
-			x = int(x)
-			y = int(y)
+			x = float(x)
+			y = float(y)
 			f_type = int(f_type)
 			crop_size = int(round(float(crop_size)))
 
 			pano_img_path = os.path.join(gsv_pano_path, pano_id[:2], pano_id + ".jpg")
+			pano_xml_path = os.path.join(gsv_pano_path, pano_id[:2], pano_id + ".xml")
+
+			if os.path.exists(pano_xml_path):
+				pano_yaw_deg = float(extract_panoyawdeg(pano_xml_path))
+			else:
+				print "Couldn't find XML for pano {}. Skipping.".format(pano_id)
+				print "Looked in {}\n".format(pano_xml_path)
+				fail_count += 1 
+				continue
+
 			output_filename = os.path.join(output_dir, "null" + str(crop_count) + ".jpg")
 
 			print pano_id
 
 			if os.path.exists(pano_img_path):
 				print "Attempting to crop from pano {}".format(pano_id)
-				make_single_crop(pano_img_path, x, y, crop_size, output_filename)
+				make_single_crop(pano_img_path, x, y, pano_yaw_deg, crop_size, output_filename)
 
 				crop_count += 1
 			else:
 				print "Pano {} not found. Skipping.".format(pano_id)
+				print "Looked in {}\n".format(pano_img_path)
 				fail_count += 1
 
-			if count >10: break
+			# uncomment for testing:
+			#if crop_count + fail_count > 10: break
 
 	print "Finished."
 	print "{} crops succeeded\n{} crops failed.".format(crop_count, fail_count)
