@@ -8,14 +8,14 @@ Note: this needs to be in same directory as GSVImage library (available in sidew
 # *****************************************
 
 # Path to crop sizes
-crop_size_path = "/vagrant/resources/fake_crop_sizes.csv"
+crop_size_path = "/vagrant/resources/crop_sizes.csv"
 # Path to random crops
 random_crops_path = "/vagrant/resources/random_crops.csv"
 # Path to panos dict
 panos_dict_path = "/vagrant/resources/panos_dict.json"
 
 import csv
-import GSVImage
+from GSV import GSVImage
 import json
 import numpy as np
 #import matplotlib.pyplot as plt
@@ -47,17 +47,22 @@ def write_to_json(d, filename):
 
 # input format is [pano_id, x_center, y_center, label type, crop_size]
 def create_pano_dict(data): 
+    ite = 0
     d = {}
     for crop in data:
-        #print "crop", crop
-        if crop[0] not in d.keys():
-            # pano_id: [((center), crop_size, label_type)]
-            #print "new pano"
-            d[crop[0]] = [((int(crop[1]), int(crop[2])), float(crop[4]), crop[3])]
-        else:
-            #print "same pano"
-            d[crop[0]] = d[crop[0]] + [((int(crop[1]), int(crop[2])), float(crop[4]), crop[3])]
-            #print d[crop[0]]
+        ite += 1
+        if ite % 500 == 0:
+            print "crop number", ite
+        if len(crop) > 1:
+            #print "crop", crop
+            if crop[0] not in d.keys():
+                # pano_id: [((center), crop_size, label_type)]
+                #print "new pano"
+                d[crop[0]] = [((int(crop[1]), int(crop[2])), float(crop[4]), crop[3])]
+            else:
+                #print "same pano"
+                d[crop[0]] = d[crop[0]] + [((int(crop[1]), int(crop[2])), float(crop[4]), crop[3])]
+                #print d[crop[0]]
     return d
 
 
@@ -126,23 +131,12 @@ def predict_crop_size_by_position(x, y, im_width, im_height):
 # Params
 N = 10000
 #N = 10
-NULL_ID = 7
+NULL_ID = 8
 
-
+### should only do this once!:
 #data = read_from_csv(crop_size_path) 
-
-# create crop size array
-#crop_sizes = [] 
-#for line in data:
-#    if len(line) > 1: 
-#        size = float(line[4])
-#        crop_sizes.append(size)
-#    else:
-#        data.remove(line)
-
-#crop_size_arr = np.array(crop_sizes)
-
-## create dictionary format panos
+#
+### create dictionary format panos
 #crop_dict = create_pano_dict(data)
 #write_to_json(crop_dict, panos_dict_path)
 #print "crop dict written to json"
@@ -186,7 +180,7 @@ for i in range(N):
     existing_crops = crop_dict[pano_id]
     #print "existing crops", existing_crops
 
-    #TODO define x_range, y_range
+    # define x_range, y_range
     x_range = (0, im_width)
     y_range = (y_bot, y_top)
 
