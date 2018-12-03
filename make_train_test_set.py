@@ -3,7 +3,7 @@ import csv
 import random
 from collections import defaultdict
 
-crops_dir = os.path.join('..', 'crops')
+crops_dir = os.path.join('..', 'crops_no_mark_no_onboard')
 # directory containing crops from CropRunner.py
 
 gs_path = "gs://sidewalk_crops_subset/imgs/"
@@ -20,7 +20,10 @@ output_path = '.'
 # eval_set.csv
 # labels.txt
 
-labels = ['curb_ramp','missing_ramp','obstruction','surface_problem','no_sidewalk','occlusion','other']
+# the following labels will be wrapped in to the 'nullcrop' class
+labels_to_pool = ("no_sidewalk", "occlusion", "other")
+
+labels = ['curb_ramp','missing_ramp','obstruction','surface_problem','no_sidewalk','occlusion','other',"nullcrop"]
 train_counts = defaultdict(int)
 test_counts = defaultdict(int)
 
@@ -34,6 +37,9 @@ with open(os.path.join(output_path,"train_set.csv"), 'wb') as train_file,\
 	for root, _, files in os.walk(crops_dir):
 		try:
 			label = labels[int(root[-1])-1]
+			if label in labels_to_pool:
+				label = "nullcrop"
+
 		except:
 			label = "no label"
 		print "Now processing {}".format(root)
@@ -60,7 +66,8 @@ with open(os.path.join(output_path,"train_set.csv"), 'wb') as train_file,\
 
 with open(os.path.join(output_path, 'labels.txt'), 'w') as labels_file:
 	for label in labels:
-		labels_file.write(label+'\n')
+		if label in labels_to_pool: continue
+		else: labels_file.write(label+'\n')
 
 print "Finished processing data"
 print "{} images processed succesfully\n".format(count_all)
