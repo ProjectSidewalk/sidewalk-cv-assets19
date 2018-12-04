@@ -17,39 +17,34 @@ REGION = 'us-central1'
 MODEL = 'sidewalk'
 VERSION = 'resnet'
 
-def predict_json(project, model, instances, version=None):
-    # from:
-    # https://cloud.google.com/ml-engine/docs/tensorflow/online-predict#creating_models_and_versions
-    service = discovery.build('ml', 'v1')
-    name = 'projects/{}/models/{}'.format(project, model)
-
-    if version is not None:
-        name += '/versions/{}'.format(version)
-
-    response = service.projects().predict(
-        name=name,
-        body={'instances': instances}
-    ).execute()
-
-    if 'error' in response:
-        raise RuntimeError(response['error'])
-
-    return response['predictions']
-
-
-#with tf.gfile.FastGFile('gs://sidewalk_crops_subset/img/2.jpg', 'r') as ifp:
-# with open('null14.jpg', 'r') as ifp, open('test.json', 'w') as ofp:
-#     image_data = ifp.read()
-#     img = base64.b64encode(image_data)
-#     json.dump({"image_bytes": {"b64": img}}, ofp)
 
 def predict_label(img_path):
+
+	def predict_json(project, model, instances, version=None):
+	    # from:
+	    # https://cloud.google.com/ml-engine/docs/tensorflow/online-predict#creating_models_and_versions
+	    service = discovery.build('ml', 'v1')
+	    name = 'projects/{}/models/{}'.format(project, model)
+
+	    if version is not None:
+	        name += '/versions/{}'.format(version)
+
+	    response = service.projects().predict(
+	        name=name,
+	        body={'instances': instances}
+	    ).execute()
+
+	    if 'error' in response:
+	        raise RuntimeError(response['error'])
+
+	    return response['predictions']
+
 	with open(img_path, 'r') as imgfile:
 		image_data = imgfile.read()
 		img = base64.b64encode(image_data)
 		instances = {'image_bytes' : {'b64': img}}
 		predictions = predict_json(PROJECT, MODEL, instances, VERSION)
-		print predictions
+		return predictions[0][u'probabilities']
 
-predict_label('38.jpg')
+print predict_label('38.jpg')
 
