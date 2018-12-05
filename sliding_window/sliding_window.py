@@ -1,12 +1,13 @@
 import base64, sys, json, os
 import tensorflow as tf
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageColor
 from oauth2client.client import GoogleCredentials
 from googleapiclient import discovery
 import numpy as np
 import math
 from collections import defaultdict
 import csv
+from copy import deepcopy
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 #from GSV import GSVImage
 #from GSV.utilities import *
@@ -31,6 +32,7 @@ VERSION = 'resnet'
 gsv_image_width = 13312
 gsv_image_height = 6656
 
+label_from_int = ('Curb Cut', 'Missing Cut', 'Obstruction', 'Sfc Problem')
 
 def predict_label(img_path):
 	def predict_json(project, model, instances, version=None):
@@ -332,6 +334,8 @@ def predict(prediction):
 	''' applies an algorithm to return the predicted class
 		returns None if there's no prediction '''
 
+	if type(prediction) == str: return prediction
+
 	# currently returns the strongest prediction if either one
 	# is >.5, otherwise returns None
 
@@ -339,49 +343,148 @@ def predict(prediction):
 	ramp = prediction[0]
 	missing = prediction[1]
 	overall = max(ramp, missing)
-	best = "Curb Ramp" if ramp > missing else "Missing Ramp"
-
+	best = label_from_int[0] if ramp > missing else label_from_int[1]
 	if overall < .85: return None
 	return best
 
 
-def annotate(img, pano_yaw_deg, coords, label):
+def annotate(img, pano_yaw_deg, coords, label, color, show_coords=True):
 	""" takes in an image object and labels it at specified coords
 		translates streetview coords to pixel coords """
 	sv_x, sv_y = coords
 	x = ((float(pano_yaw_deg) / 360) * gsv_image_width + sv_x) % gsv_image_width
 	y = gsv_image_height / 2 - sv_y
 
+	if show_coords: label = "{},{} {}".format(sv_x, sv_y, label)
+
 	# radius for dot
 	r = 20
 	draw = ImageDraw.Draw(img)
-	draw.ellipse((x - r, y - r, x + r, y + r), fill=128)
+	draw.ellipse((x - r, y - r, x + r, y + r), fill=color)
 
 	font  = ImageFont.truetype("roboto.ttf", 60, encoding="unic")
-	draw.text((x+r+10, y), label, fill=128, font=font)
+	draw.text((x+r+10, y), label, fill=color, font=font)
 
 
-def show_predictions_on_image(pano_root, predictions, out_img):
+def convert_to_real_coords(sv_x, sv_y, pano_yaw_deg):
+	x = ((float(pano_yaw_deg) / 360) * gsv_image_width + sv_x) % gsv_image_width
+	y = gsv_image_height / 2 - sv_y
+
+	return int(x), int(y)
+
+def convert_to_sv_coords(x, y, pano_yaw_deg):
+	sv_x = x - (float(pano_yaw_deg)/360 * gsv_image_width)
+	sv_y = gsv_image_height / 2 - y 
+
+	return int(sv_x), int(sv_y)
+
+
+def get_ground_truth(pano_id, true_pano_yaw_deg, cropsfile='../../minus_onboard.csv'):
+	labels = {}
+	with open(cropsfile, 'r') as csvfile:
+		reader = csv.reader(csvfile)
+
+		for row in reader:
+			if row[0] != pano_id: continue
+
+			x, y = int(row[1]), int(row[2])
+			label = int(row[3])-1
+			photog_heading = float(row[4])
+
+			pano_yaw_deg = 180 - photog_heading
+
+			x, y = convert_to_real_coords(x, y, pano_yaw_deg)
+			x, y = convert_to_sv_coords(x, y, true_pano_yaw_deg)
+
+			# ignore other labels 
+			if label not in range(4): continue
+
+			labels["{},{}".format(x,y)] = label_from_int[label]
+	return labels
+
+
+# WORK IN PROGRESS FUNCTION, DON'T USE!!!!!!!!!!!
+def non_max_suppression(predictions, radius, clip=None):
+	''' non_max suppresion, ignoring predictions with magnitude < clip '''
+
+	def near_any(this, cluster):
+		for point in cluster:
+			dif = (point[0]-this[0], point[1]-this[0])
+			dist = math.sqrt(dif[0]**2 + dist[1]**2)
+
+			if dist <= radius: return True
+		return False
+
+	predictions = deepcopy(predictions) # don't edit
+
+	for coords in predictions:
+		predcition = predictions[coords]
+		if clip is not None and max(prediction) < clip:
+			del predictions[coords]
+		# ignore if last label is strongest (eg nullcrop)
+		if prediction.index(max(prediction)) == len(prediction)-1:
+			del predictions[coords]
+
+	# load coords into list of tups
+	coords = set()
+	for coord in predictions:
+		x,y = map(int, coord.split(','))
+		coords.add( (x,y) )
+
+	clusters = []
+	# cluster coords into sets
+	while len(coords) > 0:
+		# get arbitrary element and remove
+		this = coords.pop()
+
+		# find if it goes in an existing cluster 
+		for cluster in clusters:
+			if near_any(this, cluster):
+				cluster.append(this)
+				break
+
+		# create a new cluster for this point
+		clusters.append([this])
+
+	# now we have our clusters
+	# need to get the max point for each cluster
+	for cluster in clusters:
+		pass
+
+	# need account for different types!!!
+
+
+def show_predictions_on_image(pano_root, predictions, out_img, ground_truth=True):
 	pano_img_path   = pano_root + ".jpg"
 	pano_xml_path   = pano_root + ".xml"
 	pano_depth_path = pano_root + ".depth.txt"
 	pano_yaw_deg = extract_panoyawdeg(pano_xml_path)
+	print "Pano Yaw Degree={}".format(pano_yaw_deg)
 
 	img = Image.open(pano_img_path)
 
-	# Test annotation
-	#annotate(img, pano_yaw_deg, (9200,-800), "Curb Ramp")
+	def annotate_batch(predictions, color):
+		count = 0
+		for coords, prediction in predictions.iteritems():
+			sv_x, sv_y = map(int, coords.split(','))
+			label = predict(prediction)
+			if label is not None:
+				print "Found a {} at ({},{})".format(label, sv_x, sv_y)
+				annotate(img, pano_yaw_deg, (sv_x, sv_y), label, color, show_coords=False)
+				count += 1
+		return count
 
-	count = 0
-	for coords, prediction in predictions.iteritems():
-		sv_x, sv_y = map(int, coords.split(','))
-		label = predict(prediction)
-		if label is not None:
-			print "Found a {} at ({},{})".format(label, sv_x, sv_y)
-			annotate(img, pano_yaw_deg, (sv_x, sv_y), label)
-			count += 1
+	true_color = ImageColor.getrgb('blue')
+	pred_color = ImageColor.getrgb('red')
+
+	
+	pred = annotate_batch(predictions, pred_color)
+	if ground_truth:
+		gt = get_ground_truth(pano_root, pano_yaw_deg)
+		true = annotate_batch(gt, true_color)
+	else: true = 0
 	img.save(out_img)
-	print "Marked {} labels on {}.".format(count, out_img)
+	print "Marked {} predicted and {} true labels on {}.".format(pred, true, out_img)
 	return
 
 
@@ -391,8 +494,16 @@ def show_predictions_on_image(pano_root, predictions, out_img):
 
 
 
-predictions = read_predictions_from_file('test_preds.csv')
-show_predictions_on_image('1_1OfETDixMMCUhSWn-hcA', predictions, 'preds.jpg')
+
+
+#predictions = read_predictions_from_file('test_preds.csv')
+
+#predictions = {"1500,-500":"Test", '8024,-541': 'Curb Cut from file',}
+#show_predictions_on_image('1_1OfETDixMMCUhSWn-hcA', predictions, 'preds.jpg', ground_truth=True)
 
 #make_sliding_window_crops('1_1OfETDixMMCUhSWn-hcA', test_crops, stride=100)
+
+# make new predictions 
+#predictions = predict_from_crops('test_crops')
+#write_predictions_to_file(predictions, 'test_preds.csv')
 
