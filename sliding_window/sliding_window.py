@@ -441,6 +441,22 @@ def show_predictions_on_image(pano_root, predictions, out_img, ground_truth=True
 	return
 
 
+def scale_non_null_predictions(predictions, factor):
+	''' multiply all non-nullcrop terms (ie all but the last)
+	    of a set of	predictions by a constant factor  '''
+
+	def scale(l):
+		new_l = []
+		for i in range(len(l)-1):
+			new_l.append( l[i] * factor )
+		new_l.append(l[-1])
+		return new_l
+
+	new_preds = {}
+	for coords in predictions:
+		new_preds[coords] = scale(predictions[coords])
+	
+	return new_preds
 
 
 
@@ -448,10 +464,12 @@ def show_predictions_on_image(pano_root, predictions, out_img, ground_truth=True
 
 
 
+predictions = read_predictions_from_file('new_test_preds.csv')
 
-predictions = read_predictions_from_file('test_preds.csv')
+#predictions = {"0,0":[.1, .1, 10]}
 
-predictions = non_max_sup(predictions, radius=100, clip_val=.85, ignore_last=False)
+predictions = scale_non_null_predictions(predictions, 5)
+predictions = non_max_sup(predictions, radius=100, clip_val=None, ignore_last=True)
 
 
 show_predictions_on_image('1_1OfETDixMMCUhSWn-hcA', predictions, 'non_max.jpg', ground_truth=True)
@@ -460,7 +478,7 @@ show_predictions_on_image('1_1OfETDixMMCUhSWn-hcA', predictions, 'non_max.jpg', 
 
 # make new predictions 
 #predictions = predict_from_crops('test_crops')
-#write_predictions_to_file(predictions, 'test_preds.csv')
+#write_predictions_to_file(predictions, 'new_test_preds.csv')
 
-# show predictions for single img of curb ramp
+#show predictions for single img of curb ramp
 #print predict_label('38.jpg')
