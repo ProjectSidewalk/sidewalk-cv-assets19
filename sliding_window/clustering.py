@@ -1,66 +1,9 @@
 #!/usr/bin/env python
 # coding: utf-8
-
-# In[14]:
-
-
 from collections import defaultdict
 import collections
 import math
-import matplotlib.pyplot as plt
 import csv
-
-
-# In[2]:
-
-
-int_to_label = ('Ramp', 'Missing Ramp')
-
-
-# In[3]:
-
-
-def read_predictions_from_file(path):
-    predictions = defaultdict(list)
-
-    with open(path, 'r') as csvfile:
-        reader = csv.reader(csvfile)
-
-        for row in reader:
-            x, y = row[0], row[1]
-            prediction = map(float, row[2:])
-            predictions["{},{}".format(x,y)] = prediction
-    return predictions
-
-
-# In[4]:
-
-
-predictions = read_predictions_from_file('sample_data.csv')
-
-
-# In[5]:
-
-
-def plot_predictions(predictions):
-    pts  = [] # (x,y,label)
-    
-    for coords in predictions:
-        x,y = map(int, coords.split(','))
-        label_num = predictions[coords].index(max(predictions[coords]))
-        pts.append( (x,y,int_to_label[label_num]) )
-        
-    a = filter(lambda x: x[2]=='Ramp', pts)
-    b = filter(lambda x: x[2]=='Missing Ramp', pts)
-    
-    for pts, label in [[a,'Ramp'],[b,'Missing Ramp']]:
-        xs_ys = zip(*pts)
-        plt.scatter(xs_ys[0],xs_ys[1],label=label)
-    plt.legend()
-    plt.show()
-
-
-# In[105]:
 
 
 class Point(object):
@@ -93,8 +36,9 @@ class Point(object):
     def score(self):
         return( max(self.preds) )
 
-
-# In[120]:
+    def to_pred(self):
+        coord = "{},{}".format(self.x, self.y)
+        return coord, self.label()
 
 
 class PointSet(collections.Set):
@@ -167,25 +111,25 @@ class PointSet(collections.Set):
         return self._set.__contains__(other)
 
 
-# In[134]:
-
-
-def non_max_sup(predictions, radius=1.1, clip=None, ignore_last=False):
+def non_max_sup(predictions, radius=1.1, clip_val=None, ignore_last=False):
     unclustered = set()
+
+    print "have {} untrimmmed".format(len(predictions))
     
     # load unclipped and non-nullcrop predictions into set
     for coords in predictions:
         pt = Point.from_str( coords, predictions[coords])
         
         # clip
-        clip = clip is not None and pt.score() < clip
-
+        clip = (clip_val is not None) and (pt.score() < clip_val)
             
         # ignore if last label is strongest (eg nullcrop)
-        ignore = ignore_last and pt.label() == len(pt.preds)-1
+        ignore = ignore_last and (pt.label() == len(pt.preds)-1)
         
         if not clip and not ignore:
             unclustered.add( Point.from_str(coords, predictions[coords]) )
+
+    print "trimmed to {}".format(len(unclustered))
     
     clustered = []
     while len(unclustered) > 0:
@@ -215,29 +159,17 @@ def non_max_sup(predictions, radius=1.1, clip=None, ignore_last=False):
         merged_this_loop = 0
         for this_clust in clustered:
             for other_clust in clustered:                
-                if this_clust is not other_clust                 and this_clust.any_overlaps(other_clust, radius):
+                if this_clust is not other_clust \
+                and this_clust.any_overlaps(other_clust, radius):
                     this_clust.merge(other_clust)
                     clustered.remove(other_clust)
                     merged_this_loop += 1
-        
-    return clustered
 
+    # now we need to put clusters into a dict
+    clustered_dict = {}
+    for clust in clustered:
+        pt = clust.get_strongest()
+        coord, label = pt.to_pred()
+        clustered_dict[coord] = label
 
-# In[103]:
-
-
-plot_predictions(predictions)
-
-
-# In[133]:
-
-
-for cluster in non_max_sup(predictions, ignore_last=True):
-    print cluster.get_strongest()
-
-
-# In[ ]:
-
-
-
-
+    return clustered_dict
