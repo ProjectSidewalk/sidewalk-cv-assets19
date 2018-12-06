@@ -8,6 +8,7 @@ import math
 from collections import defaultdict
 import csv
 from copy import deepcopy
+from clustering import non_max_sup
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 #from GSV import GSVImage
 #from GSV.utilities import *
@@ -27,7 +28,7 @@ BUCKET = 'sidewalk_crops_subset'
 REGION = 'us-central1'
 
 MODEL = 'sidewalk'
-VERSION = 'resnet'
+VERSION = 'nullcrop'
 
 gsv_image_width = 13312
 gsv_image_height = 6656
@@ -399,62 +400,13 @@ def get_ground_truth(pano_id, true_pano_yaw_deg, cropsfile='../../minus_onboard.
 			# ignore other labels 
 			if label not in range(4): continue
 
-			labels["{},{}".format(x,y)] = label_from_int[label]
+			labels["{},{}".format(x,y)] = label
 	return labels
 
 
-# WORK IN PROGRESS FUNCTION, DON'T USE!!!!!!!!!!!
-def non_max_suppression(predictions, radius, clip=None):
-	''' non_max suppresion, ignoring predictions with magnitude < clip '''
-
-	def near_any(this, cluster):
-		for point in cluster:
-			dif = (point[0]-this[0], point[1]-this[0])
-			dist = math.sqrt(dif[0]**2 + dist[1]**2)
-
-			if dist <= radius: return True
-		return False
-
-	predictions = deepcopy(predictions) # don't edit
-
-	for coords in predictions:
-		predcition = predictions[coords]
-		if clip is not None and max(prediction) < clip:
-			del predictions[coords]
-		# ignore if last label is strongest (eg nullcrop)
-		if prediction.index(max(prediction)) == len(prediction)-1:
-			del predictions[coords]
-
-	# load coords into list of tups
-	coords = set()
-	for coord in predictions:
-		x,y = map(int, coord.split(','))
-		coords.add( (x,y) )
-
-	clusters = []
-	# cluster coords into sets
-	while len(coords) > 0:
-		# get arbitrary element and remove
-		this = coords.pop()
-
-		# find if it goes in an existing cluster 
-		for cluster in clusters:
-			if near_any(this, cluster):
-				cluster.append(this)
-				break
-
-		# create a new cluster for this point
-		clusters.append([this])
-
-	# now we have our clusters
-	# need to get the max point for each cluster
-	for cluster in clusters:
-		pass
-
-	# need account for different types!!!
-
-
 def show_predictions_on_image(pano_root, predictions, out_img, ground_truth=True):
+	''' annotates an image with a dict of string coordinates and labels
+	    if ground truth: also gets the ground truth and displays that as well '''
 	pano_img_path   = pano_root + ".jpg"
 	pano_xml_path   = pano_root + ".xml"
 	pano_depth_path = pano_root + ".depth.txt"
@@ -467,11 +419,12 @@ def show_predictions_on_image(pano_root, predictions, out_img, ground_truth=True
 		count = 0
 		for coords, prediction in predictions.iteritems():
 			sv_x, sv_y = map(int, coords.split(','))
-			label = predict(prediction)
-			if label is not None:
-				print "Found a {} at ({},{})".format(label, sv_x, sv_y)
-				annotate(img, pano_yaw_deg, (sv_x, sv_y), label, color, show_coords=False)
-				count += 1
+
+			label = str(prediction)
+		
+			print "Found a {} at ({},{})".format(label, sv_x, sv_y)
+			annotate(img, pano_yaw_deg, (sv_x, sv_y), label, color, show_coords=False)
+			count += 1
 		return count
 
 	true_color = ImageColor.getrgb('blue')
@@ -496,10 +449,12 @@ def show_predictions_on_image(pano_root, predictions, out_img, ground_truth=True
 
 
 
-#predictions = read_predictions_from_file('test_preds.csv')
+predictions = read_predictions_from_file('test_preds.csv')
 
-#predictions = {"1500,-500":"Test", '8024,-541': 'Curb Cut from file',}
-#show_predictions_on_image('1_1OfETDixMMCUhSWn-hcA', predictions, 'preds.jpg', ground_truth=True)
+predictions = non_max_sup(predictions, radius=100, clip_val=.85, ignore_last=False)
+
+
+show_predictions_on_image('1_1OfETDixMMCUhSWn-hcA', predictions, 'non_max.jpg', ground_truth=True)
 
 #make_sliding_window_crops('1_1OfETDixMMCUhSWn-hcA', test_crops, stride=100)
 
@@ -507,3 +462,5 @@ def show_predictions_on_image(pano_root, predictions, out_img, ground_truth=True
 #predictions = predict_from_crops('test_crops')
 #write_predictions_to_file(predictions, 'test_preds.csv')
 
+# show predictions for single img of curb ramp
+#print predict_label('38.jpg')
