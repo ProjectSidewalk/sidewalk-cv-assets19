@@ -9,6 +9,7 @@ from collections import defaultdict
 import csv
 from copy import deepcopy
 from clustering import non_max_sup
+from precision_recall import precision_recall
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 #from GSV import GSVImage
 #from GSV.utilities import *
@@ -375,12 +376,15 @@ def convert_to_real_coords(sv_x, sv_y, pano_yaw_deg):
 
 def convert_to_sv_coords(x, y, pano_yaw_deg):
 	sv_x = x - (float(pano_yaw_deg)/360 * gsv_image_width)
-	sv_y = gsv_image_height / 2 - y 
+	sv_y = gsv_image_height / 2 - y
+
+	if sv_x < 0: sv_x += gsv_image_width 
 
 	return int(sv_x), int(sv_y)
 
 
 def get_ground_truth(pano_id, true_pano_yaw_deg, cropsfile='../../minus_onboard.csv'):
+	''' returns dict of str coords mapped to int label '''
 	labels = {}
 	with open(cropsfile, 'r') as csvfile:
 		reader = csv.reader(csvfile)
@@ -411,7 +415,6 @@ def show_predictions_on_image(pano_root, predictions, out_img, ground_truth=True
 	pano_xml_path   = pano_root + ".xml"
 	pano_depth_path = pano_root + ".depth.txt"
 	pano_yaw_deg = extract_panoyawdeg(pano_xml_path)
-	print "Pano Yaw Degree={}".format(pano_yaw_deg)
 
 	img = Image.open(pano_img_path)
 
@@ -422,8 +425,8 @@ def show_predictions_on_image(pano_root, predictions, out_img, ground_truth=True
 
 			label = str(prediction)
 		
-			print "Found a {} at ({},{})".format(label, sv_x, sv_y)
-			annotate(img, pano_yaw_deg, (sv_x, sv_y), label, color, show_coords=False)
+			#print "Found a {} at ({},{})".format(label, sv_x, sv_y)
+			annotate(img, pano_yaw_deg, (sv_x, sv_y), label, color, show_coords=True)
 			count += 1
 		return count
 
@@ -438,6 +441,15 @@ def show_predictions_on_image(pano_root, predictions, out_img, ground_truth=True
 	else: true = 0
 	img.save(out_img)
 	print "Marked {} predicted and {} true labels on {}.".format(pred, true, out_img)
+
+
+	#### PR #####
+	gt = get_ground_truth(pano_root, pano_yaw_deg)
+	pr = precision_recall(predictions, gt, R=1000)
+
+	print pr
+
+	#############
 	return
 
 
@@ -465,14 +477,16 @@ def scale_non_null_predictions(predictions, factor):
 
 
 predictions = read_predictions_from_file('new_test_preds.csv')
-
-#predictions = {"0,0":[.1, .1, 10]}
-
 predictions = scale_non_null_predictions(predictions, 5)
 predictions = non_max_sup(predictions, radius=100, clip_val=None, ignore_last=True)
-
-
 show_predictions_on_image('1_1OfETDixMMCUhSWn-hcA', predictions, 'non_max.jpg', ground_truth=True)
+
+#p  = {"0,0":0, '2,2':1}
+#gt = {'1,1':1}
+#print precision_recall(p, gt, 2)
+
+
+
 
 #make_sliding_window_crops('1_1OfETDixMMCUhSWn-hcA', test_crops, stride=100)
 

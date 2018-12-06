@@ -1,49 +1,6 @@
 import numpy as np
-import matplotlib.pyplot as plt
-
-plt.style.use('seaborn')
-
-######## Make fake data ########
-
-N_true = 10
-N_pred = 15
-R_test = 100
-#fake_precision = 0.5
-fake_recall = 0.6
-Y_range = (-1000, 1000)
-X_range = (0, 3000)
-N_classes = 4
-
-fake_pred_dict = {} 
-fake_truth_dict = {}
-
-for i in xrange(N_true):
-    x = np.random.randint(X_range[0], X_range[1])
-    y = np.random.randint(Y_range[0], Y_range[1])
-    coords = str(x) + "," + str(y)
-    label = np.random.randint(0,N_classes)
-    fake_truth_dict[coords] = label
-    if np.random.random() <= fake_recall:
-        fake_pred_dict[coords] = label
-    else:
-        x = np.random.randint(X_range[0], X_range[1])
-        y = np.random.randint(Y_range[0], Y_range[1])
-        coords = str(x) + "," + str(y)
-        label = np.random.randint(0,N_classes)
-        fake_pred_dict[coords] = label
-
-num_true = len(fake_truth_dict)
-print "Generated", num_true, "true"
-
-for j in xrange(N_pred - N_true): 
-    x = np.random.randint(X_range[0], X_range[1])
-    y = np.random.randint(Y_range[0], Y_range[1])
-    coords = str(x) + "," + str(y)
-    label = np.random.randint(0,N_classes)
-    fake_pred_dict[coords] = label
-
-num_pred = len(fake_pred_dict)
-print "Generated", num_pred, "predicted"
+import math
+from collections import defaultdict
 
 ######## Process points ########
 
@@ -59,7 +16,7 @@ def process(points_dict):
 
 ######## precision recall fn ########
 
-def precision_recall(pred_dict, truth_dict, R):
+def epr(pred_dict, truth_dict, R, N_classes=4):
     true_x, true_y, true_labels = process(truth_dict)
     pred_x, pred_y, pred_labels = process(pred_dict)
     #print true_x
@@ -72,10 +29,12 @@ def precision_recall(pred_dict, truth_dict, R):
     for g in xrange(len(true_x)):
         output[true_labels[g],2] += 1
 
-    for c in xrange(N_classes): 
+    for c in xrange(N_classes):
+        print "class {}".format(c) 
         dists = np.full((len(pred_x), len(true_x)), np.infty)
         for p in xrange(len(pred_x)):
             if pred_labels[p] == c:
+                print "found prediction matching class"
                 # num predicted per class
                 output[c,1] += 1
                 for t in xrange(len(true_x)):
@@ -84,13 +43,65 @@ def precision_recall(pred_dict, truth_dict, R):
             correct = np.any(dists[p] < R) 
             if correct:
                 output[c,0] += 1
+        print dists
     #print output
     return output
 
-######## main #########
+class Point(object):
+    """docstring for Point"""
+    def __init__(self, x,y):
+        super(Point, self).__init__()
+        self.x = x
+        self.y = y
+
+    def dist(self, other):
+        assert isinstance(other, Point)
+        
+        xd = self.x - other.x
+        yd = self.y - other.y
+        return math.sqrt( xd**2 + yd**2 )
+
+    def __str__(self):
+        return "{},{}".format(self.x, self.y)
+        
+
+def gpr(pred_dict, truth_dict, R, N_classes=4):
+    true_x, true_y, true_labels = process(truth_dict)
+    pred_x, pred_y, pred_labels = process(pred_dict)
+
+    output = np.zeros((N_classes, 3))
+
+    # count true
+    for g in xrange(len(true_x)):
+        output[true_labels[g],2] += 1
+
+    # count predicted
+    for g in xrange(len(pred_x)):
+        output[pred_labels[g],1] += 1
+
+    # load predictions into dict by label
+    predictions_by_label = defaultdict(set)
+    for i, label in enumerate(pred_labels):
+        pt = Point(pred_x[i], pred_y[i])
+        predictions_by_label[label].add(pt)
+
+    # count correct
+    # iterate over true points
+    # for each, see if there's a nearby
+    # prediction that matches the label
+    for i, label in enumerate(true_labels):
+        pt = Point(true_x[i], true_y[i])
+
+        print "Looking for {} near {}".format(label, pt)
+
+        for pred in predictions_by_label[label]:
+            print "\tTrying {}\t{:07.1} away".format(pred, pt.dist(pred))
+            if pt.dist(pred) <= R:
+                print "Found a correct"
+                output[label,0] += 1
+                break
+
+    return output
 
 
-true_x, true_y, true_labels = process(fake_truth_dict)
-pred_x, pred_y, pred_labels = process(fake_pred_dict)
-
-precision_recall(fake_pred_dict, fake_truth_dict, R_test)
+precision_recall = gpr
