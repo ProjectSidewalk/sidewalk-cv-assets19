@@ -34,6 +34,9 @@ VERSION = 'nullcrop'
 gsv_image_width = 13312
 gsv_image_height = 6656
 
+path_to_gsv_scrapes  = "/mnt/c/Users/gweld/sidewalk/panos_drive_full/scrapes_dump/"
+pano_db_export = '../../minus_onboard.csv'
+
 label_from_int = ('Curb Cut', 'Missing Cut', 'Obstruction', 'Sfc Problem')
 
 def predict_label(img_path):
@@ -194,7 +197,7 @@ def predict_crop_size(x, y, im_width, im_height, path_to_depth_file):
 		depth_z = depth[2]
 
 		distance = math.sqrt(depth_x ** 2 + depth_y ** 2 + depth_z ** 2)
-		print "\tDistance is {}".format(distance)
+		#print "\tDistance is {}".format(distance)
 		if distance == "nan":
 			# If no depth data is available, use position in panorama as fallback
 			# Calculate distance from point to image center
@@ -208,7 +211,7 @@ def predict_crop_size(x, y, im_width, im_height, path_to_depth_file):
 
 			crop_size = (4.0 / 15.0) * min_dist + 200
 
-			print "Depth data unavailable; using crop size " + str(crop_size)
+			#print "Depth data unavailable; using crop size " + str(crop_size)
 		else:
 			# crop_size = (30700.0/37.0)-(300.0/37.0)*distance
 			# crop_size = 2600 - 220*distance
@@ -284,10 +287,8 @@ def make_sliding_window_crops(pano_root, outdir, stride=100, bottom_space=1600, 
 		y -= stride
 		x = 2 * stride
 
-predictions = {'1600,-500':[.5, 0, 0, 0], "3200,-800":[.1, 0, 0, 0]}
 
-
-def predict_from_crops(crops_dir):
+def predict_from_crops(crops_dir, verbose=False):
 	''' returns dict mapping string of coords to list of predictions '''
 	predictions = defaultdict(list)
 
@@ -298,8 +299,9 @@ def predict_from_crops(crops_dir):
 
 		prediction = predict_label(os.path.join(crops_dir, imagename))
 
-		print "getting predictions for {}".format(imagename)
-		print prediction
+		if verbose:
+			print "getting predictions for {}".format(imagename)
+			print prediction
 
 		predictions[coords] = prediction
 
@@ -311,12 +313,24 @@ def write_predictions_to_file(predictions, path):
 	with open(path, 'w') as csvfile:
 		writer = csv.writer(csvfile)
 
-		for coods, prediction in predictions.iteritems():
-			x,y = coods.split(',')
+		for coords, prediction in predictions.iteritems():
+			x,y = coords.split(',')
 			row = [x,y] + prediction
 			writer.writerow(row)
 			count += 1
-		print "Wrote {} predictions to {}.".format(count, path)
+		print "\tWrote {} predictions to {}.".format(count, path)
+
+def write_gt_to_file(gt, path):
+	count = 0
+	with open(path, 'w') as csvfile:
+		writer = csv.writer(csvfile)
+
+		for coords, label in gt.iteritems():
+			x,y = coords.split(',')
+			row = [x,y] + [label]
+			writer.writerow(row)
+			count += 1
+		print "\tWrote {} predictions to {}.".format(count, path)
 
 
 def read_predictions_from_file(path):
@@ -383,10 +397,10 @@ def convert_to_sv_coords(x, y, pano_yaw_deg):
 	return int(sv_x), int(sv_y)
 
 
-def get_ground_truth(pano_id, true_pano_yaw_deg, cropsfile='../../minus_onboard.csv'):
+def get_ground_truth(pano_id, true_pano_yaw_deg):
 	''' returns dict of str coords mapped to int label '''
 	labels = {}
-	with open(cropsfile, 'r') as csvfile:
+	with open(pano_db_export, 'r') as csvfile:
 		reader = csv.reader(csvfile)
 
 		for row in reader:
@@ -410,7 +424,7 @@ def get_ground_truth(pano_id, true_pano_yaw_deg, cropsfile='../../minus_onboard.
 
 def show_predictions_on_image(pano_root, predictions, out_img, ground_truth=True):
 	''' annotates an image with a dict of string coordinates and labels
-	    if ground truth: also gets the ground truth and displays that as well '''
+		if ground truth: also gets the ground truth and displays that as well '''
 	pano_img_path   = pano_root + ".jpg"
 	pano_xml_path   = pano_root + ".xml"
 	pano_depth_path = pano_root + ".depth.txt"
@@ -442,20 +456,13 @@ def show_predictions_on_image(pano_root, predictions, out_img, ground_truth=True
 	img.save(out_img)
 	print "Marked {} predicted and {} true labels on {}.".format(pred, true, out_img)
 
-
-	#### PR #####
-	gt = get_ground_truth(pano_root, pano_yaw_deg)
-	pr = precision_recall(predictions, gt, R=1000)
-
-	print pr
-
 	#############
 	return
 
 
 def scale_non_null_predictions(predictions, factor):
 	''' multiply all non-nullcrop terms (ie all but the last)
-	    of a set of	predictions by a constant factor  '''
+		of a set of	predictions by a constant factor  '''
 
 	def scale(l):
 		new_l = []
@@ -471,21 +478,75 @@ def scale_non_null_predictions(predictions, factor):
 	return new_preds
 
 
+def batch_sliding_window(pano_roots_path, outdir, stride=150, bottom_space=1500, side_space=500):
+	''' takes a list of pano roots in a text file, one per line
+		and gets pr
+		note: side padding is a multiple of stride '''
+
+	pano_roots = []
+	with open(pano_roots_path, 'r') as pano_list_file:
+		for pano_root in pano_list_file.readlines():
+			pano_roots.append(pano_root.strip())
+
+	print "Attempting to process {} panoramas.".format(len(pano_roots))
+
+	for pano_root in pano_roots:
+		print "Starting on {}".format(pano_root)
+		pano_xml_path   = os.path.join(path_to_gsv_scrapes, pano_root[:2], pano_root + ".xml")
+		pano_img_path   = os.path.join(path_to_gsv_scrapes, pano_root[:2], pano_root + ".jpg")
+		pano_depth_path = os.path.join(path_to_gsv_scrapes, pano_root[:2], pano_root + ".depth.txt")
+		pano_yaw_deg = extract_panoyawdeg(pano_xml_path)
+
+		output_dir = os.path.join(outdir, pano_root)
+		if (not os.path.exists(output_dir)) or (not os.path.isdir(output_dir)):
+			print "\t Making output directory {}".format(output_dir)
+			os.mkdir(output_dir)
+		predictions_file  = os.path.join(output_dir, 'predictions.csv')
+		ground_truth_file = os.path.join(output_dir, 'ground_truth.csv')
+
+		#### CROPS ####
+
+		print "\t Cropping into {}".format(output_dir)
+		num_succesful_crops = 0
+		x, y = side_space, 0
+		while(y > - (gsv_image_height/2 - bottom_space)):
+			while(x < gsv_image_width - side_space):
+				# do things in one row
+				output_filename  = os.path.join(output_dir, "{},{}.jpg".format(x,y))
+				try:
+					make_single_crop_from_depth(pano_img_path, x, y, pano_yaw_deg, pano_depth_path, output_filename)
+					num_succesful_crops += 1
+				except Exception as e:
+					print '\t\tcropping around ({},{}) failed:'.format(x,y)
+					print e
+				x += stride
+			y -= stride
+			x = 2 * stride
+
+		print "\t Finished cropping - {} crops made successfully".format(num_succesful_crops)
+
+		#### PREDICTIONS ####
+		print "\t Getting predictions for {} crops".format(num_succesful_crops)
+		predictions = predict_from_crops(output_dir)
+		write_predictions_to_file(predictions, predictions_file)
+
+		#### GROUND TRUTH ####
+		print "\t Getting ground truth for {}".format(pano_root)
+		gt = get_ground_truth(pano_root, pano_yaw_deg)
+		print "\t Found {} ground truth points".format(len(gt))
+		write_gt_to_file(gt, ground_truth_file)
+
+		print "Finished processing {}".format(pano_root)
 
 
 
 
+# predictions = read_predictions_from_file('new_test_preds.csv')
+# predictions = scale_non_null_predictions(predictions, 5)
+# predictions = non_max_sup(predictions, radius=100, clip_val=None, ignore_last=True)
+# show_predictions_on_image('1_1OfETDixMMCUhSWn-hcA', predictions, 'non_max.jpg', ground_truth=True)
 
-predictions = read_predictions_from_file('new_test_preds.csv')
-predictions = scale_non_null_predictions(predictions, 5)
-predictions = non_max_sup(predictions, radius=100, clip_val=None, ignore_last=True)
-show_predictions_on_image('1_1OfETDixMMCUhSWn-hcA', predictions, 'non_max.jpg', ground_truth=True)
-
-#p  = {"0,0":0, '2,2':1}
-#gt = {'1,1':1}
-#print precision_recall(p, gt, 2)
-
-
+batch_sliding_window("batch_panos.txt", "./batch_test/", stride=5000)
 
 
 #make_sliding_window_crops('1_1OfETDixMMCUhSWn-hcA', test_crops, stride=100)
