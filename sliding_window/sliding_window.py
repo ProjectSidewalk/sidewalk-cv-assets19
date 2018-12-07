@@ -198,7 +198,7 @@ def predict_crop_size(x, y, im_width, im_height, path_to_depth_file):
 
 		distance = math.sqrt(depth_x ** 2 + depth_y ** 2 + depth_z ** 2)
 		#print "\tDistance is {}".format(distance)
-		if distance == "nan":
+		if distance == "nan" or math.isnan(distance):
 			# If no depth data is available, use position in panorama as fallback
 			# Calculate distance from point to image center
 			dist_to_center = math.sqrt((x - im_width / 2) ** 2 + (y - im_height / 2) ** 2)
@@ -251,6 +251,11 @@ def make_single_crop_from_depth(path_to_image, sv_image_x, sv_image_y, PanoYawDe
 	y = im_height / 2 - sv_image_y
 
 	crop_size = predict_crop_size(x, y, im_width, im_height, path_to_depth)
+	try:
+		crop_size = int(crop_size)
+	except ValueError:
+		crop_size = 300
+		print "Invalid depth data, using crop_size=300 instead"
 
 	# Crop rectangle around label
 	cropped_square = None
@@ -342,6 +347,10 @@ def read_predictions_from_file(path):
 		for row in reader:
 			x, y = row[0], row[1]
 			prediction = map(float, row[2:])
+
+			# let this work for processed predictions, as well
+			if len(prediction) == 1: prediction = int(prediction[0])
+
 			predictions["{},{}".format(x,y)] = prediction
 	return predictions
 
@@ -539,21 +548,63 @@ def batch_sliding_window(pano_roots_path, outdir, stride=150, bottom_space=1500,
 		print "Finished processing {}".format(pano_root)
 
 
+def batch_p_r(dir_containing_preds, scaling, clust_r, cor_r, clip_val=None):
+	sum_pr = np.zeros((4,3))
 
+	for root, dirs, files in os.walk(dir_containing_preds):
+
+		# skip directories that don't contain 
+		# predictions and ground truths
+		if len(files) < 2: continue
+
+		pano_root = os.path.basename(root)
+		print "Processing predictions for {}".format(pano_root)
+		p_file = os.path.join(root, 'predictions.csv')
+		gt_file = os.path.join(root, 'ground_truth.csv') 
+
+		predictions = read_predictions_from_file(p_file)
+		gt = read_predictions_from_file(gt_file)
+
+		print "\t Loaded {} predictions and {} true labels".format(len(predictions), len(gt))
+
+		predictions = scale_non_null_predictions(predictions, scaling)
+		predictions = non_max_sup(predictions, radius=clust_r, clip_val=clip_val, ignore_last=True)
+
+		pr = precision_recall(predictions, gt, cor_r, N_classes=4)
+
+		sum_pr += pr
+
+	pr_dict = {}
+	for num, name in enumerate(label_from_int):
+		cor, pred, actual = sum_pr[num,:]
+
+		if pred > 0:
+			precision = float(cor)/pred
+		else: precision = float('nan')
+
+		if actual > 0:
+			recall = float(cor)/actual
+		else: recall = float('nan')
+
+		pr_dict[name] = (precision,recall)
+
+		print "{:15}\t{:0.2f}\t{:0.2f}".format(name, precision, recall)
+
+	return pr_dict
+
+
+
+batch_p_r('./batch_test/', 5, 150, 500)
 
 # predictions = read_predictions_from_file('new_test_preds.csv')
 # predictions = scale_non_null_predictions(predictions, 5)
 # predictions = non_max_sup(predictions, radius=100, clip_val=None, ignore_last=True)
 # show_predictions_on_image('1_1OfETDixMMCUhSWn-hcA', predictions, 'non_max.jpg', ground_truth=True)
 
-batch_sliding_window("batch_panos.txt", "./batch_test/", stride=5000)
+#batch_sliding_window("batch_panos.txt", "./batch_test/", stride=150)
 
 
 #make_sliding_window_crops('1_1OfETDixMMCUhSWn-hcA', test_crops, stride=100)
-
-# make new predictions 
-#predictions = predict_from_crops('test_crops')
-#write_predictions_to_file(predictions, 'new_test_preds.csv')
 
 #show predictions for single img of curb ramp
 #print predict_label('38.jpg')

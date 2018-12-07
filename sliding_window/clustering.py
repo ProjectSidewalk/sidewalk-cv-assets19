@@ -113,8 +113,6 @@ class PointSet(collections.Set):
 
 def non_max_sup(predictions, radius=1.1, clip_val=None, ignore_last=False):
     unclustered = set()
-
-    print "have {} untrimmmed".format(len(predictions))
     
     # load unclipped and non-nullcrop predictions into set
     for coords in predictions:
@@ -129,7 +127,7 @@ def non_max_sup(predictions, radius=1.1, clip_val=None, ignore_last=False):
         if not clip and not ignore:
             unclustered.add( Point.from_str(coords, predictions[coords]) )
 
-    print "trimmed to {}".format(len(unclustered))
+    print "\t Clustered/ignored {} pts down to {}".format(len(predictions), len(unclustered))
     
     clustered = []
     while len(unclustered) > 0:
