@@ -566,18 +566,22 @@ def batch_p_r(dir_containing_preds, scaling, clust_r, cor_r, clip_val=None):
 		p_file = os.path.join(root, 'predictions.csv')
 		gt_file = os.path.join(root, 'ground_truth.csv') 
 
-		predictions = read_predictions_from_file(p_file)
-		gt = read_predictions_from_file(gt_file)
+		try:
+			predictions = read_predictions_from_file(p_file)
+			gt = read_predictions_from_file(gt_file)
 
-		print "\t Loaded {} predictions and {} true labels".format(len(predictions), len(gt))
+			print "\t Loaded {} predictions and {} true labels".format(len(predictions), len(gt))
 
-		predictions = scale_non_null_predictions(predictions, scaling)
-		predictions = non_max_sup(predictions, radius=clust_r, clip_val=clip_val, ignore_last=True)
+			predictions = scale_non_null_predictions(predictions, scaling)
+			predictions = non_max_sup(predictions, radius=clust_r, clip_val=clip_val, ignore_last=True)
 
-		pr = precision_recall(predictions, gt, cor_r, N_classes=4)
+			pr = precision_recall(predictions, gt, cor_r, N_classes=4)
 
-		sum_pr += pr
+			sum_pr += pr
 
+		except IOError as e:
+			print "\t Could not read predictions for {}, skipping.".format(pano_root)
+			
 	pr_dict = {}
 	for num, name in enumerate(label_from_int):
 		cor, pred, actual = sum_pr[num,:]
@@ -605,7 +609,9 @@ def batch_p_r(dir_containing_preds, scaling, clust_r, cor_r, clip_val=None):
 # predictions = non_max_sup(predictions, radius=100, clip_val=None, ignore_last=True)
 # show_predictions_on_image('1_1OfETDixMMCUhSWn-hcA', predictions, 'non_max.jpg', ground_truth=True)
 
-batch_sliding_window("sample50.txt", "./batch_50/", stride=150)
+# paused here
+#batch_sliding_window("inc_sample50.txt", "./batch_50/", stride=150)
+
 
 
 #make_sliding_window_crops('1_1OfETDixMMCUhSWn-hcA', test_crops, stride=100)
