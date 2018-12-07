@@ -500,52 +500,56 @@ def batch_sliding_window(pano_roots_path, outdir, stride=150, bottom_space=1500,
 	print "Attempting to process {} panoramas.".format(len(pano_roots))
 
 	for pano_root in pano_roots:
-		print "Starting on {}".format(pano_root)
-		pano_xml_path   = os.path.join(path_to_gsv_scrapes, pano_root[:2], pano_root + ".xml")
-		pano_img_path   = os.path.join(path_to_gsv_scrapes, pano_root[:2], pano_root + ".jpg")
-		pano_depth_path = os.path.join(path_to_gsv_scrapes, pano_root[:2], pano_root + ".depth.txt")
-		pano_yaw_deg = extract_panoyawdeg(pano_xml_path)
+		try:
+			print "Starting on {}".format(pano_root)
+			pano_xml_path   = os.path.join(path_to_gsv_scrapes, pano_root[:2], pano_root + ".xml")
+			pano_img_path   = os.path.join(path_to_gsv_scrapes, pano_root[:2], pano_root + ".jpg")
+			pano_depth_path = os.path.join(path_to_gsv_scrapes, pano_root[:2], pano_root + ".depth.txt")
+			pano_yaw_deg = extract_panoyawdeg(pano_xml_path)
 
-		output_dir = os.path.join(outdir, pano_root)
-		if (not os.path.exists(output_dir)) or (not os.path.isdir(output_dir)):
-			print "\t Making output directory {}".format(output_dir)
-			os.mkdir(output_dir)
-		predictions_file  = os.path.join(output_dir, 'predictions.csv')
-		ground_truth_file = os.path.join(output_dir, 'ground_truth.csv')
+			output_dir = os.path.join(outdir, pano_root)
+			if (not os.path.exists(output_dir)) or (not os.path.isdir(output_dir)):
+				print "\t Making output directory {}".format(output_dir)
+				os.mkdir(output_dir)
+			predictions_file  = os.path.join(output_dir, 'predictions.csv')
+			ground_truth_file = os.path.join(output_dir, 'ground_truth.csv')
 
-		#### CROPS ####
+			#### CROPS ####
 
-		print "\t Cropping into {}".format(output_dir)
-		num_succesful_crops = 0
-		x, y = side_space, 0
-		while(y > - (gsv_image_height/2 - bottom_space)):
-			while(x < gsv_image_width - side_space):
-				# do things in one row
-				output_filename  = os.path.join(output_dir, "{},{}.jpg".format(x,y))
-				try:
-					make_single_crop_from_depth(pano_img_path, x, y, pano_yaw_deg, pano_depth_path, output_filename)
-					num_succesful_crops += 1
-				except Exception as e:
-					print '\t\tcropping around ({},{}) failed:'.format(x,y)
-					print e
-				x += stride
-			y -= stride
-			x = 2 * stride
+			print "\t Cropping into {}".format(output_dir)
+			num_succesful_crops = 0
+			x, y = side_space, 0
+			while(y > - (gsv_image_height/2 - bottom_space)):
+				while(x < gsv_image_width - side_space):
+					# do things in one row
+					output_filename  = os.path.join(output_dir, "{},{}.jpg".format(x,y))
+					try:
+						make_single_crop_from_depth(pano_img_path, x, y, pano_yaw_deg, pano_depth_path, output_filename)
+						num_succesful_crops += 1
+					except Exception as e:
+						print '\t\tcropping around ({},{}) failed:'.format(x,y)
+						print e
+					x += stride
+				y -= stride
+				x = 2 * stride
 
-		print "\t Finished cropping - {} crops made successfully".format(num_succesful_crops)
+			print "\t Finished cropping - {} crops made successfully".format(num_succesful_crops)
 
-		#### PREDICTIONS ####
-		print "\t Getting predictions for {} crops".format(num_succesful_crops)
-		predictions = predict_from_crops(output_dir)
-		write_predictions_to_file(predictions, predictions_file)
+			#### PREDICTIONS ####
+			print "\t Getting predictions for {} crops".format(num_succesful_crops)
+			predictions = predict_from_crops(output_dir)
+			write_predictions_to_file(predictions, predictions_file)
 
-		#### GROUND TRUTH ####
-		print "\t Getting ground truth for {}".format(pano_root)
-		gt = get_ground_truth(pano_root, pano_yaw_deg)
-		print "\t Found {} ground truth points".format(len(gt))
-		write_gt_to_file(gt, ground_truth_file)
+			#### GROUND TRUTH ####
+			print "\t Getting ground truth for {}".format(pano_root)
+			gt = get_ground_truth(pano_root, pano_yaw_deg)
+			print "\t Found {} ground truth points".format(len(gt))
+			write_gt_to_file(gt, ground_truth_file)
 
-		print "Finished processing {}".format(pano_root)
+			print "Finished processing {}".format(pano_root)
+		except Exception as e:
+			print "Processing {} failed".format(pano_root)
+			print e
 
 
 def batch_p_r(dir_containing_preds, scaling, clust_r, cor_r, clip_val=None):
@@ -594,14 +598,14 @@ def batch_p_r(dir_containing_preds, scaling, clust_r, cor_r, clip_val=None):
 
 
 
-batch_p_r('./batch_test/', 5, 150, 500)
+#batch_p_r('./batch_test/', 5, 150, 500)
 
 # predictions = read_predictions_from_file('new_test_preds.csv')
 # predictions = scale_non_null_predictions(predictions, 5)
 # predictions = non_max_sup(predictions, radius=100, clip_val=None, ignore_last=True)
 # show_predictions_on_image('1_1OfETDixMMCUhSWn-hcA', predictions, 'non_max.jpg', ground_truth=True)
 
-#batch_sliding_window("batch_panos.txt", "./batch_test/", stride=150)
+batch_sliding_window("sample50.txt", "./batch_50/", stride=150)
 
 
 #make_sliding_window_crops('1_1OfETDixMMCUhSWn-hcA', test_crops, stride=100)
