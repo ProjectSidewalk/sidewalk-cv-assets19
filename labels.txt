@@ -1,0 +1,5 @@
+curb_ramp
+missing_ramp
+obstruction
+surface_problem
+nullcrop
