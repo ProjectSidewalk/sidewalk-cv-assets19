@@ -1,0 +1,10 @@
+LABEL                TRAIN       TEST
+curb_ramp           130314      14194
+missing_ramp         17175       1927
+obstruction          19583       2078
+surface_problem       7592        868
+no_sidewalk              0          0
+occlusion                0          0
+other                    0          0
+nullcrop             49248       5363
+Total               223912      24430
