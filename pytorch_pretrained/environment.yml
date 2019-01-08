@@ -1,0 +1,10 @@
+name: sidewalk_pytorch
+channels:
+  - pytorch
+dependencies:
+  - python=2.7
+  - numpy
+  - matplotlib
+  - pytorch
+  - torchvision
+  - nb_conda
