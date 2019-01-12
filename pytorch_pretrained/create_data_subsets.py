@@ -12,6 +12,14 @@ num_train_imgs = 2000
 num_val_imgs = 400
 
 
+use_all_imgs = True
+# if this is set to true, the counts above will be ignored
+# all images will be included, partitioned according to the ratio below
+
+partition_ratio = .8
+# .8 indicates 80/20 split
+
+
 labels_to_name = {'1':'ramp',
                   '2':'not_ramp',
                   '3':'obstruction',
