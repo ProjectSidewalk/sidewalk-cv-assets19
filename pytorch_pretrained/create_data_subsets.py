@@ -5,7 +5,7 @@ from shutil import copyfile
 crops_dir = '/mnt/c/Users/gweld/sidewalk/crops_no_mark_no_onboard/'
 # this is of format class/images, where class in [1,2,3,4,5,6,7,8]
 
-output_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/pytorch_pretrained/data/medium_sidewalk'
+output_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/pytorch_pretrained/data/all_sidewalk'
 
 
 num_train_imgs = 2000
@@ -43,13 +43,22 @@ for label, name in labels_to_name.items():
 	if not os.path.exists(val_path): os.makedirs(val_path)
 
 
-
 	files = os.listdir(in_path)
 
-	sample = random.sample(files, num_val_imgs + num_train_imgs)
+	if not use_all_imgs:
+		sample = random.sample(files, num_val_imgs + num_train_imgs)
 
-	train_set = sample[:num_train_imgs]
-	val_set   = sample[num_train_imgs:]
+		train_set = sample[:num_train_imgs]
+		val_set   = sample[num_train_imgs:]
+
+
+	if use_all_imgs:
+		sample = random.sample(files, len(files))
+
+		train_set = sample[:int(.8 * len(files))]
+		val_set   = sample[int(.8 * len(files)):]
+
+	
 
 	print "choosing {}".format(name)
 	print "train_len {}, val_len {}".format(len(train_set), len(val_set))
