@@ -28,7 +28,7 @@ data_transforms = {
 }
 
 
-data_dir = '/homes/gweld/sidewalk_test_crops/all_sidewalk/'
+data_dir = '/home/gweld/sidewalk_test_crops/all_sidewalk/'
 image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x),
                                           data_transforms[x])
                   for x in ['train', 'val']}
