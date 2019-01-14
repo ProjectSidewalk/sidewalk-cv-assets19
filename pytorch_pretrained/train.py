@@ -115,7 +115,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
 
 model_ft = models.resnet18(pretrained=True)
 num_ftrs = model_ft.fc.in_features
-model_ft.fc = nn.Linear(num_ftrs, 2) # last arg here, # classes? -gw
+model_ft.fc = nn.Linear(num_ftrs, 5) # last arg here, # classes? -gw
 
 model_ft = model_ft.to(device)
 
