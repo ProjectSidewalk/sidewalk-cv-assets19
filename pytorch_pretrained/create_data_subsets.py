@@ -5,14 +5,14 @@ from shutil import copyfile
 crops_dir = '/mnt/c/Users/gweld/sidewalk/crops_no_mark_no_onboard/'
 # this is of format class/images, where class in [1,2,3,4,5,6,7,8]
 
-output_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/pytorch_pretrained/data/all_sidewalk'
+output_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/pytorch_pretrained/data/micro_sidewalk'
 
 
-num_train_imgs = 2000
-num_val_imgs = 400
+num_train_imgs = 20
+num_val_imgs = 5
 
 
-use_all_imgs = True
+use_all_imgs = False
 # if this is set to true, the counts above will be ignored
 # all images will be included, partitioned according to the ratio below
 
