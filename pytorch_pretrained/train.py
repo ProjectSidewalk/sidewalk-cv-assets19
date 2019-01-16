@@ -29,7 +29,7 @@ data_transforms = {
 }
 
 
-data_dir = '/home/gweld/sidewalk_test_crops/all_sidewalk/'
+data_dir = '/home/gweld/sidewalk_test_crops/small_sidewalk/'
 image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x),
                                           data_transforms[x])
                   for x in ['train', 'val']}
@@ -65,6 +65,9 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
             running_loss = 0.0
             running_corrects = 0
 
+            class_corrects = defaultdict(int)
+            class_totals   = defaultdict(int)
+
             # Iterate over data.
             for inputs, labels in dataloaders[phase]:
                 inputs = inputs.to(device)
@@ -89,11 +92,28 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
                 running_loss += loss.item() * inputs.size(0)
                 running_corrects += torch.sum(preds == labels.data)
 
+                for index, pred in enumerate(preds):
+                    actual = labels.data[index]
+                    class_name = class_names[actual]
+                    
+                    if actual == pred: class_corrects[class_name] += 1
+                    class_totals[class_name] += 1
+
             epoch_loss = running_loss / dataset_sizes[phase]
             epoch_acc = running_corrects.double() / dataset_sizes[phase]
 
             print('{} Loss: {:.4f} Acc: {:.4f}'.format(
                 phase, epoch_loss, epoch_acc))
+
+            if phase == 'val':
+                print("Validation Class Accuracies")
+
+                for class_name in class_totals:
+                    class_acc = float(class_corrects[class_name])
+                    class_acc = class_acc/class_totals[class_name]
+
+                    print("{:20}{}%".format(class_name, 100*class_acc))
+                print("\n")
 
             # deep copy the model
             if phase == 'val' and epoch_acc > best_acc:
@@ -147,7 +167,7 @@ model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler,
 
 
 
-torch.save(model_ft.state_dict(), 'models/test_gcloud_run.pt')
+torch.save(model_ft.state_dict(), 'models/test_gcloud_run_small.pt')
 
 
 
