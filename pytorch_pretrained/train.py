@@ -151,14 +151,8 @@ exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=7, gamma=0.1)
 
 # Train and evaluate
 # ^^^^^^^^^^^^^^^^^^
-# 
-# It should take around 15-25 min on CPU. On GPU though, it takes less than a
-# minute.
-# 
-# 
-# 
 
-# In[28]:
+print('Beginning Training on {} train and {} val images.'.format(dataset_sizes['train'], dataset_sizes['val']))
 
 
 model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler,
