@@ -29,7 +29,7 @@ data_transforms = {
 }
 
 
-data_dir = '/home/gweld/sidewalk_test_crops/small_sidewalk/'
+data_dir = '/home/gweld/all_sidewalk/all_sidewalk/'
 image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x),
                                           data_transforms[x])
                   for x in ['train', 'val']}
@@ -161,7 +161,7 @@ model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler,
 
 
 
-torch.save(model_ft.state_dict(), 'models/test_gcloud_run_small.pt')
+torch.save(model_ft.state_dict(), 'models/full_glcoud_run.pt')
 
 
 
