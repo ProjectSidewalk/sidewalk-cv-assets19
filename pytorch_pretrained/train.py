@@ -134,7 +134,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
 
 
 
-model_ft = models.resnet18(pretrained=True)
+model_ft = models.resnet50(pretrained=True)
 num_ftrs = model_ft.fc.in_features
 model_ft.fc = nn.Linear(num_ftrs, 5) # last arg here, # classes? -gw
 
@@ -156,12 +156,12 @@ print('Beginning Training on {} train and {} val images.'.format(dataset_sizes['
 
 
 model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler,
-                       num_epochs=25)
+                       num_epochs=50)
 
 
 
 
-torch.save(model_ft.state_dict(), 'models/full_glcoud_run.pt')
+torch.save(model_ft.state_dict(), 'models/50epoch_full_ds_resnet50.pt')
 
 
 
