@@ -43,6 +43,13 @@ model_path = '25epoch_full_ds_resnet18.pt'
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+data_transform = transforms.Compose([
+    transforms.Resize(256),
+    transforms.CenterCrop(224),
+    transforms.ToTensor(),
+    transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    ])
+
 model_ft = models.resnet18()
 num_ftrs = model_ft.fc.in_features
 model_ft.fc = nn.Linear(num_ftrs, 5)
@@ -53,6 +60,21 @@ model_ft.eval()
 
 
 ############################################
+
+def predict_single_image(imgfile):
+	''' takes an image and returns a tuple of preds '''
+	if not imgfile.endswith('.jpg'):
+		raise IOError("{} is not a .jpg image".format(imgfile))
+
+
+	loaded_img = Image.open(imgfile)
+	loaded_img = data_transform(loaded_img).float()
+	loaded_img = loaded_img.unsqueeze(0)
+
+	with torch.no_grad():
+		prediction = model_ft( loaded_img )
+
+	return tuple(prediction.flatten().tolist())
 
 
 def bilinear_interpolation(x, y, points):
@@ -286,32 +308,17 @@ def predict_from_crops(crops_dir, verbose=False):
 		mapping string of coords to list of predictions '''
 	predictions = defaultdict(list)
 
-	data_transform = transforms.Compose([
-        transforms.Resize(256),
-        transforms.CenterCrop(224),
-        transforms.ToTensor(),
-        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-        ])
-
-	#image_dataset = datasets.ImageFolder( crops_dir, data_transform )
-
-	#dataloader = torch.utils.data.DataLoader(image_dataset, batch_size=4, shuffle=True, num_workers=4)
 
 	for imagename in os.listdir(crops_dir):
 		if not imagename.endswith('.jpg'): continue
 		coords = imagename[:-4]
-		x,y = coords.split(',')
+		x,y = coords.split(',')			
 
-		loaded_img = Image.open( os.path.join(crops_dir, imagename) )
-		loaded_img = data_transform(loaded_img).float()
-		#loaded_img = torch.autograd.Variable(loaded_img, requires_grad=True)
+		if verbose: print "getting predictions for {}".format(imagename)
 
-		with torch.no_grad():
-			prediction = model_ft( loaded_img )
+		prediction = predict_single_image( os.path.join(crops_dir, imagename) )
 
-		if verbose:
-			print "getting predictions for {}".format(imagename)
-			print prediction
+		if verbose:	print prediction
 
 		predictions[coords] = prediction
 
@@ -624,4 +631,4 @@ def batch_p_r(dir_containing_preds, scaling, clust_r, cor_r, clip_val=None):
 #show predictions for single img of curb ramp
 #print predict_label('38.jpg')
 
-print predict_from_crops('test_crops_small/')
+print predict_single_image('38.jpg')
