@@ -1,8 +1,8 @@
+# to be run in the sidewalk_pytorch environment defined in
+# pytorch_pretrained/environment.yml
+
 import base64, sys, json, os
-import tensorflow as tf
 from PIL import Image, ImageDraw, ImageFont, ImageColor
-from oauth2client.client import GoogleCredentials
-from googleapiclient import discovery
 import numpy as np
 import math
 from collections import defaultdict
@@ -11,25 +11,19 @@ from copy import deepcopy
 from clustering import non_max_sup
 from precision_recall import precision_recall
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-#from GSV import GSVImage
-#from GSV.utilities import *
+
+import torchvision
+from torchvision import datasets, models, transforms
+import torch
+import torch.nn as nn
+import torch.optim as optim
+from torch.optim import lr_scheduler
+
 try:
 	from xml.etree import cElementTree as ET
 except ImportError, e:
 	from xml.etree import ElementTree as ET
 
-# will need to install Google API client
-# pip install --upgrade google-api-python-client
-
-GCLOUD_SERVICE_KEY = '/home/gweld/gcloud_acct_key.json'
-os.environ['GOOGLE_APPLICATION_CREDENTIALS'] = GCLOUD_SERVICE_KEY
-
-PROJECT = 'sidewalk-dl'
-BUCKET = 'sidewalk_crops_subset'
-REGION = 'us-central1'
-
-MODEL = 'sidewalk'
-VERSION = 'nullcrop'
 
 gsv_image_width = 13312
 gsv_image_height = 6656
@@ -38,33 +32,27 @@ path_to_gsv_scrapes  = "/mnt/c/Users/gweld/sidewalk/panos_drive_full/scrapes_dum
 pano_db_export = '../../minus_onboard.csv'
 
 label_from_int = ('Curb Cut', 'Missing Cut', 'Obstruction', 'Sfc Problem')
+pytorch_label_from_int = ('Mussing Cut', "Null", 'Obstruction', "Curb Cut", "Sfc Problem")
 
-def predict_label(img_path):
-	def predict_json(project, model, instances, version=None):
-		# from:
-		# https://cloud.google.com/ml-engine/docs/tensorflow/online-predict#creating_models_and_versions
-		service = discovery.build('ml', 'v1')
-		name = 'projects/{}/models/{}'.format(project, model)
+model_path = '25epoch_full_ds_resnet18.pt'
 
-		if version is not None:
-			name += '/versions/{}'.format(version)
 
-		response = service.projects().predict(
-			name=name,
-			body={'instances': instances}
-		).execute()
 
-		if 'error' in response:
-			raise RuntimeError(response['error'])
+############ Load the Model ################
+# we're gonna do this just once
 
-		return response['predictions']
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-	with open(img_path, 'r') as imgfile:
-		image_data = imgfile.read()
-		img = base64.b64encode(image_data)
-		instances = {'image_bytes' : {'b64': img}}
-		predictions = predict_json(PROJECT, MODEL, instances, VERSION)
-		return predictions[0][u'probabilities']
+model_ft = models.resnet18()
+num_ftrs = model_ft.fc.in_features
+model_ft.fc = nn.Linear(num_ftrs, 5)
+model_ft = model_ft.to( device )
+
+model_ft.load_state_dict( torch.load(model_path, map_location='cpu') )
+model_ft.eval()
+
+
+############################################
 
 
 def bilinear_interpolation(x, y, points):
@@ -294,15 +282,32 @@ def make_sliding_window_crops(pano_root, outdir, stride=100, bottom_space=1600, 
 
 
 def predict_from_crops(crops_dir, verbose=False):
-	''' returns dict mapping string of coords to list of predictions '''
+	''' takes a directory full of crops, and returns dict
+		mapping string of coords to list of predictions '''
 	predictions = defaultdict(list)
+
+	data_transform = transforms.Compose([
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
+        transforms.ToTensor(),
+        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        ])
+
+	#image_dataset = datasets.ImageFolder( crops_dir, data_transform )
+
+	#dataloader = torch.utils.data.DataLoader(image_dataset, batch_size=4, shuffle=True, num_workers=4)
 
 	for imagename in os.listdir(crops_dir):
 		if not imagename.endswith('.jpg'): continue
 		coords = imagename[:-4]
 		x,y = coords.split(',')
 
-		prediction = predict_label(os.path.join(crops_dir, imagename))
+		loaded_img = Image.open( os.path.join(crops_dir, imagename) )
+		loaded_img = data_transform(loaded_img).float()
+		#loaded_img = torch.autograd.Variable(loaded_img, requires_grad=True)
+
+		with torch.no_grad():
+			prediction = model_ft( loaded_img )
 
 		if verbose:
 			print "getting predictions for {}".format(imagename)
@@ -618,3 +623,5 @@ def batch_p_r(dir_containing_preds, scaling, clust_r, cor_r, clip_val=None):
 
 #show predictions for single img of curb ramp
 #print predict_label('38.jpg')
+
+print predict_from_crops('test_crops_small/')
