@@ -27,6 +27,9 @@ class Point(object):
         
 
 def precision_recall(pred_dict, truth_dict, R, N_classes=4):
+    """ returns a N_classes x 3 matrix where the rows correspond to classes
+        and the cols correspond to the counts of [correct, predicted, actual]
+    """
     output = np.zeros((N_classes, 3))
 
     # count true

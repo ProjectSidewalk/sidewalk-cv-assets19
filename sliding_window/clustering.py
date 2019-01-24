@@ -112,6 +112,9 @@ class PointSet(collections.Set):
 
 
 def non_max_sup(predictions, radius=1.1, clip_val=None, ignore_last=False):
+    ''' expects the predictions dict to contain predictions that
+        are single labels, not arrays of predictions per clases
+    '''
     unclustered = set()
     
     # load unclipped and non-nullcrop predictions into set

@@ -484,6 +484,9 @@ def scale_non_null_predictions(predictions, factor):
 	''' multiply all non-nullcrop terms (ie all but the last)
 		of a set of	predictions by a constant factor  '''
 
+	# short circuit if we don't need to change anything
+	if factor == 1: return predictions
+
 	def scale(l):
 		new_l = []
 		for i in range(len(l)-1):
@@ -501,7 +504,8 @@ def scale_non_null_predictions(predictions, factor):
 def batch_sliding_window(pano_roots_path, outdir, stride=150, bottom_space=1500, side_space=500):
 	''' takes a list of pano roots in a text file, one per line
 		and gets pr
-		note: side padding is a multiple of stride '''
+		note: side padding is a multiple of stride
+	'''
 
 	pano_roots = []
 	with open(pano_roots_path, 'r') as pano_list_file:
@@ -567,7 +571,8 @@ def batch_predictions_only(dir_containing_crops, filename=model_path[:-3]+"_pred
 	""" gets predictions for premade crops only
 		takes a directory containing directories of crops, and in
 		each subdirectory containing crops, writes a file with predictions
-		for later use. """
+		for later use.
+	"""
 
 	num_panos = 0
 	num_preds = 0
@@ -596,7 +601,18 @@ def batch_predictions_only(dir_containing_crops, filename=model_path[:-3]+"_pred
 
 
 
-def batch_p_r(dir_containing_preds, scaling, clust_r, cor_r, clip_val=None):
+def batch_p_r(dir_containing_preds, scaling=1, clust_r, cor_r, clip_val=None):
+	""" Computes precision and recall given a directory containing subdirectories
+		containg predictions and ground truth csvs
+
+		scaling multiplies non-null crop predictions by a constant factor
+		clust_r sets the distance below which adjacent predictions will be clustered together
+		cor_r sets the 'correct' distance, a prediction within this distance of a 
+			ground truth  point will be considered correct
+		clip_val will ignore predictions with a strength less than this value
+	"""
+	
+	# sum_pr keeps track of the counts of [correct, predicted, actual]
 	sum_pr = np.zeros((4,3))
 
 	for root, dirs, files in os.walk(dir_containing_preds):
@@ -621,6 +637,7 @@ def batch_p_r(dir_containing_preds, scaling, clust_r, cor_r, clip_val=None):
 
 			pr = precision_recall(predictions, gt, cor_r, N_classes=4)
 
+			# sum_pr keeps track of the counts of [correct, predicted, actual]
 			sum_pr += pr
 
 		except IOError as e:
