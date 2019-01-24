@@ -32,7 +32,7 @@ path_to_gsv_scrapes  = "/mnt/c/Users/gweld/sidewalk/panos_drive_full/scrapes_dum
 pano_db_export = '../../minus_onboard.csv'
 
 label_from_int = ('Curb Cut', 'Missing Cut', 'Obstruction', 'Sfc Problem')
-pytorch_label_from_int = ('Mussing Cut', "Null", 'Obstruction', "Curb Cut", "Sfc Problem")
+pytorch_label_from_int = ('Missing Cut', "Null", 'Obstruction', "Curb Cut", "Sfc Problem")
 
 model_path = '25epoch_full_ds_resnet18.pt'
 
@@ -366,24 +366,6 @@ def read_predictions_from_file(path):
 	return predictions
 
 
-def predict(prediction):
-	''' applies an algorithm to return the predicted class
-		returns None if there's no prediction '''
-
-	if type(prediction) == str: return prediction
-
-	# currently returns the strongest prediction if either one
-	# is >.5, otherwise returns None
-
-	# Only look at ramps and missing ramps
-	ramp = prediction[0]
-	missing = prediction[1]
-	overall = max(ramp, missing)
-	best = label_from_int[0] if ramp > missing else label_from_int[1]
-	if overall < .85: return None
-	return best
-
-
 def annotate(img, pano_yaw_deg, coords, label, color, show_coords=True):
 	""" takes in an image object and labels it at specified coords
 		translates streetview coords to pixel coords """
@@ -427,7 +409,7 @@ def get_ground_truth(pano_id, true_pano_yaw_deg):
 			if row[0] != pano_id: continue
 
 			x, y = int(row[1]), int(row[2])
-			label = int(row[3])-1
+			label = int(row[3])-1 # compensate for 1-indexing
 			photog_heading = float(row[4])
 
 			pano_yaw_deg = 180 - photog_heading
@@ -601,7 +583,7 @@ def batch_predictions_only(dir_containing_crops, filename=model_path[:-3]+"_pred
 
 
 
-def batch_p_r(dir_containing_preds, scaling=1, clust_r, cor_r, clip_val=None):
+def batch_p_r(dir_containing_preds, scaling, clust_r, cor_r, clip_val=None, preds_filename='predictions.csv'):
 	""" Computes precision and recall given a directory containing subdirectories
 		containg predictions and ground truth csvs
 
@@ -611,7 +593,7 @@ def batch_p_r(dir_containing_preds, scaling=1, clust_r, cor_r, clip_val=None):
 			ground truth  point will be considered correct
 		clip_val will ignore predictions with a strength less than this value
 	"""
-	
+
 	# sum_pr keeps track of the counts of [correct, predicted, actual]
 	sum_pr = np.zeros((4,3))
 
@@ -623,7 +605,7 @@ def batch_p_r(dir_containing_preds, scaling=1, clust_r, cor_r, clip_val=None):
 
 		pano_root = os.path.basename(root)
 		print "Processing predictions for {}".format(pano_root)
-		p_file = os.path.join(root, 'predictions.csv')
+		p_file = os.path.join(root, preds_filename)
 		gt_file = os.path.join(root, 'ground_truth.csv') 
 
 		try:
@@ -632,9 +614,21 @@ def batch_p_r(dir_containing_preds, scaling=1, clust_r, cor_r, clip_val=None):
 
 			print "\t Loaded {} predictions and {} true labels".format(len(predictions), len(gt))
 
+			# here predictions are still a dict of arrays
 			predictions = scale_non_null_predictions(predictions, scaling)
-			predictions = non_max_sup(predictions, radius=clust_r, clip_val=clip_val, ignore_last=True)
+			predictions = non_max_sup(predictions, radius=clust_r, clip_val=clip_val, ignore_ind=1)
+			# now predictions are ints
 
+			# in here we need to map from pytorch class numbering to
+			# [ramp, no ramp, obstruction, sfc_prob] zero indexed
+			# ground truth is stored in DB using above encoding but 1-indexed
+			# this is compensted when loaded using get_ground_truth
+			for coord in predictions:
+				pytorch_label = predictions[coord]
+				label = label_from_int.index( pytorch_label_from_int[ pytorch_label ] )
+				predictions[coord] = label
+
+			# now we can compute the correxts, predicteds, and actual
 			pr = precision_recall(predictions, gt, cor_r, N_classes=4)
 
 			# sum_pr keeps track of the counts of [correct, predicted, actual]
@@ -680,4 +674,6 @@ def batch_p_r(dir_containing_preds, scaling=1, clust_r, cor_r, clip_val=None):
 #show predictions for single img of curb ramp
 #print predict_label('38.jpg')
 
-batch_predictions_only('batch_50')
+#batch_predictions_only('batch_50')
+
+batch_p_r("./batch_50", 1, 150, 500, preds_filename='25epoch_full_ds_resnet18_preds.csv')

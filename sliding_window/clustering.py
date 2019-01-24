@@ -31,6 +31,7 @@ class Point(object):
         return cls(x,y, preds)
     
     def label(self):
+        """ still representing label as an int """
         return self.preds.index( max(self.preds) )
     
     def score(self):
@@ -98,7 +99,7 @@ class PointSet(collections.Set):
             self.add(pt)
 
     def get_strongest(self):
-        ''' returns the item in the set with the highest score '''
+        ''' returns the Point in the set with the highest score '''
         return max(self, key=lambda x: x.score())
         
     def __len__(self):
@@ -111,9 +112,17 @@ class PointSet(collections.Set):
         return self._set.__contains__(other)
 
 
-def non_max_sup(predictions, radius=1.1, clip_val=None, ignore_last=False):
-    ''' expects the predictions dict to contain predictions that
-        are single labels, not arrays of predictions per clases
+def non_max_sup(predictions, radius=1.1, clip_val=None, ignore_ind=None):
+    ''' expects the predictions dict to contain arrays
+        of predictions per clases
+
+        if ignore_ind is not None, will ignore points whose
+        index(max(predictions)) == ignore
+        i.e. if null_crop is feature 4, set ignore_ind to 4 to
+        ignore nulls
+
+        note that the clustered predictions returned by this function
+        will have their predictions array converted to a single int prediction
     '''
     unclustered = set()
     
@@ -125,7 +134,7 @@ def non_max_sup(predictions, radius=1.1, clip_val=None, ignore_last=False):
         clip = (clip_val is not None) and (pt.score() < clip_val)
             
         # ignore if last label is strongest (eg nullcrop)
-        ignore = ignore_last and (pt.label() == len(pt.preds)-1)
+        ignore = ignore_ind and (pt.label() == ignore_ind)
         
         if not clip and not ignore:
             unclustered.add( Point.from_str(coords, predictions[coords]) )
