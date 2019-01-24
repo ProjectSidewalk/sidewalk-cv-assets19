@@ -62,7 +62,7 @@ model_ft.eval()
 ############################################
 
 def predict_single_image(imgfile):
-	''' takes an image and returns a tuple of preds '''
+	''' takes an image and returns a list of preds '''
 	if not imgfile.endswith('.jpg'):
 		raise IOError("{} is not a .jpg image".format(imgfile))
 
@@ -74,7 +74,7 @@ def predict_single_image(imgfile):
 	with torch.no_grad():
 		prediction = model_ft( loaded_img )
 
-	return tuple(prediction.flatten().tolist())
+	return prediction.flatten().tolist()
 
 
 def bilinear_interpolation(x, y, points):
@@ -307,7 +307,6 @@ def predict_from_crops(crops_dir, verbose=False):
 	''' takes a directory full of crops, and returns dict
 		mapping string of coords to list of predictions '''
 	predictions = defaultdict(list)
-
 
 	for imagename in os.listdir(crops_dir):
 		if not imagename.endswith('.jpg'): continue
@@ -564,6 +563,39 @@ def batch_sliding_window(pano_roots_path, outdir, stride=150, bottom_space=1500,
 			print e
 
 
+def batch_predictions_only(dir_containing_crops, filename=model_path[:-3]+"_preds.csv"):
+	""" gets predictions for premade crops only
+		takes a directory containing directories of crops, and in
+		each subdirectory containing crops, writes a file with predictions
+		for later use. """
+
+	num_panos = 0
+	num_preds = 0
+
+	for root, dirs, files in os.walk(dir_containing_crops):
+		# skip empty dirs
+		if len(files) < 1: continue
+
+		pano_root = os.path.basename(root)
+		p_file = os.path.join(root, filename)
+		print "Processing predictions for {}".format(pano_root)
+
+		print "\tAttempting to get predictions for {} crops.".format(len(files))
+
+		predictions = predict_from_crops(root)
+
+		print "\tSuccessfully got {} predictions.".format(len(predictions))
+
+		write_predictions_to_file(predictions, p_file)
+
+		num_panos += 1
+		num_preds += len(predictions)
+
+	print "Computed and saved {} predictions for {} panos.".format(num_preds, num_panos)
+	return
+
+
+
 def batch_p_r(dir_containing_preds, scaling, clust_r, cor_r, clip_val=None):
 	sum_pr = np.zeros((4,3))
 
@@ -631,4 +663,4 @@ def batch_p_r(dir_containing_preds, scaling, clust_r, cor_r, clip_val=None):
 #show predictions for single img of curb ramp
 #print predict_label('38.jpg')
 
-print predict_single_image('38.jpg')
+batch_predictions_only('batch_50')
