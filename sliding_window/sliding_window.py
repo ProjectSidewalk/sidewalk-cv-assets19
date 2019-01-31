@@ -9,7 +9,7 @@ from collections import defaultdict
 import csv
 from copy import deepcopy
 from clustering import non_max_sup
-from precision_recall import precision_recall
+from precision_recall import precision_recall, partition_based_on_correctness
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import torchvision
@@ -366,9 +366,11 @@ def read_predictions_from_file(path):
 	return predictions
 
 
-def annotate(img, pano_yaw_deg, coords, label, color, show_coords=True):
+def annotate(img, pano_yaw_deg, coords, label, color, show_coords=True, box=None):
 	""" takes in an image object and labels it at specified coords
-		translates streetview coords to pixel coords """
+		translates streetview coords to pixel coords
+		if given a box, marks that box around the label
+	"""
 	sv_x, sv_y = coords
 	x = ((float(pano_yaw_deg) / 360) * gsv_image_width + sv_x) % gsv_image_width
 	y = gsv_image_height / 2 - sv_y
@@ -379,6 +381,11 @@ def annotate(img, pano_yaw_deg, coords, label, color, show_coords=True):
 	r = 20
 	draw = ImageDraw.Draw(img)
 	draw.ellipse((x - r, y - r, x + r, y + r), fill=color)
+	if box is not None:
+		half_box = box/2
+		p1 = (x-half_box, y-half_box)
+		p2 = (x+half_box, y+half_box)
+		draw.rectangle([p1,p2], outline=color)
 
 	font  = ImageFont.truetype("roboto.ttf", 60, encoding="unic")
 	draw.text((x+r+10, y), label, fill=color, font=font)
@@ -424,37 +431,58 @@ def get_ground_truth(pano_id, true_pano_yaw_deg):
 	return labels
 
 
-def show_predictions_on_image(pano_root, predictions, out_img, ground_truth=True):
+def show_predictions_on_image(pano_root, predictions, out_img, ground_truth=True, show_coords=True, show_box=False):
 	''' annotates an image with a dict of string coordinates and labels
 		if ground truth: also gets the ground truth and displays that as well '''
 	pano_img_path   = pano_root + ".jpg"
 	pano_xml_path   = pano_root + ".xml"
 	pano_depth_path = pano_root + ".depth.txt"
-	pano_yaw_deg = extract_panoyawdeg(pano_xml_path)
+	pano_yaw_deg    = extract_panoyawdeg(pano_xml_path)
 
 	img = Image.open(pano_img_path)
+
+	# convert from pytorch encoding to str
+	for coord in predictions:
+		int_label = predictions[coord]
+		predictions[coord] = pytorch_label_from_int[int_label]
 
 	def annotate_batch(predictions, color):
 		count = 0
 		for coords, prediction in predictions.iteritems():
 			sv_x, sv_y = map(int, coords.split(','))
 
+			if show_box:
+				x = ((float(pano_yaw_deg) / 360) * gsv_image_width + sv_x) % gsv_image_width
+				y = gsv_image_height / 2 - sv_y
+				box = predict_crop_size(x, y, gsv_image_width, gsv_image_height, pano_depth_path)
+			else: box = None
+
 			label = str(prediction)
 		
 			#print "Found a {} at ({},{})".format(label, sv_x, sv_y)
-			annotate(img, pano_yaw_deg, (sv_x, sv_y), label, color, show_coords=True)
+			annotate(img, pano_yaw_deg, (sv_x, sv_y), label, color, show_coords, box)
 			count += 1
 		return count
 
 	true_color = ImageColor.getrgb('blue')
 	pred_color = ImageColor.getrgb('red')
+	cor_color  = ImageColor.getrgb('DarkRed')
+	inc_color  = ImageColor.getrgb('LightSalmon')
 
 	
-	pred = annotate_batch(predictions, pred_color)
 	if ground_truth:
 		gt = get_ground_truth(pano_root, pano_yaw_deg)
+		for coord in gt: # convert to string labels
+			gt[coord] = label_from_int[gt[coord]]
 		true = annotate_batch(gt, true_color)
+
+		correct, incorrect = partition_based_on_correctness(predictions, gt, R=200)
+		pred = annotate_batch(correct, cor_color)
+		pred += annotate_batch(incorrect, inc_color)
 	else: true = 0
+
+	if not ground_truth: pred = annotate_batch(predictions, pred_color)
+
 	img.save(out_img)
 	print "Marked {} predicted and {} true labels on {}.".format(pred, true, out_img)
 
@@ -659,13 +687,14 @@ def batch_p_r(dir_containing_preds, scaling, clust_r, cor_r, clip_val=None, pred
 
 #batch_p_r('./batch_test/', 5, 150, 500)
 
-# predictions = read_predictions_from_file('new_test_preds.csv')
-# predictions = scale_non_null_predictions(predictions, 5)
-# predictions = non_max_sup(predictions, radius=100, clip_val=None, ignore_last=True)
-# show_predictions_on_image('1_1OfETDixMMCUhSWn-hcA', predictions, 'non_max.jpg', ground_truth=True)
+predictions = read_predictions_from_file('./single_test_pano/1_1OfETDixMMCUhSWn-hcA/25epoch_full_ds_resnet18_preds.csv')
+#predictions = scale_non_null_predictions(predictions, 5)
+predictions = non_max_sup(predictions, radius=150, clip_val=None, ignore_ind=1)
+show_predictions_on_image('1_1OfETDixMMCUhSWn-hcA', predictions, 'non_max.jpg', ground_truth=True, show_coords=False, show_box=True)
 
 # paused here
 #batch_sliding_window("inc_sample50.txt", "./batch_50/", stride=150)
+
 
 
 
@@ -674,6 +703,6 @@ def batch_p_r(dir_containing_preds, scaling, clust_r, cor_r, clip_val=None, pred
 #show predictions for single img of curb ramp
 #print predict_label('38.jpg')
 
-#batch_predictions_only('batch_50')
+#batch_predictions_only('single_test_pano')
 
-batch_p_r("./batch_50", 1, 150, 500, preds_filename='25epoch_full_ds_resnet18_preds.csv')
+#batch_p_r("./batch_50", 1, 300, 500, preds_filename='25epoch_full_ds_resnet18_preds.csv')

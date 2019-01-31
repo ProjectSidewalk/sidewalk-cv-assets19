@@ -63,3 +63,37 @@ def precision_recall(pred_dict, truth_dict, R, N_classes=4):
                 break
 
     return output
+
+def partition_based_on_correctness(pred_dict, truth_dict, R):
+    ''' given two dictionaries of points, one true, and one predicted,
+        this function partitions the predicted points into "correct"
+        and "incorrect" sets for each class.
+    '''
+    gt_by_label = defaultdict(set)
+    for coords, label in truth_dict.iteritems():
+        pt = Point.from_str(coords)
+        gt_by_label[label].add(pt)
+
+    cor_preds_by_label = defaultdict(set)
+    inc_preds_by_label = defaultdict(set)
+    for coords, label in pred_dict.iteritems():
+        pt = Point.from_str(coords)
+
+        for truth in gt_by_label[label]:
+            if truth.dist(pt) < R:
+                cor_preds_by_label[label].add(pt)
+                continue
+        if pt not in cor_preds_by_label[label]:
+            inc_preds_by_label[label].add(pt)
+
+    correct   = {}
+    incorrect = {}
+    for label in cor_preds_by_label:
+        for pt in cor_preds_by_label[label]:
+            correct[str(pt)] = label
+
+    for label in inc_preds_by_label:
+        for pt in inc_preds_by_label[label]:
+            incorrect[str(pt)] = label
+
+    return correct, incorrect

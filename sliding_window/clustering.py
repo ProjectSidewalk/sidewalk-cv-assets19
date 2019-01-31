@@ -139,7 +139,7 @@ def non_max_sup(predictions, radius=1.1, clip_val=None, ignore_ind=None):
         if not clip and not ignore:
             unclustered.add( Point.from_str(coords, predictions[coords]) )
 
-    print "\t Clustered/ignored {} pts down to {}".format(len(predictions), len(unclustered))
+    print "\t Clipped/ignored {} pts down to {}".format(len(predictions), len(unclustered))
     
     clustered = []
     while len(unclustered) > 0:
@@ -181,5 +181,8 @@ def non_max_sup(predictions, radius=1.1, clip_val=None, ignore_ind=None):
         pt = clust.get_strongest()
         coord, label = pt.to_pred()
         clustered_dict[coord] = label
+
+    print "\t Clustered down to {}".format(len(clustered_dict))
+
 
     return clustered_dict
