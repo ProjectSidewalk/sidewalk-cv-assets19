@@ -29,7 +29,7 @@ gsv_image_width = 13312
 gsv_image_height = 6656
 
 path_to_gsv_scrapes  = "/mnt/c/Users/gweld/sidewalk/panos_drive_full/scrapes_dump/"
-pano_db_export = '../../minus_onboard.csv'
+pano_db_export = '/mnt/c/Users/gweld/sidewalk/minus_onboard.csv'
 
 label_from_int = ('Curb Cut', 'Missing Cut', 'Obstruction', 'Sfc Problem')
 pytorch_label_from_int = ('Missing Cut', "Null", 'Obstruction', "Curb Cut", "Sfc Problem")
@@ -464,14 +464,14 @@ def show_predictions_on_image(pano_root, predictions, out_img, ground_truth=True
 			count += 1
 		return count
 
-	true_color = ImageColor.getrgb('blue')
+	true_color = ImageColor.getrgb('Navy')
 	pred_color = ImageColor.getrgb('red')
-	cor_color  = ImageColor.getrgb('DarkRed')
-	inc_color  = ImageColor.getrgb('LightSalmon')
+	cor_color  = ImageColor.getrgb('Chocolate')
+	inc_color  = ImageColor.getrgb('FireBrick')
 
 	
 	if ground_truth:
-		gt = get_ground_truth(pano_root, pano_yaw_deg)
+		gt = get_ground_truth(os.path.split(pano_root)[1], pano_yaw_deg)
 		for coord in gt: # convert to string labels
 			gt[coord] = label_from_int[gt[coord]]
 		true = annotate_batch(gt, true_color)
@@ -487,6 +487,25 @@ def show_predictions_on_image(pano_root, predictions, out_img, ground_truth=True
 	print "Marked {} predicted and {} true labels on {}.".format(pred, true, out_img)
 
 	#############
+	return
+
+
+def batch_visualize_preds(dir_containing_panos, outdir):
+	count = 0
+	for pano_id in os.listdir(dir_containing_panos):
+		print "Annotating {}".format(pano_id)
+		predictions_file = os.path.join(dir_containing_panos, pano_id, '25epoch_full_ds_resnet18_preds.csv')
+		predictions = read_predictions_from_file(predictions_file)
+		predictions = non_max_sup(predictions, radius=200, clip_val=None, ignore_ind=1)
+
+		outfile = os.path.join(outdir, pano_id+'.jpg')
+
+		pano_root = os.path.join(path_to_gsv_scrapes, pano_id[:2], pano_id)
+		show_predictions_on_image(pano_root, predictions, outfile, ground_truth=True, show_coords=False, show_box=True)
+		count += 1
+
+		#if count > 0: break
+	print "Wrote predictions for {} panos to {}".format(count, outdir)
 	return
 
 
@@ -687,10 +706,10 @@ def batch_p_r(dir_containing_preds, scaling, clust_r, cor_r, clip_val=None, pred
 
 #batch_p_r('./batch_test/', 5, 150, 500)
 
-predictions = read_predictions_from_file('./single_test_pano/1_1OfETDixMMCUhSWn-hcA/25epoch_full_ds_resnet18_preds.csv')
+#predictions = read_predictions_from_file('./single_test_pano/1_1OfETDixMMCUhSWn-hcA/25epoch_full_ds_resnet18_preds.csv')
 #predictions = scale_non_null_predictions(predictions, 5)
-predictions = non_max_sup(predictions, radius=150, clip_val=None, ignore_ind=1)
-show_predictions_on_image('1_1OfETDixMMCUhSWn-hcA', predictions, 'non_max.jpg', ground_truth=True, show_coords=False, show_box=True)
+#predictions = non_max_sup(predictions, radius=150, clip_val=None, ignore_ind=1)
+#show_predictions_on_image('1_1OfETDixMMCUhSWn-hcA', predictions, 'non_max.jpg', ground_truth=True, show_coords=False, show_box=True)
 
 # paused here
 #batch_sliding_window("inc_sample50.txt", "./batch_50/", stride=150)
@@ -706,3 +725,5 @@ show_predictions_on_image('1_1OfETDixMMCUhSWn-hcA', predictions, 'non_max.jpg', 
 #batch_predictions_only('single_test_pano')
 
 #batch_p_r("./batch_50", 1, 300, 500, preds_filename='25epoch_full_ds_resnet18_preds.csv')
+
+batch_visualize_preds('./batch_50', './visualized_panos/')
