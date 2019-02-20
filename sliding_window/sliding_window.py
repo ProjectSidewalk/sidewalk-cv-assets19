@@ -685,8 +685,15 @@ def batch_p_r(dir_containing_preds, scaling, clust_r, cor_r, clip_val=None, pred
 			print "\t Could not read predictions for {}, skipping.".format(pano_root)
 			
 	pr_dict = {}
+	total_cor    = 0
+	total_pred   = 0
+	total_actual = 0
 	for num, name in enumerate(label_from_int):
 		cor, pred, actual = sum_pr[num,:]
+
+		total_cor    += cor
+		total_pred   += pred
+		total_actual += actual
 
 		if pred > 0:
 			precision = float(cor)/pred
@@ -699,6 +706,16 @@ def batch_p_r(dir_containing_preds, scaling, clust_r, cor_r, clip_val=None, pred
 		pr_dict[name] = (precision,recall)
 
 		print "{:15}\t{:0.2f}\t{:0.2f}".format(name, precision, recall)
+
+	# calculate overall averages
+	if total_pred > 0:
+		precision = float(total_cor)/total_pred
+	else: precision = float('nan')
+
+	if total_actual > 0:
+		recall = float(total_cor)/total_actual
+	else: recall = float('nan')
+	print "{:15}\t{:0.2f}\t{:0.2f}".format('Total', precision, recall)
 
 	return pr_dict
 
@@ -724,6 +741,6 @@ def batch_p_r(dir_containing_preds, scaling, clust_r, cor_r, clip_val=None, pred
 
 #batch_predictions_only('single_test_pano')
 
-#batch_p_r("./batch_50", 1, 300, 500, preds_filename='25epoch_full_ds_resnet18_preds.csv')
+batch_p_r("./batch_50", 1, 150, 500, preds_filename='25epoch_full_ds_resnet18_preds.csv')
 
-batch_visualize_preds('./batch_50', './visualized_panos/')
+#batch_visualize_preds('./batch_50', './visualized_panos/')

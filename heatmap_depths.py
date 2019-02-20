@@ -123,7 +123,9 @@ def depth(path_to_image, sv_image_x, sv_image_y, pano_yaw_deg, path_to_depth):
 	distance = math.sqrt(val_x ** 2 + val_y ** 2 + val_z ** 2)
 	return distance
 
-def depth_generator():
+def depth_generator(verbose=False):
+	success = 0
+	fail = 0
 	with open(pano_db_export) as csvfile:
 		reader = csv.reader(csvfile)
 
@@ -138,7 +140,7 @@ def depth_generator():
 			label_id = int(row[7])
 
 			if label_type-1 >= len(label_from_int):
-				print "skipping label int {}".format(label_type)
+				if verbose: print "skipping label int {}".format(label_type)
 				continue
 			label_name = label_from_int[label_type-1]
 
@@ -151,18 +153,28 @@ def depth_generator():
 				if (os.path.exists(pano_xml_path)):
 					pano_yaw_deg = float(extract_panoyawdeg(pano_xml_path))
 				else:
-					print "Skipping {} due to missing XML data".format(pano_id)
+					if verbose: print "Skipping {} due to missing XML data".format(pano_id)
+					fail += 1
 					continue
 			except KeyError as e:
-				print "Invalid XML data, skipping {}".format(pano_id)
+				if verbose: print "Invalid XML data, skipping {}".format(pano_id)
+				fail += 1
 				continue
 
 			try:
 				d = depth(pano_img_path, sv_image_x, sv_image_y, pano_yaw_deg, pano_depth_path)
 			except IndexError as e:
-				print "Error interpolating depth data for {}, skipping.".format(pano_id)
+				if verbose: print "Error interpolating depth data for {}, skipping.".format(pano_id)
+				fail += 1
+				continue
+			except IOError as e:
+				if verbose: print "Missing depth data for {}, skipping.".format(pano_id)
+				fail += 1
+				continue
 			#print label_name, d
 
 			yield label_name, d
+			success += 1
+		print "Computed depth for {} panos, {}%% success rate.".format(success, 100*(float(success)/fail))
 
 
