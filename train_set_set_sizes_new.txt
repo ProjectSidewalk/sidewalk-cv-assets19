@@ -1,0 +1,43 @@
+Loaded features from 58034 panos
+Curb Cut            149227
+Missing Cut         19543
+Obstruction         22016
+Sfc Problem         8780
+
+
+                  Train   Test    Val     Total   
+Num Panos         46463   5797    5774    58034   
+Missing Cut       15692   1872    1979    19543   
+Sfc Problem       7003    897     880     8780    
+Obstruction       17519   2305    2192    22016   
+Curb Cut          119799  14731   14697   149227  
+Total Features    160013  19805   19748   199566
+
+
+Processing Test set
+Computing sliding window for 5797 panos
+Feature Type      Count
+Nullcrop          17391
+Curb Cut          19451
+Missing Cut       2616
+Obstruction       3314
+Sfc Problem       1288
+Wrote features from 5797 panos to dataset_csvs/Test.csv
+Processing Train set
+Computing sliding window for 46463 panos
+Feature Type      Count
+Nullcrop          139389
+Curb Cut          159039
+Missing Cut       21552
+Obstruction       25162
+Sfc Problem       9933
+Wrote features from 46463 panos to dataset_csvs/Train.csv
+Processing Val set
+Computing sliding window for 5774 panos
+Feature Type      Count
+Nullcrop          17322
+Curb Cut          19538
+Missing Cut       2685
+Obstruction       3153
+Sfc Problem       1205
+Wrote features from 5774 panos to dataset_csvs/Val.csv

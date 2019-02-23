@@ -5,11 +5,13 @@ from torch.optim import lr_scheduler
 import numpy as np
 import torchvision
 from torchvision import datasets, models, transforms
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 import time
 import os
 import copy
 from collections import defaultdict
+
+from TwoFileFolder import TwoFileFolder
 
 
 
@@ -20,7 +22,7 @@ data_transforms = {
         transforms.ToTensor(),
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ]),
-    'val': transforms.Compose([
+    'test': transforms.Compose([
         transforms.Resize(256),
         transforms.CenterCrop(224),
         transforms.ToTensor(),
@@ -29,14 +31,17 @@ data_transforms = {
 }
 
 
-data_dir = '/home/gweld/all_sidewalk/all_sidewalk/'
-image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x),
-                                          data_transforms[x])
-                  for x in ['train', 'val']}
+data_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/baby_ds/'
+
+# use datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
+# to ignore .json sidecars
+
+image_datasets = {x:TwoFileFolder(os.path.join(data_dir, x), data_transforms[x])
+                  for x in ['train', 'test']}
 dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=4,
                                              shuffle=True, num_workers=4)
-              for x in ['train', 'val']}
-dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'val']}
+              for x in ['train', 'test']}
+dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'test']}
 class_names = image_datasets['train'].classes
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -55,7 +60,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
         print('-' * 10)
 
         # Each epoch has a training and validation phase
-        for phase in ['train', 'val']:
+        for phase in ['train', 'test']:
             if phase == 'train':
                 scheduler.step()
                 model.train()  # Set model to training mode
@@ -105,8 +110,8 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
             print('{} Loss: {:.4f} Acc: {:.4f}'.format(
                 phase, epoch_loss, epoch_acc))
 
-            if phase == 'val':
-                print("Validation Class Accuracies")
+            if phase == 'test':
+                print("Class Accuracies on Test Set")
 
                 for class_name in class_totals:
                     class_acc = float(class_corrects[class_name])
@@ -116,7 +121,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
                 print("\n")
 
             # deep copy the model
-            if phase == 'val' and epoch_acc > best_acc:
+            if phase == 'test' and epoch_acc > best_acc:
                 best_acc = epoch_acc
                 best_model_wts = copy.deepcopy(model.state_dict())
 
@@ -125,7 +130,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(
         time_elapsed // 60, time_elapsed % 60))
-    print('Best val Acc: {:4f}'.format(best_acc))
+    print('Best test Acc: {:4f}'.format(best_acc))
 
     # load best model weights
     model.load_state_dict(best_model_wts)
@@ -134,7 +139,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
 
 
 
-model_ft = models.resnet50(pretrained=True)
+model_ft = models.resnet18(pretrained=True)
 num_ftrs = model_ft.fc.in_features
 model_ft.fc = nn.Linear(num_ftrs, 5) # last arg here, # classes? -gw
 
@@ -152,16 +157,16 @@ exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=7, gamma=0.1)
 # Train and evaluate
 # ^^^^^^^^^^^^^^^^^^
 
-print('Beginning Training on {} train and {} val images.'.format(dataset_sizes['train'], dataset_sizes['val']))
+print('Beginning Training on {} train and {} test images.'.format(dataset_sizes['train'], dataset_sizes['test']))
 
 
 model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler,
-                       num_epochs=50)
+                       num_epochs=10)
 
 
 
 
-torch.save(model_ft.state_dict(), 'models/50epoch_full_ds_resnet50.pt')
+torch.save(model_ft.state_dict(), 'models/test_discard.pt')
 
 
 

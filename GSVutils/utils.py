@@ -17,7 +17,7 @@ GSV_IMAGE_HEIGHT = 6656
 
 label_from_int   = ('Curb Cut', 'Missing Cut', 'Obstruction', 'Sfc Problem')
 
-path_to_gsv_scrapes = "/mnt/c/Users/gweld/sidewalk/panos_drive_full/scrapes_dump/"
+path_to_gsv_scrapes = "/mnt/f/scrapes_dump/"
 
 
 def bilinear_interpolation(x, y, points):
