@@ -70,8 +70,10 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
             running_loss = 0.0
             running_corrects = 0
 
-            class_corrects = defaultdict(int)
-            class_totals   = defaultdict(int)
+            if phase == 'test':
+                class_corrects  = defaultdict(int)
+                class_totals    = defaultdict(int)
+                class_predicted = defaultdict(int)
 
             # Iterate over data.
             for inputs, labels in dataloaders[phase]:
@@ -97,12 +99,14 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
                 running_loss += loss.item() * inputs.size(0)
                 running_corrects += torch.sum(preds == labels.data)
 
-                for index, pred in enumerate(preds):
-                    actual = labels.data[index]
-                    class_name = class_names[actual]
-                    
-                    if actual == pred: class_corrects[class_name] += 1
-                    class_totals[class_name] += 1
+                if phase == 'test':
+                    for index, pred in enumerate(preds):
+                        actual = labels.data[index]
+                        class_name = class_names[actual]
+                        
+                        if actual == pred: class_corrects[class_name] += 1
+                        class_totals[class_name] += 1
+                        class_predicted[ class_names[pred] ] += 1
 
             epoch_loss = running_loss / dataset_sizes[phase]
             epoch_acc = running_corrects.double() / dataset_sizes[phase]
@@ -111,13 +115,17 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
                 phase, epoch_loss, epoch_acc))
 
             if phase == 'test':
-                print("Class Accuracies on Test Set")
+                print("Class Precision and Recall on Test Data")
 
                 for class_name in class_totals:
-                    class_acc = float(class_corrects[class_name])
-                    class_acc = class_acc/class_totals[class_name]
+                    correct   = float(class_corrects[class_name])
+                    predicted = float(class_predicted[class_name])
+                    actual    = float(class_totals[class_name])
 
-                    print("{:20}{}%".format(class_name, 100*class_acc))
+                    p = 100 * (correct / predicted) if predicted >0 else float('nan')
+                    r = 100 * (correct / actual)
+
+                    print("{:20}{:06.2f}% {:06.2f}%".format(class_name, p, r))
                 print("\n")
 
             # deep copy the model
@@ -125,7 +133,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
                 best_acc = epoch_acc
                 best_model_wts = copy.deepcopy(model.state_dict())
 
-        print()
+        #print()
 
     time_elapsed = time.time() - since
     print('Training complete in {:.0f}m {:.0f}s'.format(
@@ -141,7 +149,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
 
 model_ft = models.resnet18(pretrained=True)
 num_ftrs = model_ft.fc.in_features
-model_ft.fc = nn.Linear(num_ftrs, 5) # last arg here, # classes? -gw
+model_ft.fc = nn.Linear(num_ftrs, 2) # last arg here, # classes? -gw
 
 model_ft = model_ft.to(device)
 
@@ -161,7 +169,7 @@ print('Beginning Training on {} train and {} test images.'.format(dataset_sizes[
 
 
 model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler,
-                       num_epochs=10)
+                       num_epochs=1)
 
 
 
