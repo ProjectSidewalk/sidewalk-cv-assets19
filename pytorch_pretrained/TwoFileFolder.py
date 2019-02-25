@@ -33,9 +33,9 @@ def make_dataset(dir, class_to_idx):
                     if os.path.exists(img_path) and os.path.exists(meta_path):
                         images.append(item)
                     if not os.path.exists(img_path):
-                        print "Couldn't find img {}".format(img_path)
+                        print( "Couldn't find img {}".format(img_path) )
                     if not os.path.exists(meta_path):
-                        print "Couldn't find meta {}".format(meta_path)
+                        print( "Couldn't find meta {}".format(meta_path) )
 
     return images
 
