@@ -31,7 +31,7 @@ data_transforms = {
 }
 
 
-data_dir = '/home/gweld/sidewalk_crops_subset/'
+data_dir = '/home/gweld/sliding_window_dataset/'
 
 # use datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
 # to ignore .json sidecars
