@@ -36,13 +36,21 @@ data_dir = '/home/gweld/sliding_window_dataset/'
 # use datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
 # to ignore .json sidecars
 
+print('Loading datasets')
 image_datasets = {x:TwoFileFolder(os.path.join(data_dir, x), data_transforms[x])
                   for x in ['Val', 'Test']}
+
+print('Loading dataloaders')
 dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=4,
                                              shuffle=True, num_workers=4)
               for x in ['Val', 'Test']}
 dataset_sizes = {x: len(image_datasets[x]) for x in ['Val', 'Test']}
 class_names = image_datasets['Val'].classes
+
+print( "{:<10}{}".format('Dataset', 'size') )
+for dataset, size in dataset_sizes.iteritems():
+    print( "{:<10}{}".format(dataset, size) )
+
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
