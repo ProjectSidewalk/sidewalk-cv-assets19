@@ -31,7 +31,7 @@ data_transforms = {
 }
 
 
-data_dir = '/home/gweld/sliding_window_dataset/'
+data_dir = '/home/gweld/sidewalk_crops_subset/'
 
 # use datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
 # to ignore .json sidecars
@@ -48,7 +48,7 @@ dataset_sizes = {x: len(image_datasets[x]) for x in ['Val', 'Test']}
 class_names = image_datasets['Val'].classes
 
 print( "{:<10}{}".format('Dataset', 'size') )
-for dataset, size in dataset_sizes.iteritems():
+for dataset, size in dataset_sizes.items():
     print( "{:<10}{}".format(dataset, size) )
 
 
