@@ -1,0 +1,70 @@
+Finished Imports
+Loading datasets
+Loading dataloaders
+Dataset   size
+Val       18926
+Test      20308
+Beginning Training on 18926 train and 20308 test images.
+Epoch 0/24
+----------
+Val Loss: 1.2008 Acc: 0.5426
+Test Loss: 1.6491 Acc: 0.5487
+Class Precision and Recall on Test Data
+8                   077.31% 065.94%
+1                   084.00% 037.49%
+2                   025.49% 067.29%
+4                   000nan% 000.00%
+3                   053.19% 078.87%
+
+
+Epoch 1/24
+----------
+Val Loss: 0.9839 Acc: 0.6253
+Test Loss: 1.4851 Acc: 0.6832
+Class Precision and Recall on Test Data
+1                   072.16% 081.54%
+3                   078.62% 057.08%
+8                   064.60% 084.90%
+2                   057.12% 041.33%
+4                   000nan% 000.00%
+
+
+Epoch 2/24
+----------
+Val Loss: 0.8944 Acc: 0.6618
+Test Loss: 1.5647 Acc: 0.6304
+Class Precision and Recall on Test Data
+1                   078.56% 054.19%
+8                   073.29% 078.87%
+2                   052.81% 051.17%
+3                   044.26% 083.08%
+4                   000nan% 000.00%
+
+
+Epoch 3/24
+----------
+Val Loss: 0.8279 Acc: 0.6851
+Test Loss: 1.3923 Acc: 0.6905
+Class Precision and Recall on Test Data
+1                   085.51% 068.99%
+4                   000nan% 000.00%
+8                   069.19% 084.46%
+3                   060.93% 077.03%
+2                   049.98% 054.39%
+
+
+Epoch 4/24
+----------
+Val Loss: 0.8053 Acc: 0.6979
+Test Loss: 1.2985 Acc: 0.7167
+Class Precision and Recall on Test Data
+1                   081.55% 079.64%
+2                   056.22% 052.09%
+8                   071.91% 082.57%
+3                   064.66% 077.54%
+4                   000nan% 000.00%
+
+
+Epoch 5/24
+----------
+Val Loss: 0.7769 Acc: 0.7073

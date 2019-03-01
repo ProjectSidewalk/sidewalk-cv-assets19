@@ -1,0 +1,653 @@
+Beginning Training on 161040 train and 40263 val images.
+Epoch 0/49
+----------
+train Loss: 0.5670 Acc: 0.8112
+val Loss: 0.4492 Acc: 0.8517
+Validation Class Accuracies
+ramp                92.13203238530205%
+not_ramp            57.26249672860507%
+obstruction         80.96007385183476%
+null                77.75577557755776%
+sfc_prob            46.6903073286052%
+
+
+
+Epoch 1/49
+----------
+train Loss: 0.4870 Acc: 0.8375
+val Loss: 0.3928 Acc: 0.8711
+Validation Class Accuracies
+ramp                93.94851567365579%
+null                75.84158415841584%
+obstruction         85.25271174705746%
+not_ramp            55.61371368751635%
+sfc_prob            56.205673758865245%
+
+
+
+Epoch 2/49
+----------
+train Loss: 0.4671 Acc: 0.8439
+val Loss: 0.3709 Acc: 0.8816
+Validation Class Accuracies
+ramp                96.03487647913639%
+null                72.60726072607261%
+not_ramp            57.91677571316409%
+obstruction         78.19063004846527%
+sfc_prob            61.28841607565012%
+
+
+
+Epoch 3/49
+----------
+train Loss: 0.4515 Acc: 0.8488
+val Loss: 0.3925 Acc: 0.8780
+Validation Class Accuracies
+ramp                97.16974603833644%
+not_ramp            48.36430253860246%
+null                79.40594059405942%
+obstruction         78.12139395338103%
+sfc_prob            49.11347517730496%
+
+
+
+Epoch 4/49
+----------
+train Loss: 0.4433 Acc: 0.8515
+val Loss: 0.3677 Acc: 0.8831
+Validation Class Accuracies
+ramp                96.64729084492423%
+obstruction         72.76713593353334%
+not_ramp            60.08898194190002%
+null                81.12211221122112%
+sfc_prob            55.910165484633566%
+
+
+
+Epoch 5/49
+----------
+train Loss: 0.4351 Acc: 0.8552
+val Loss: 0.3627 Acc: 0.8834
+Validation Class Accuracies
+ramp                95.36710262265588%
+not_ramp            65.71578120910756%
+sfc_prob            57.62411347517731%
+null                74.85148514851485%
+obstruction         78.09831525501961%
+
+
+
+Epoch 6/49
+----------
+train Loss: 0.4279 Acc: 0.8571
+val Loss: 0.3555 Acc: 0.8868
+Validation Class Accuracies
+not_ramp            59.015964407223244%
+sfc_prob            63.71158392434988%
+ramp                96.12483565151202%
+null                76.1056105610561%
+obstruction         79.3676436648973%
+
+
+
+Epoch 7/49
+----------
+train Loss: 0.3978 Acc: 0.8675
+val Loss: 0.3295 Acc: 0.8956
+Validation Class Accuracies
+not_ramp            62.392043967547764%
+obstruction         82.85252711747057%
+ramp                96.45353262749983%
+null                77.75577557755776%
+sfc_prob            60.99290780141844%
+
+
+
+Epoch 8/49
+----------
+train Loss: 0.3884 Acc: 0.8703
+val Loss: 0.3225 Acc: 0.8971
+Validation Class Accuracies
+sfc_prob            62.11583924349882%
+ramp                96.37741332779738%
+not_ramp            63.8314577335776%
+null                77.16171617161716%
+obstruction         83.19870759289176%
+
+
+
+Epoch 9/49
+----------
+train Loss: 0.3858 Acc: 0.8716
+val Loss: 0.3194 Acc: 0.8979
+Validation Class Accuracies
+ramp                96.48813230918275%
+obstruction         82.55250403877221%
+sfc_prob            61.52482269503546%
+null                78.41584158415841%
+not_ramp            64.3548809212248%
+
+
+
+Epoch 10/49
+----------
+train Loss: 0.3829 Acc: 0.8729
+val Loss: 0.3202 Acc: 0.8986
+Validation Class Accuracies
+ramp                97.01404747076326%
+not_ramp            62.470557445694844%
+obstruction         80.96007385183476%
+sfc_prob            63.47517730496454%
+null                77.42574257425743%
+
+
+
+Epoch 11/49
+----------
+train Loss: 0.3808 Acc: 0.8731
+val Loss: 0.3233 Acc: 0.8975
+Validation Class Accuracies
+ramp                96.43623278665837%
+sfc_prob            62.470449172576835%
+obstruction         83.89106854373414%
+not_ramp            62.18267469248888%
+null                79.00990099009901%
+
+
+
+Epoch 12/49
+----------
+train Loss: 0.3780 Acc: 0.8735
+val Loss: 0.3205 Acc: 0.8987
+Validation Class Accuracies
+ramp                96.99674762992181%
+obstruction         81.76782829448419%
+not_ramp            62.4967286050772%
+sfc_prob            62.29314420803782%
+null                76.83168316831683%
+
+
+
+Epoch 13/49
+----------
+train Loss: 0.3763 Acc: 0.8747
+val Loss: 0.3191 Acc: 0.8982
+Validation Class Accuracies
+ramp                96.60923119507301%
+null                75.44554455445545%
+sfc_prob            60.9338061465721%
+not_ramp            63.49123266160691%
+obstruction         84.09877682898684%
+
+
+
+Epoch 14/49
+----------
+train Loss: 0.3716 Acc: 0.8761
+val Loss: 0.3170 Acc: 0.8995
+Validation Class Accuracies
+null                78.15181518151815%
+ramp                96.88256868036814%
+obstruction         81.92937918301408%
+sfc_prob            63.829787234042556%
+not_ramp            62.86312483643025%
+
+
+
+Epoch 15/49
+----------
+train Loss: 0.3687 Acc: 0.8780
+val Loss: 0.3185 Acc: 0.8994
+Validation Class Accuracies
+ramp                96.64729084492423%
+null                78.54785478547855%
+obstruction         83.42949457650587%
+not_ramp            63.36037686469511%
+sfc_prob            62.29314420803782%
+
+
+
+Epoch 16/49
+----------
+train Loss: 0.3679 Acc: 0.8772
+val Loss: 0.3149 Acc: 0.9004
+Validation Class Accuracies
+not_ramp            63.64825961790107%
+sfc_prob            62.825059101654844%
+ramp                96.91716836205106%
+obstruction         82.41403184860374%
+null                77.68976897689768%
+
+
+
+Epoch 17/49
+----------
+train Loss: 0.3699 Acc: 0.8775
+val Loss: 0.3198 Acc: 0.9003
+Validation Class Accuracies
+not_ramp            64.0931693274012%
+sfc_prob            64.77541371158392%
+ramp                96.81682928517058%
+obstruction         82.13708746826678%
+null                76.83168316831683%
+
+
+
+Epoch 18/49
+----------
+train Loss: 0.3695 Acc: 0.8767
+val Loss: 0.3173 Acc: 0.9001
+Validation Class Accuracies
+ramp                96.70265033561691%
+sfc_prob            63.652482269503544%
+obstruction         82.85252711747057%
+not_ramp            64.04082700863648%
+null                77.82178217821783%
+
+
+
+Epoch 19/49
+----------
+train Loss: 0.3667 Acc: 0.8778
+val Loss: 0.3174 Acc: 0.8999
+Validation Class Accuracies
+ramp                96.5642516088852%
+obstruction         84.12185552734826%
+not_ramp            62.94163831457733%
+sfc_prob            64.18439716312056%
+null                78.41584158415841%
+
+
+
+Epoch 20/49
+----------
+train Loss: 0.3672 Acc: 0.8775
+val Loss: 0.3185 Acc: 0.8999
+Validation Class Accuracies
+ramp                96.71303024012178%
+obstruction         82.66789753057927%
+not_ramp            63.8314577335776%
+sfc_prob            63.061465721040186%
+null                78.61386138613862%
+
+
+
+Epoch 21/49
+----------
+train Loss: 0.3690 Acc: 0.8772
+val Loss: 0.3129 Acc: 0.9011
+Validation Class Accuracies
+ramp                96.90678845754618%
+sfc_prob            62.23404255319149%
+obstruction         83.03715670436188%
+not_ramp            63.85762889295996%
+null                78.08580858085809%
+
+
+
+Epoch 22/49
+----------
+train Loss: 0.3657 Acc: 0.8784
+val Loss: 0.3149 Acc: 0.9006
+Validation Class Accuracies
+ramp                96.72341014462667%
+not_ramp            64.77361947134258%
+sfc_prob            63.652482269503544%
+null                76.5016501650165%
+obstruction         82.96792060927764%
+
+
+
+Epoch 23/49
+----------
+train Loss: 0.3690 Acc: 0.8765
+val Loss: 0.3158 Acc: 0.9008
+Validation Class Accuracies
+ramp                96.69227043111204%
+obstruction         83.70643895684283%
+not_ramp            64.25019628369537%
+null                78.48184818481847%
+sfc_prob            62.23404255319149%
+
+
+
+Epoch 24/49
+----------
+train Loss: 0.3681 Acc: 0.8775
+val Loss: 0.3174 Acc: 0.8998
+Validation Class Accuracies
+ramp                96.73725001729984%
+not_ramp            63.33420570531274%
+null                79.33993399339934%
+sfc_prob            61.46572104018912%
+obstruction         83.2910223863374%
+
+
+
+Epoch 25/49
+----------
+train Loss: 0.3677 Acc: 0.8781
+val Loss: 0.3181 Acc: 0.8997
+Validation Class Accuracies
+obstruction         82.94484191091622%
+ramp                96.62307106774618%
+not_ramp            64.14551164616591%
+sfc_prob            64.18439716312056%
+null                77.16171617161716%
+
+
+
+Epoch 26/49
+----------
+train Loss: 0.3677 Acc: 0.8782
+val Loss: 0.3173 Acc: 0.8991
+Validation Class Accuracies
+ramp                96.63691094041936%
+obstruction         82.13708746826678%
+not_ramp            63.75294425543051%
+null                78.15181518151815%
+sfc_prob            64.42080378250591%
+
+
+
+Epoch 27/49
+----------
+train Loss: 0.3667 Acc: 0.8775
+val Loss: 0.3193 Acc: 0.8989
+Validation Class Accuracies
+ramp                96.79260950799252%
+obstruction         81.69859219939995%
+sfc_prob            64.77541371158392%
+not_ramp            62.62758440198901%
+null                78.41584158415841%
+
+
+
+Epoch 28/49
+----------
+train Loss: 0.3677 Acc: 0.8779
+val Loss: 0.3172 Acc: 0.8999
+Validation Class Accuracies
+ramp                96.78568957165594%
+sfc_prob            63.35697399527187%
+obstruction         82.11400876990538%
+not_ramp            63.93614237110704%
+null                78.41584158415841%
+
+
+
+Epoch 29/49
+----------
+train Loss: 0.3667 Acc: 0.8784
+val Loss: 0.3190 Acc: 0.8996
+Validation Class Accuracies
+not_ramp            63.9623135304894%
+ramp                96.84450903051692%
+sfc_prob            62.470449172576835%
+obstruction         82.22940226171244%
+null                77.02970297029704%
+
+
+
+Epoch 30/49
+----------
+train Loss: 0.3664 Acc: 0.8776
+val Loss: 0.3157 Acc: 0.9000
+Validation Class Accuracies
+ramp                96.61961109957788%
+obstruction         83.08331410108471%
+null                77.88778877887789%
+sfc_prob            63.35697399527187%
+not_ramp            64.38105208060718%
+
+
+
+Epoch 31/49
+----------
+train Loss: 0.3675 Acc: 0.8776
+val Loss: 0.3150 Acc: 0.9005
+Validation Class Accuracies
+obstruction         83.42949457650587%
+ramp                96.83758909418033%
+not_ramp            63.90997121172468%
+sfc_prob            61.702127659574465%
+null                76.96369636963696%
+
+
+
+Epoch 32/49
+----------
+train Loss: 0.3683 Acc: 0.8765
+val Loss: 0.3160 Acc: 0.9005
+Validation Class Accuracies
+ramp                96.6161511314096%
+obstruction         82.25248096007385%
+not_ramp            64.32870976184245%
+sfc_prob            66.01654846335697%
+null                78.74587458745874%
+
+
+
+Epoch 33/49
+----------
+train Loss: 0.3674 Acc: 0.8773
+val Loss: 0.3148 Acc: 0.9003
+Validation Class Accuracies
+obstruction         82.11400876990538%
+ramp                96.7580098263096%
+not_ramp            64.0931693274012%
+null                77.95379537953795%
+sfc_prob            64.83451536643025%
+
+
+
+Epoch 34/49
+----------
+train Loss: 0.3660 Acc: 0.8779
+val Loss: 0.3167 Acc: 0.9006
+Validation Class Accuracies
+obstruction         82.04477267482115%
+ramp                96.77876963531935%
+null                78.08580858085809%
+not_ramp            65.21852918084271%
+sfc_prob            62.70685579196218%
+
+
+
+Epoch 35/49
+----------
+train Loss: 0.3673 Acc: 0.8769
+val Loss: 0.3154 Acc: 0.9007
+Validation Class Accuracies
+ramp                96.60231125873642%
+not_ramp            64.14551164616591%
+obstruction         84.05261943226402%
+sfc_prob            63.35697399527187%
+null                77.88778877887789%
+
+
+
+Epoch 36/49
+----------
+train Loss: 0.3653 Acc: 0.8780
+val Loss: 0.3183 Acc: 0.8991
+Validation Class Accuracies
+obstruction         82.3447957535195%
+ramp                96.76492976264618%
+not_ramp            62.62758440198901%
+null                78.81188118811882%
+sfc_prob            63.652482269503544%
+
+
+
+Epoch 37/49
+----------
+train Loss: 0.3671 Acc: 0.8772
+val Loss: 0.3137 Acc: 0.9009
+Validation Class Accuracies
+ramp                96.79260950799252%
+obstruction         83.06023540272328%
+not_ramp            64.30253860246009%
+null                77.68976897689768%
+sfc_prob            62.825059101654844%
+
+
+
+Epoch 38/49
+----------
+train Loss: 0.3683 Acc: 0.8772
+val Loss: 0.3175 Acc: 0.8995
+Validation Class Accuracies
+ramp                96.68535049477545%
+sfc_prob            63.652482269503544%
+obstruction         82.5063466420494%
+not_ramp            64.01465584925413%
+null                77.62376237623762%
+
+
+
+Epoch 39/49
+----------
+train Loss: 0.3655 Acc: 0.8777
+val Loss: 0.3208 Acc: 0.8991
+Validation Class Accuracies
+ramp                96.64037090858764%
+obstruction         82.62174013385645%
+sfc_prob            61.28841607565012%
+not_ramp            64.22402512431302%
+null                79.00990099009901%
+
+
+
+Epoch 40/49
+----------
+train Loss: 0.3673 Acc: 0.8780
+val Loss: 0.3168 Acc: 0.8995
+Validation Class Accuracies
+ramp                96.79260950799252%
+null                77.68976897689768%
+not_ramp            62.20884585187124%
+obstruction         82.94484191091622%
+sfc_prob            64.53900709219859%
+
+
+
+Epoch 41/49
+----------
+train Loss: 0.3658 Acc: 0.8779
+val Loss: 0.3161 Acc: 0.9001
+Validation Class Accuracies
+ramp                96.77530966715106%
+sfc_prob            63.94799054373522%
+null                77.16171617161716%
+not_ramp            64.74744831196023%
+obstruction         81.86014308792984%
+
+
+
+Epoch 42/49
+----------
+train Loss: 0.3664 Acc: 0.8769
+val Loss: 0.3161 Acc: 0.9005
+Validation Class Accuracies
+ramp                96.59193135423155%
+sfc_prob            65.01182033096927%
+not_ramp            64.19785396493066%
+null                77.82178217821783%
+obstruction         83.267943687976%
+
+
+
+Epoch 43/49
+----------
+train Loss: 0.3670 Acc: 0.8776
+val Loss: 0.3148 Acc: 0.9002
+Validation Class Accuracies
+ramp                96.66805065393397%
+not_ramp            64.17168280554829%
+obstruction         82.94484191091622%
+null                77.95379537953795%
+sfc_prob            63.77068557919622%
+
+
+
+Epoch 44/49
+----------
+train Loss: 0.3675 Acc: 0.8773
+val Loss: 0.3157 Acc: 0.9003
+Validation Class Accuracies
+not_ramp            64.53807903690134%
+ramp                96.80990934883398%
+obstruction         81.88322178629124%
+sfc_prob            62.70685579196218%
+null                78.81188118811882%
+
+
+
+Epoch 45/49
+----------
+train Loss: 0.3673 Acc: 0.8778
+val Loss: 0.3187 Acc: 0.8997
+Validation Class Accuracies
+ramp                96.6542107812608%
+obstruction         82.99099930763904%
+not_ramp            64.59042135566607%
+sfc_prob            62.4113475177305%
+null                77.16171617161716%
+
+
+
+Epoch 46/49
+----------
+train Loss: 0.3666 Acc: 0.8788
+val Loss: 0.3152 Acc: 0.9007
+Validation Class Accuracies
+ramp                96.80990934883398%
+not_ramp            62.91546715519497%
+sfc_prob            65.66193853427896%
+obstruction         82.87560581583199%
+null                77.75577557755776%
+
+
+
+Epoch 47/49
+----------
+train Loss: 0.3664 Acc: 0.8778
+val Loss: 0.3163 Acc: 0.9001
+Validation Class Accuracies
+obstruction         83.2910223863374%
+ramp                96.48121237284617%
+sfc_prob            66.13475177304964%
+not_ramp            63.85762889295996%
+null                78.28382838283828%
+
+
+
+Epoch 48/49
+----------
+train Loss: 0.3663 Acc: 0.8778
+val Loss: 0.3156 Acc: 0.9013
+Validation Class Accuracies
+ramp                96.79606947616082%
+sfc_prob            63.94799054373522%
+obstruction         83.01407800600046%
+not_ramp            64.0931693274012%
+null                78.28382838283828%
+
+
+
+Epoch 49/49
+----------
+train Loss: 0.3673 Acc: 0.8782
+val Loss: 0.3141 Acc: 0.9001
+Validation Class Accuracies
+obstruction         82.20632356335102%
+ramp                96.72341014462667%
+not_ramp            64.32870976184245%
+null                77.22772277227723%
+sfc_prob            64.71631205673759%
+
+
+
+Training complete in 5036m 34s
+Best val Acc: 0.901324

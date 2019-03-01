@@ -14,6 +14,7 @@ from collections import defaultdict
 from TwoFileFolder import TwoFileFolder
 
 
+print('Finished Imports')
 
 data_transforms = {
     'Val': transforms.Compose([
@@ -32,12 +33,14 @@ data_transforms = {
 
 
 data_dir = '/home/gweld/sliding_window_dataset/'
+#data_dir  = '/home/gweld/sidewalk_crops_subset/'
 
 # use datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
 # to ignore .json sidecars
+# use TwoFileFolder( ... for custom dataloader
 
 print('Loading datasets')
-image_datasets = {x:TwoFileFolder(os.path.join(data_dir, x), data_transforms[x])
+image_datasets = {x:datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
                   for x in ['Val', 'Test']}
 
 print('Loading dataloaders')
@@ -111,7 +114,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
                     for index, pred in enumerate(preds):
                         actual = labels.data[index]
                         class_name = class_names[actual]
-                        
+
                         if actual == pred: class_corrects[class_name] += 1
                         class_totals[class_name] += 1
                         class_predicted[ class_names[pred] ] += 1
