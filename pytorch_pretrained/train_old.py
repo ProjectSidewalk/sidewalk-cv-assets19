@@ -28,8 +28,8 @@ data_transforms = {
     ]),
 }
 
+data_dir = '/home/gweld/sliding_window_dataset/'
 
-data_dir = 'home/gweld/sliding_window_dataset/'
 image_datasets = {x: datasets.ImageFolder(os.path.join(data_dir, x),
                                           data_transforms[x])
                   for x in ['Test', 'Val']}

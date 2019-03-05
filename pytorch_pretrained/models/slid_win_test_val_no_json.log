@@ -1,0 +1,309 @@
+Finished Imports
+Loading datasets
+Loading dataloaders
+Dataset   size
+Val       20131
+Test      20308
+Beginning Training on 20131 train and 20308 test images.
+Epoch 0/24
+----------
+Val Loss: 1.2972 Acc: 0.5256
+Test Loss: 0.9281 Acc: 0.6891
+Class Precision and Recall on Test Data
+4                   043.03% 039.64%
+1                   079.29% 073.54%
+3                   066.53% 069.49%
+2                   064.96% 032.02%
+8                   066.61% 084.43%
+
+
+Epoch 1/24
+----------
+Val Loss: 1.0411 Acc: 0.6126
+Test Loss: 0.8018 Acc: 0.7234
+Class Precision and Recall on Test Data
+1                   077.73% 082.54%
+8                   073.52% 080.06%
+3                   071.15% 071.07%
+2                   062.86% 040.44%
+4                   051.10% 048.91%
+
+
+Epoch 2/24
+----------
+Val Loss: 0.9678 Acc: 0.6457
+Test Loss: 0.8022 Acc: 0.7244
+Class Precision and Recall on Test Data
+1                   078.32% 082.13%
+2                   062.28% 047.11%
+8                   071.27% 081.22%
+3                   072.58% 067.04%
+4                   059.66% 043.54%
+
+
+Epoch 3/24
+----------
+Val Loss: 0.9236 Acc: 0.6607
+Test Loss: 0.7762 Acc: 0.7271
+Class Precision and Recall on Test Data
+3                   069.24% 074.88%
+1                   084.26% 076.39%
+8                   074.18% 081.31%
+2                   051.50% 058.37%
+4                   066.36% 033.49%
+
+
+Epoch 4/24
+----------
+Val Loss: 0.8846 Acc: 0.6771
+Test Loss: 0.7930 Acc: 0.7286
+Class Precision and Recall on Test Data
+1                   082.84% 078.62%
+8                   076.17% 078.48%
+3                   066.23% 078.90%
+2                   052.56% 057.83%
+4                   072.76% 029.75%
+
+
+Epoch 5/24
+----------
+Val Loss: 0.8574 Acc: 0.6886
+Test Loss: 0.8142 Acc: 0.7294
+Class Precision and Recall on Test Data
+1                   077.49% 083.26%
+4                   062.98% 041.20%
+3                   078.07% 059.35%
+2                   061.15% 050.10%
+8                   071.49% 084.79%
+
+
+Epoch 6/24
+----------
+Val Loss: 0.8525 Acc: 0.6889
+Test Loss: 0.7799 Acc: 0.7412
+Class Precision and Recall on Test Data
+8                   072.75% 084.32%
+2                   057.53% 056.91%
+3                   078.24% 066.83%
+4                   064.77% 044.39%
+1                   081.88% 080.27%
+
+
+Epoch 7/24
+----------
+Val Loss: 0.7637 Acc: 0.7225
+Test Loss: 0.7227 Acc: 0.7531
+Class Precision and Recall on Test Data
+3                   073.67% 074.36%
+1                   083.04% 082.05%
+2                   058.89% 057.87%
+8                   076.70% 081.21%
+4                   063.07% 048.68%
+
+
+Epoch 8/24
+----------
+Val Loss: 0.7361 Acc: 0.7337
+Test Loss: 0.7366 Acc: 0.7547
+Class Precision and Recall on Test Data
+2                   061.82% 052.78%
+8                   076.09% 081.82%
+1                   082.14% 083.46%
+3                   071.32% 077.09%
+4                   071.12% 044.31%
+
+
+Epoch 9/24
+----------
+Val Loss: 0.7290 Acc: 0.7343
+Test Loss: 0.7208 Acc: 0.7589
+Class Precision and Recall on Test Data
+2                   060.22% 056.87%
+8                   078.13% 080.14%
+1                   080.91% 085.58%
+4                   068.04% 048.91%
+3                   074.69% 073.76%
+
+
+Epoch 10/24
+----------
+Val Loss: 0.7189 Acc: 0.7399
+Test Loss: 0.7113 Acc: 0.7562
+Class Precision and Recall on Test Data
+3                   076.30% 072.40%
+1                   084.26% 082.02%
+4                   064.77% 049.69%
+2                   060.21% 055.46%
+8                   074.32% 083.94%
+
+
+Epoch 11/24
+----------
+Val Loss: 0.7171 Acc: 0.7432
+Test Loss: 0.7273 Acc: 0.7563
+Class Precision and Recall on Test Data
+1                   083.42% 082.24%
+8                   076.83% 081.60%
+4                   065.64% 048.21%
+2                   059.95% 057.33%
+3                   072.69% 075.79%
+
+
+Epoch 12/24
+----------
+Val Loss: 0.7012 Acc: 0.7467
+Test Loss: 0.7360 Acc: 0.7539
+Class Precision and Recall on Test Data
+2                   058.11% 058.87%
+3                   076.85% 070.04%
+8                   074.46% 084.01%
+1                   083.58% 082.18%
+4                   069.70% 044.08%
+
+
+Epoch 13/24
+----------
+Val Loss: 0.7027 Acc: 0.7453
+Test Loss: 0.7230 Acc: 0.7613
+Class Precision and Recall on Test Data
+4                   068.20% 049.61%
+1                   083.20% 083.89%
+2                   062.07% 054.54%
+8                   076.67% 082.58%
+3                   072.95% 075.33%
+
+
+Epoch 14/24
+----------
+Val Loss: 0.6950 Acc: 0.7494
+Test Loss: 0.7150 Acc: 0.7620
+Class Precision and Recall on Test Data
+8                   076.03% 083.22%
+3                   075.77% 073.34%
+4                   061.90% 053.89%
+2                   064.14% 052.74%
+1                   082.86% 084.33%
+
+
+Epoch 15/24
+----------
+Val Loss: 0.6918 Acc: 0.7464
+Test Loss: 0.7171 Acc: 0.7585
+Class Precision and Recall on Test Data
+1                   084.33% 082.22%
+8                   073.03% 085.86%
+3                   075.81% 072.58%
+2                   063.58% 052.62%
+4                   069.22% 047.82%
+
+
+Epoch 16/24
+----------
+Val Loss: 0.6868 Acc: 0.7520
+Test Loss: 0.7256 Acc: 0.7598
+Class Precision and Recall on Test Data
+2                   060.81% 056.87%
+3                   077.20% 071.73%
+4                   063.07% 052.80%
+1                   084.03% 082.53%
+8                   075.35% 083.72%
+
+
+Epoch 17/24
+----------
+Val Loss: 0.6887 Acc: 0.7516
+Test Loss: 0.7165 Acc: 0.7591
+Class Precision and Recall on Test Data
+3                   071.05% 076.97%
+2                   066.65% 049.75%
+1                   083.20% 083.81%
+4                   065.82% 050.55%
+8                   075.52% 082.86%
+
+
+Epoch 18/24
+----------
+Val Loss: 0.6892 Acc: 0.7533
+Test Loss: 0.7122 Acc: 0.7578
+Class Precision and Recall on Test Data
+2                   060.31% 056.57%
+8                   075.53% 083.82%
+3                   075.97% 073.31%
+1                   084.60% 081.15%
+4                   061.08% 052.80%
+
+
+Epoch 19/24
+----------
+Val Loss: 0.6787 Acc: 0.7560
+Test Loss: 0.7209 Acc: 0.7603
+Class Precision and Recall on Test Data
+8                   075.67% 083.25%
+4                   069.02% 048.05%
+1                   083.91% 082.95%
+2                   060.60% 057.37%
+3                   074.81% 073.61%
+
+
+Epoch 20/24
+----------
+Val Loss: 0.6869 Acc: 0.7492
+Test Loss: 0.7143 Acc: 0.7602
+Class Precision and Recall on Test Data
+2                   061.88% 053.96%
+1                   082.64% 084.11%
+8                   076.53% 082.44%
+3                   074.39% 074.18%
+4                   065.90% 051.48%
+
+
+Epoch 21/24
+----------
+Val Loss: 0.6829 Acc: 0.7529
+Test Loss: 0.7149 Acc: 0.7590
+Class Precision and Recall on Test Data
+1                   082.63% 084.07%
+4                   067.49% 048.68%
+3                   075.45% 072.28%
+2                   063.03% 052.43%
+8                   074.84% 084.23%
+
+
+Epoch 22/24
+----------
+Val Loss: 0.6853 Acc: 0.7507
+Test Loss: 0.7206 Acc: 0.7585
+Class Precision and Recall on Test Data
+4                   066.67% 050.00%
+8                   077.02% 082.00%
+1                   082.32% 084.08%
+2                   059.76% 056.26%
+3                   074.89% 072.85%
+
+
+Epoch 23/24
+----------
+Val Loss: 0.6874 Acc: 0.7502
+Test Loss: 0.7293 Acc: 0.7570
+Class Precision and Recall on Test Data
+8                   073.75% 084.53%
+1                   084.11% 082.77%
+4                   071.55% 044.47%
+3                   074.65% 073.27%
+2                   061.49% 054.23%
+
+
+Epoch 24/24
+----------
+Val Loss: 0.6779 Acc: 0.7531
+Test Loss: 0.7203 Acc: 0.7585
+Class Precision and Recall on Test Data
+8                   073.86% 084.78%
+1                   083.71% 083.06%
+4                   069.27% 047.74%
+3                   075.08% 072.94%
+2                   063.08% 052.82%
+
+
+Training complete in 273m 8s
+Best test Acc: 0.761966
