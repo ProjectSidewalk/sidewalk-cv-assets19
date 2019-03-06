@@ -1,4 +1,4 @@
-    import torch
+import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.optim import lr_scheduler
@@ -31,7 +31,7 @@ data_transforms = {
 }
 
 
-data_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/baby_ds/'
+data_dir = '/home/gweld/sliding_window_dataset/'
 
 # use datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
 # to ignore .json sidecars
@@ -174,7 +174,7 @@ model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler,
 
 
 
-torch.save(model_ft.state_dict(), 'models/test_discard.pt')
+torch.save(model_ft.state_dict(), 'models/sliding_winddow_25epoch_resnet18.pt')
 
 
 
