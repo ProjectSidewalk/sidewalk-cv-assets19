@@ -149,7 +149,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
 
 model_ft = models.resnet18(pretrained=True)
 num_ftrs = model_ft.fc.in_features
-model_ft.fc = nn.Linear(num_ftrs, 2) # last arg here, # classes? -gw
+model_ft.fc = nn.Linear(num_ftrs, 5) # last arg here, # classes? -gw
 
 model_ft = model_ft.to(device)
 
@@ -169,12 +169,12 @@ print('Beginning Training on {} train and {} test images.'.format(dataset_sizes[
 
 
 model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler,
-                       num_epochs=1)
+        num_epochs=20)
 
 
 
 
-torch.save(model_ft.state_dict(), 'models/sliding_winddow_25epoch_resnet18.pt')
+torch.save(model_ft.state_dict(), 'models/sliding_winddow_no_meta_25epoch_resnet18.pt')
 
 
 
