@@ -191,8 +191,24 @@ def extended_resnet18(pretrained=False, **kwargs):
     """
     model = ResNet(BasicBlock, [2, 2, 2, 2], **kwargs)
     if pretrained:
-        assert "pretrained is not yet implemented"
-        model.load_state_dict(model_zoo.load_url(model_urls['resnet18']))
+        resnet_state_dict = model_zoo.load_url(model_urls['resnet18'])
+        own_state = model.state_dict()
+        skipped, used = 0,0
+        for name, param in resnet_state_dict.items():
+            if name not in own_state:
+                skipped += 1
+                continue
+            if isinstance(param, nn.Parameter):
+                # backwards compatibility for serialized parameters
+                param = param.data
+            try:
+                own_state[name].copy_(param)
+                used += 1
+            except RuntimeError as e:
+                print( 'Failed to load {}'.format(name) )
+                print(e)
+                skipped += 1
+    print( "Copied {} and skipped {} items from pretrained state dict.".format(used, skipped) )
     return model
 
 
@@ -204,6 +220,7 @@ def resnet34(pretrained=False, **kwargs):
     """
     model = ResNet(BasicBlock, [3, 4, 6, 3], **kwargs)
     if pretrained:
+        assert False, "pretrained is not yet implemented"
         model.load_state_dict(model_zoo.load_url(model_urls['resnet34']))
     return model
 
@@ -216,6 +233,7 @@ def resnet50(pretrained=False, **kwargs):
     """
     model = ResNet(Bottleneck, [3, 4, 6, 3], **kwargs)
     if pretrained:
+        assert False, "pretrained is not yet implemented"
         model.load_state_dict(model_zoo.load_url(model_urls['resnet50']))
     return model
 
@@ -228,6 +246,7 @@ def resnet101(pretrained=False, **kwargs):
     """
     model = ResNet(Bottleneck, [3, 4, 23, 3], **kwargs)
     if pretrained:
+        assert False, "pretrained is not yet implemented"
         model.load_state_dict(model_zoo.load_url(model_urls['resnet101']))
     return model
 
@@ -240,5 +259,6 @@ def resnet152(pretrained=False, **kwargs):
     """
     model = ResNet(Bottleneck, [3, 8, 36, 3], **kwargs)
     if pretrained:
+        assert False, "pretrained is not yet implemented"
         model.load_state_dict(model_zoo.load_url(model_urls['resnet152']))
     return model

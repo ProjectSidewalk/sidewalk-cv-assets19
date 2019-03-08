@@ -14,7 +14,14 @@ from collections import defaultdict
 from TwoFileFolder import TwoFileFolder
 import resnet_extended
 
-
+##### IMPORTANT: READ BEFORE STARTING A RUN ######
+# Checklists:
+# Correct Dataset Source?
+# Correct Number of Epochs?
+# Correct Model Save-Path?
+#
+#
+##################################################
 
 data_transforms = {
     'train': transforms.Compose([
@@ -32,7 +39,7 @@ data_transforms = {
 }
 
 
-data_dir = '../baby_ds/'
+data_dir = '../mini_ds/'
 
 # use datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
 # to ignore .json sidecars
@@ -149,7 +156,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
 
 
 #model_ft = models.resnet18(pretrained=True)
-model_ft  = resnet_extended.extended_resnet18(num_classes=len(class_names), len_ex_feats=7)
+model_ft  = resnet_extended.extended_resnet18(True, num_classes=len(class_names), len_ex_feats=7)
 
 model_ft = model_ft.to(device)
 
