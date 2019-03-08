@@ -11,6 +11,10 @@ import os
 import os.path
 import sys
 
+import numpy as np
+import json
+import torch
+
 
 def make_dataset(dir, class_to_idx):
     images = []
@@ -61,6 +65,33 @@ def default_loader(path):
         return accimage_loader(path)
     else:
         return pil_loader(path)
+
+
+def meta_to_tensor(path_to_meta):
+    ''' used by getitem to load the meta into a tensor'''
+    with open(path_to_meta) as metafile:
+        meta_dict = json.load(metafile)
+        
+        features = []
+        # crop size as proxy for depth
+        # hacky approximate normilization
+        features.append( meta_dict[u'crop size']/1000 )
+        
+        # pano yaw degree
+        features.append( np.sin(np.deg2rad(meta_dict[u'pano yaw'])) )
+        features.append( np.cos(np.deg2rad(meta_dict[u'pano yaw'])) )
+        
+        # sv_x converted to degree
+        horiz_degree = (meta_dict[u'sv_x'] / 13312) * 360
+        features.append( np.sin(np.deg2rad( horiz_degree )) )
+        features.append( np.cos(np.deg2rad( horiz_degree )) )
+        
+        # sv_y converted to degree
+        vert_degree = (meta_dict[u'sv_y'] / 3328) * 360
+        features.append( np.sin(np.deg2rad( vert_degree )) )
+        features.append( np.cos(np.deg2rad( vert_degree )) )
+        
+        return torch.Tensor( features )
 
 
 class TwoFileFolder(data.Dataset):
@@ -140,7 +171,10 @@ class TwoFileFolder(data.Dataset):
         if self.target_transform is not None:
             target = self.target_transform(target)
 
-        return img, target
+        meta = meta_to_tensor(meta_path)
+        both = torch.cat((img.view(3*224*224), meta))
+
+        return both, target
 
     def __len__(self):
         return len(self.samples)
@@ -154,3 +188,4 @@ class TwoFileFolder(data.Dataset):
         tmp = '    Target Transforms (if any): '
         fmt_str += '{0}{1}'.format(tmp, self.target_transform.__repr__().replace('\n', '\n' + ' ' * len(tmp)))
         return fmt_str
+

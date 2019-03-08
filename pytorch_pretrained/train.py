@@ -12,6 +12,7 @@ import copy
 from collections import defaultdict
 
 from TwoFileFolder import TwoFileFolder
+import resnet_extended
 
 
 
@@ -31,7 +32,7 @@ data_transforms = {
 }
 
 
-data_dir = '/home/gweld/sliding_window_dataset/'
+data_dir = '../baby_ds/'
 
 # use datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
 # to ignore .json sidecars
@@ -147,9 +148,8 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
 
 
 
-model_ft = models.resnet18(pretrained=True)
-num_ftrs = model_ft.fc.in_features
-model_ft.fc = nn.Linear(num_ftrs, 5) # last arg here, # classes? -gw
+#model_ft = models.resnet18(pretrained=True)
+model_ft  = resnet_extended.extended_resnet18(num_classes=len(class_names), len_ex_feats=7)
 
 model_ft = model_ft.to(device)
 
@@ -166,15 +166,16 @@ exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=7, gamma=0.1)
 # ^^^^^^^^^^^^^^^^^^
 
 print('Beginning Training on {} train and {} test images.'.format(dataset_sizes['train'], dataset_sizes['test']))
+print('NOT SAVING THIS MODEL!!!!!!!!')
 
 
 model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler,
-        num_epochs=20)
+        num_epochs=2)
 
 
 
 
-torch.save(model_ft.state_dict(), 'models/sliding_winddow_no_meta_25epoch_resnet18.pt')
+#torch.save(model_ft.state_dict(), 'test_model_remove.pt')
 
 
 
