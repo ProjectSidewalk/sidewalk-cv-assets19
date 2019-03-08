@@ -172,7 +172,7 @@ class TwoFileFolder(data.Dataset):
             target = self.target_transform(target)
 
         meta = meta_to_tensor(meta_path)
-        both = torch.cat((img.view(3*224*224), meta))
+        both = torch.cat((img.view(150528), meta))
 
         return both, target
 
