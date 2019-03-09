@@ -39,10 +39,9 @@ data_transforms = {
 }
 
 
-data_dir = '../mini_ds/'
+data_dir = '/home/sliding_window_dataset/'
 
-# use datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
-# to ignore .json sidecars
+
 
 image_datasets = {x:TwoFileFolder(os.path.join(data_dir, x), data_transforms[x])
                   for x in ['train', 'test']}
@@ -173,16 +172,15 @@ exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=7, gamma=0.1)
 # ^^^^^^^^^^^^^^^^^^
 
 print('Beginning Training on {} train and {} test images.'.format(dataset_sizes['train'], dataset_sizes['test']))
-print('NOT SAVING THIS MODEL!!!!!!!!')
 
 
 model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler,
-        num_epochs=2)
+        num_epochs=20)
 
 
 
 
-#torch.save(model_ft.state_dict(), 'test_model_remove.pt')
+torch.save(model_ft.state_dict(), '20ep_slid_win_w_feats_r18.pt')
 
 
 
