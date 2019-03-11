@@ -39,7 +39,7 @@ data_transforms = {
 }
 
 
-data_dir = '/home/sliding_window_dataset/'
+data_dir = '/home/gweld/sliding_window_dataset/'
 
 
 
