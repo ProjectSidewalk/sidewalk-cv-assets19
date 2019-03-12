@@ -3,3 +3,5 @@ pytorch_pretrained/data/*
 *.ipynb_checkpoints/
 visualizations/*.log
 visualizations/*.csv
+*_ds/*
+sliding_window/*pt
