@@ -268,6 +268,12 @@ def make_single_crop(pano_id, sv_image_x, sv_image_y, PanoYawDeg, output_filebas
 	return
 
 def bulk_extract_crops(path_to_crop_csv, destination_dir):
+	'''
+	takes a csv of rows:
+	Pano ID, SV_x, SV_y, Label, Photog Heading, Heading, Label ID 
+	and get depth-proportioned crops around each features described by each row
+	writes each crop to a file in a directory within destination_dir named by that label
+	'''
 	csv_file = open(path_to_crop_csv)
 	csv_f = csv.reader(csv_file)
 	counter = 0
@@ -286,7 +292,7 @@ def bulk_extract_crops(path_to_crop_csv, destination_dir):
 
 		sv_image_x = float(row[1])
 		sv_image_y = float(row[2])
-		label_type = int(row[3])
+		label_type = row[3]
 		photographer_heading = float(row[4])
 
 		pano_img_path = os.path.join(path_to_gsv_scrapes, pano_id[:2], pano_id + ".jpg")

@@ -28,7 +28,7 @@ except ImportError, e:
 gsv_image_width = 13312
 gsv_image_height = 6656
 
-path_to_gsv_scrapes  = "/mnt/c/Users/gweld/sidewalk/panos_drive_full/scrapes_dump/"
+path_to_gsv_scrapes  = "/mnt/f/scrapes_dump/"
 pano_db_export = '/mnt/c/Users/gweld/sidewalk/minus_onboard.csv'
 
 label_from_int = ('Curb Cut', 'Missing Cut', 'Obstruction', 'Sfc Problem')
