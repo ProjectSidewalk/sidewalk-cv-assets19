@@ -27,7 +27,7 @@ class Point(object):
     
     @classmethod
     def from_str(cls, s, preds):
-        x,y = map(int, s.split(','))
+        x,y = map(float, s.split(','))
         return cls(x,y, preds)
     
     def label(self):

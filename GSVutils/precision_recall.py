@@ -22,7 +22,7 @@ class Point(object):
 
     @classmethod
     def from_str(cls, s):
-        x,y = map(int, s.split(','))
+        x,y = map(float, s.split(','))
         return cls(x,y)
         
 

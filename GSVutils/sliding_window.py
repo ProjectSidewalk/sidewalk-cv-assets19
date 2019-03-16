@@ -7,6 +7,8 @@ import csv
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append( os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'pytorch_pretrained') )
 
+from PIL import Image, ImageDraw, ImageFont, ImageColor
+
 import GSVutils.utils
 
 from GSVutils.point import Point as Point
@@ -27,6 +29,9 @@ import resnet_extended
 
 GSV_IMAGE_HEIGHT = GSVutils.utils.GSV_IMAGE_HEIGHT
 GSV_IMAGE_WIDTH  = GSVutils.utils.GSV_IMAGE_WIDTH
+
+label_from_int = ('Curb Cut', 'Missing Cut', 'Obstruction', 'Sfc Problem')
+pytorch_label_from_int = ('Missing Cut', "Null", 'Obstruction', "Curb Cut", "Sfc Problem")
 
 path_to_gsv_scrapes  = "/mnt/f/scrapes_dump/"
 pano_db_export = '/mnt/c/Users/gweld/sidewalk/minus_onboard.csv'
@@ -225,8 +230,8 @@ def annotate(img, pano_yaw_deg, coords, label, color, show_coords=True, box=None
         if given a box, marks that box around the label
     """
     sv_x, sv_y = coords
-    x = ((float(pano_yaw_deg) / 360) * gsv_image_width + sv_x) % gsv_image_width
-    y = gsv_image_height / 2 - sv_y
+    x = ((float(pano_yaw_deg) / 360) * GSV_IMAGE_WIDTH + sv_x) % GSV_IMAGE_WIDTH
+    y = GSV_IMAGE_HEIGHT / 2 - sv_y
 
     if show_coords: label = "{},{} {}".format(sv_x, sv_y, label)
 
@@ -250,7 +255,7 @@ def show_predictions_on_image(pano_root, predictions, out_img, ground_truth=True
     pano_img_path   = pano_root + ".jpg"
     pano_xml_path   = pano_root + ".xml"
     pano_depth_path = pano_root + ".depth.txt"
-    pano_yaw_deg    = extract_panoyawdeg(pano_xml_path)
+    pano_yaw_deg    = GSVutils.utils.extract_panoyawdeg(pano_xml_path)
 
     img = Image.open(pano_img_path)
 
@@ -262,12 +267,16 @@ def show_predictions_on_image(pano_root, predictions, out_img, ground_truth=True
     def annotate_batch(predictions, color):
         count = 0
         for coords, prediction in predictions.iteritems():
-            sv_x, sv_y = map(int, coords.split(','))
+            sv_x, sv_y = map(float, coords.split(','))
 
             if show_box:
-                x = ((float(pano_yaw_deg) / 360) * gsv_image_width + sv_x) % gsv_image_width
-                y = gsv_image_height / 2 - sv_y
-                box = predict_crop_size(x, y, gsv_image_width, gsv_image_height, pano_depth_path)
+                x = ((float(pano_yaw_deg) / 360) * GSV_IMAGE_WIDTH + sv_x) % GSV_IMAGE_WIDTH
+                y = GSV_IMAGE_HEIGHT / 2 - sv_y
+                try:
+                    box = GSVutils.utils.predict_crop_size(x, y, GSV_IMAGE_WIDTH, GSV_IMAGE_HEIGHT, pano_depth_path)
+                except:
+                    print "Couldn't get crop size... skipping box"
+                    box = None
             else: box = None
 
             label = str(prediction)
@@ -301,6 +310,25 @@ def show_predictions_on_image(pano_root, predictions, out_img, ground_truth=True
 
     return
 
+
+def batch_visualize_preds(dir_containing_panos, outdir):
+    count = 0
+    for pano_id in os.listdir(dir_containing_panos):
+        print "Annotating {}".format(pano_id)
+        predictions_file = os.path.join(dir_containing_panos, pano_id, "20e_slid_win_w_feats_r18.csv")
+        predictions = read_predictions_from_file(predictions_file)
+        predictions = non_max_sup(predictions, radius=200, clip_val=None, ignore_ind=1)
+
+        outfile = os.path.join(outdir, pano_id+'.jpg')
+
+        pano_root = os.path.join(path_to_gsv_scrapes, pano_id[:2], pano_id)
+        show_predictions_on_image(pano_root, predictions, outfile, ground_truth=True, show_coords=False, show_box=True)
+        count += 1
+
+        #if count > 0: break
+    print "Wrote predictions for {} panos to {}".format(count, outdir)
+    return
+
 simple_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/tiny_slid_win_crops/'
 big_dir    = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/new_sliding_window_crops/'
 pred_file_name = "20e_slid_win_w_feats_r18.csv"
@@ -313,4 +341,4 @@ pred_file_name = "20e_slid_win_w_feats_r18.csv"
 # get_and_write_batch_ground_truth(big_dir)
 
 # see if ground truth looks good
-
+batch_visualize_preds(big_dir, '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/test/')
