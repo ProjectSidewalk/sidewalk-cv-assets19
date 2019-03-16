@@ -157,6 +157,17 @@ class TwoFileFolder(data.Dataset):
         class_to_idx = {classes[i]: i for i in range(len(classes))}
         return classes, class_to_idx
 
+    def load_img_and_meta(self, img_path, meta_path):
+        ''' expose this so we can call it from sliding_window '''
+        img = self.loader(img_path)
+        if self.transform is not None:
+            img = self.transform(img)
+
+        meta = meta_to_tensor(meta_path)
+        both = torch.cat((img.view(150528), meta))
+
+        return both
+
     def __getitem__(self, index):
         """
         Args:
@@ -165,14 +176,11 @@ class TwoFileFolder(data.Dataset):
             tuple: (sample, target) where target is class_index of the target class.
         """
         img_path, meta_path, target = self.samples[index]
-        img = self.loader(img_path)
-        if self.transform is not None:
-            img = self.transform(img)
+
+        both = self.load_img_and_meta(img_path, meta_path)
+
         if self.target_transform is not None:
             target = self.target_transform(target)
-
-        meta = meta_to_tensor(meta_path)
-        both = torch.cat((img.view(150528), meta))
 
         return both, target
 

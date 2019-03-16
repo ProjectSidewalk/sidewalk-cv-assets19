@@ -208,7 +208,7 @@ def extended_resnet18(pretrained=False, **kwargs):
                 print( 'Failed to load {}'.format(name) )
                 print(e)
                 skipped += 1
-    print( "Copied {} and skipped {} items from pretrained state dict.".format(used, skipped) )
+        print( "Copied {} and skipped {} items from pretrained state dict.".format(used, skipped) )
     return model
 
 
