@@ -8,6 +8,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append( os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'pytorch_pretrained') )
 
 from PIL import Image, ImageDraw, ImageFont, ImageColor
+import numpy as np
 
 import GSVutils.utils
 
@@ -36,7 +37,10 @@ pytorch_label_from_int = ('Missing Cut', "Null", 'Obstruction', "Curb Cut", "Sfc
 path_to_gsv_scrapes  = "/mnt/f/scrapes_dump/"
 pano_db_export = '/mnt/c/Users/gweld/sidewalk/minus_onboard.csv'
 
-model_path = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/pytorch_pretrained/models/20e_slid_win_w_feats_r18.pt'
+model_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/pytorch_pretrained/models/'
+model_name = "20e_slid_win_w_feats_r18"
+
+model_path = os.path.join(model_dir, model_name+'.pt')
 
 ############ Load the Model ################
 # we're gonna do this just once
@@ -50,9 +54,15 @@ data_transform = transforms.Compose([
     transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
 
-model_ft = resnet_extended.extended_resnet18()
-#num_ftrs = model_ft.fc.in_features
-#model_ft.fc = nn.Linear(num_ftrs, 5)
+# use new model
+#model_ft = resnet_extended.extended_resnet18()
+
+# use old model
+model_ft = models.resnet18()
+num_ftrs = model_ft.fc.in_features
+model_ft.fc = nn.Linear(num_ftrs, 5)
+
+
 model_ft = model_ft.to( device )
 
 model_ft.load_state_dict( torch.load(model_path, map_location='cpu') )
@@ -311,11 +321,11 @@ def show_predictions_on_image(pano_root, predictions, out_img, ground_truth=True
     return
 
 
-def batch_visualize_preds(dir_containing_panos, outdir):
+def batch_visualize_preds(dir_containing_panos, outdir, predictions_file):
     count = 0
     for pano_id in os.listdir(dir_containing_panos):
         print "Annotating {}".format(pano_id)
-        predictions_file = os.path.join(dir_containing_panos, pano_id, "20e_slid_win_w_feats_r18.csv")
+        predictions_file = os.path.join(dir_containing_panos, pano_id, predictions_file)
         predictions = read_predictions_from_file(predictions_file)
         predictions = non_max_sup(predictions, radius=200, clip_val=None, ignore_ind=1)
 
@@ -329,16 +339,111 @@ def batch_visualize_preds(dir_containing_panos, outdir):
     print "Wrote predictions for {} panos to {}".format(count, outdir)
     return
 
+
+def batch_p_r(dir_containing_preds, clust_r, cor_r, clip_val=None, preds_filename='predictions.csv'):
+    """ Computes precision and recall given a directory containing subdirectories
+        containg predictions and ground truth csvs
+
+        clust_r sets the distance below which adjacent predictions will be clustered together
+        cor_r sets the 'correct' distance, a prediction within this distance of a 
+            ground truth  point will be considered correct
+        clip_val will ignore predictions with a strength less than this value
+    """
+
+    # sum_pr keeps track of the counts of [correct, predicted, actual]
+    sum_pr = np.zeros((4,3))
+
+    for root, dirs, files in os.walk(dir_containing_preds):
+
+        # skip directories that don't contain 
+        # predictions and ground truths
+        if len(files) < 2: continue
+
+        pano_root = os.path.basename(root)
+        print "Processing predictions for {}".format(pano_root)
+        p_file = os.path.join(root, preds_filename)
+        gt_file = os.path.join(root, 'ground_truth.csv') 
+
+        try:
+            predictions = read_predictions_from_file(p_file)
+            gt = read_predictions_from_file(gt_file)
+
+            print "\t Loaded {} predictions and {} true labels".format(len(predictions), len(gt))
+
+            # here predictions are still a dict of arrays
+            predictions = non_max_sup(predictions, radius=clust_r, clip_val=clip_val, ignore_ind=1)
+            # now predictions are ints
+
+            # in here we need to map from pytorch class numbering to
+            # [ramp, no ramp, obstruction, sfc_prob] zero indexed
+            # ground truth is stored in DB using above encoding but 1-indexed
+            # this is compensted when loaded using get_ground_truth
+            for coord in predictions:
+                pytorch_label = predictions[coord]
+                label = label_from_int.index( pytorch_label_from_int[ pytorch_label ] )
+                predictions[coord] = label
+
+            # now we can compute the correxts, predicteds, and actual
+            pr = precision_recall(predictions, gt, cor_r, N_classes=4)
+
+            # sum_pr keeps track of the counts of [correct, predicted, actual]
+            sum_pr += pr
+
+        except IOError as e:
+            print "\t Could not read predictions for {}, skipping.".format(pano_root)
+            
+    pr_dict = {}
+    total_cor    = 0
+    total_pred   = 0
+    total_actual = 0
+    for num, name in enumerate(label_from_int):
+        cor, pred, actual = sum_pr[num,:]
+
+        total_cor    += cor
+        total_pred   += pred
+        total_actual += actual
+
+        if pred > 0:
+            precision = 100 * float(cor)/pred
+        else: precision = float('nan')
+
+        if actual > 0:
+            recall = 100 * float(cor)/actual
+        else: recall = float('nan')
+
+        pr_dict[name] = (precision,recall)
+
+        print "{:15}\t{:5.2f}\t{:5.2f}".format(name, precision, recall)
+
+    # calculate overall averages
+    if total_pred > 0:
+        precision = 100 * float(total_cor)/total_pred
+    else: precision = float('nan')
+
+    if total_actual > 0:
+        recall = 100 * float(total_cor)/total_actual
+    else: recall = float('nan')
+    print "{:15}\t{:5.2f}\t{:5.2f}".format('Total', precision, recall)
+
+    return pr_dict
+
+
 simple_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/tiny_slid_win_crops/'
 big_dir    = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/new_sliding_window_crops/'
-pred_file_name = "20e_slid_win_w_feats_r18.csv"
+
+pred_file_name = model_name + ".csv"
+
+
 
 # get and write predictions
-#bps = predict_from_crops(big_dir, verbose=True)
-#write_batch_predictions_to_file(bps, big_dir, pred_file_name)
+bps = predict_from_crops(big_dir, verbose=True)
+write_batch_predictions_to_file(bps, big_dir, pred_file_name)
 
 # get and write ground_truth
 # get_and_write_batch_ground_truth(big_dir)
 
 # see if ground truth looks good
-batch_visualize_preds(big_dir, '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/test/')
+#batch_visualize_preds(big_dir, '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/test/')
+
+# let's try this out...
+#batch_p_r(big_dir, 150, 500, preds_filename='20e_slid_win_w_feats_r18.csv')
