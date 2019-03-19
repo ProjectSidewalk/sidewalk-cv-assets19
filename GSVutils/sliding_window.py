@@ -38,7 +38,8 @@ path_to_gsv_scrapes  = "/mnt/f/scrapes_dump/"
 pano_db_export = '/mnt/c/Users/gweld/sidewalk/minus_onboard.csv'
 
 model_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/pytorch_pretrained/models/'
-model_name = "20e_slid_win_w_feats_r18"
+#model_name = "20e_slid_win_w_feats_r18"
+model_name = "20e_slid_win_no_feats_r18"
 
 model_path = os.path.join(model_dir, model_name+'.pt')
 
@@ -104,6 +105,36 @@ def predict_from_crops(dir_containing_crops, verbose=False):
 
     return predictions
 
+def predict_from_crops(dir_containing_crops, verbose=False):
+    ''' nasty hacky thing using old model
+    '''
+    predictions = defaultdict(dict)
+
+    print "Building dataset..."
+
+    dataset    = datasets.ImageFolder(dir_containing_crops, data_transform)
+
+    for img_path, _ in dataset.samples:
+        _, img_name = os.path.split(img_path)
+        img_name, _ = os.path.splitext(img_name)
+        pano_id, coords = img_name.split('crop')
+
+        if verbose:
+            print "Getting predictions for pano {} at {}".format( pano_id, coords )
+
+        both = Image.open(img_path)
+        both = data_transform(both).float()
+        both = both.unsqueeze(0)
+        with torch.no_grad():
+            prediction = model_ft( both )
+        prediction = prediction.flatten().tolist()
+
+        if verbose:         
+            print '\t'+str(prediction)
+
+        predictions[pano_id][coords] = prediction
+
+    return predictions
 
 def get_and_write_batch_ground_truth(dir_containing_crops):
     ground_truths = {}
@@ -176,7 +207,7 @@ def sliding_window(pano, stride=100, bottom_space=1600, side_space=300, cor_thre
         x = side_space
 
 
-def convert_to_real_coords(sv_x, sv_y, pano_yaw_deg):
+def convert_to_sv_coords_to_real_coords(sv_x, sv_y, pano_yaw_deg):
     x = ((float(pano_yaw_deg) / 360) * GSV_IMAGE_WIDTH + sv_x) % GSV_IMAGE_WIDTH
     y = GSV_IMAGE_HEIGHT / 2 - sv_y
 
