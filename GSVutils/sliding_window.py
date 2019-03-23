@@ -39,7 +39,7 @@ pano_db_export = '/mnt/c/Users/gweld/sidewalk/minus_onboard.csv'
 
 model_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/pytorch_pretrained/models/'
 #model_name = "20e_slid_win_w_feats_r18"
-model_name = "20e_slid_win_no_feats_r18"
+model_name = "25epoch_full_ds_resnet18"
 
 model_path = os.path.join(model_dir, model_name+'.pt')
 
@@ -467,8 +467,8 @@ pred_file_name = model_name + ".csv"
 
 
 # get and write predictions
-bps = predict_from_crops(big_dir, verbose=True)
-write_batch_predictions_to_file(bps, big_dir, pred_file_name)
+#bps = predict_from_crops(big_dir, verbose=True)
+#write_batch_predictions_to_file(bps, big_dir, pred_file_name)
 
 # get and write ground_truth
 # get_and_write_batch_ground_truth(big_dir)
@@ -477,4 +477,4 @@ write_batch_predictions_to_file(bps, big_dir, pred_file_name)
 #batch_visualize_preds(big_dir, '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/test/')
 
 # let's try this out...
-#batch_p_r(big_dir, 150, 500, preds_filename='20e_slid_win_w_feats_r18.csv')
+batch_p_r(big_dir, 150, 500, preds_filename=pred_file_name)

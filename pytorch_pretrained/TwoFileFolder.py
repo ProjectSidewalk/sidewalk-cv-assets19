@@ -163,7 +163,7 @@ class TwoFileFolder(data.Dataset):
         if self.transform is not None:
             img = self.transform(img)
 
-        meta = meta_to_tensor(meta_path)
+        meta = meta_t_toensor(meta_path)
         both = torch.cat((img.view(150528), meta))
 
         return both
