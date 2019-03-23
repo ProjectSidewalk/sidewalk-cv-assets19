@@ -17,6 +17,9 @@ class Point(object):
     def __str__(self):
         return "{},{}".format(self.x, self.y)
 
+    def __hash__(self):
+        return hash(str(self))
+
     @classmethod
     def from_str(cls, s):
         x,y = map(int, s.split(','))

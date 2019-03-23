@@ -12,3 +12,7 @@ from GSVutils.utils import bulk_extract_crops
 
 # this to make dataset
 #bulk_extract_crops('dataset_csvs/Val.csv', 'new_ds_exports/Val/')
+
+# this to make old dataset
+bulk_extract_crops('new_old_dataset_csvs/Val.csv', '/mnt/e/old_dataset/val/')
+#bulk_extract_crops('new_old_dataset_csvs/Train.csv', '/mnt/e/old_dataset/train/')
