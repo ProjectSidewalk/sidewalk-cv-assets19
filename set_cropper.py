@@ -7,4 +7,8 @@
 from GSVutils.utils import bulk_extract_crops
 
 
-bulk_extract_crops('sliding_window_crops_to_make.csv', 'sliding_window/new_sliding_window_crops/')
+# use this to make new sliding window crops for analysis
+#bulk_extract_crops('sliding_window_crops_to_make.csv', 'sliding_window/new_sliding_window_crops/')
+
+# this to make dataset
+#bulk_extract_crops('dataset_csvs/Val.csv', 'new_ds_exports/Val/')
