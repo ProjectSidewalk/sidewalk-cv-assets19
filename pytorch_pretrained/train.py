@@ -12,10 +12,11 @@ import copy
 from collections import defaultdict
 
 from TwoFileFolder import TwoFileFolder
-import resnet_extended
+from resnet_extended2 import extended_resnet18
 
 ##### IMPORTANT: READ BEFORE STARTING A RUN ######
 # Checklists:
+# Correct Model? eg right resnet_extended
 # Correct Dataset Source?
 # Correct Number of Epochs?
 # Correct Model Save-Path?
@@ -155,7 +156,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
 
 
 #model_ft = models.resnet18(pretrained=True)
-model_ft  = resnet_extended.extended_resnet18(True, num_classes=len(class_names), len_ex_feats=7)
+model_ft  = extended_resnet18(True, num_classes=len(class_names), len_ex_feats=7)
 
 model_ft = model_ft.to(device)
 
@@ -180,7 +181,7 @@ model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler,
 
 
 
-torch.save(model_ft.state_dict(), '20ep_slid_win_w_feats_r18.pt')
+torch.save(model_ft.state_dict(), '20ep_slid_win_re18_2.pt')
 
 
 
