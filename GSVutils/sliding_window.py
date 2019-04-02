@@ -26,7 +26,7 @@ import torch.optim as optim
 from torch.optim import lr_scheduler
 
 from TwoFileFolder import TwoFileFolder
-import resnet_extended 
+from resnet_extended2 import extended_resnet18
 
 GSV_IMAGE_HEIGHT = GSVutils.utils.GSV_IMAGE_HEIGHT
 GSV_IMAGE_WIDTH  = GSVutils.utils.GSV_IMAGE_WIDTH
@@ -38,8 +38,8 @@ path_to_gsv_scrapes  = "/mnt/f/scrapes_dump/"
 pano_db_export = '/mnt/c/Users/gweld/sidewalk/minus_onboard.csv'
 
 model_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/pytorch_pretrained/models/'
-#model_name = "20e_slid_win_w_feats_r18"
-model_name = "25epoch_full_ds_resnet18"
+model_name = "20ep_slid_win_re18_2"
+#model_name = "25epoch_full_ds_resnet18"
 
 model_path = os.path.join(model_dir, model_name+'.pt')
 
@@ -56,12 +56,12 @@ data_transform = transforms.Compose([
     ])
 
 # use new model
-#model_ft = resnet_extended.extended_resnet18()
+model_ft = extended_resnet18()
 
 # use old model
-model_ft = models.resnet18()
-num_ftrs = model_ft.fc.in_features
-model_ft.fc = nn.Linear(num_ftrs, 5)
+#model_ft = models.resnet18()
+#num_ftrs = model_ft.fc.in_features
+#model_ft.fc = nn.Linear(num_ftrs, 5)
 
 
 model_ft = model_ft.to( device )
@@ -105,36 +105,36 @@ def predict_from_crops(dir_containing_crops, verbose=False):
 
     return predictions
 
-def predict_from_crops(dir_containing_crops, verbose=False):
-    ''' nasty hacky thing using old model
-    '''
-    predictions = defaultdict(dict)
+# def predict_from_crops(dir_containing_crops, verbose=False):
+#     ''' nasty hacky thing using old model
+#     '''
+#     predictions = defaultdict(dict)
 
-    print "Building dataset..."
+#     print "Building dataset..."
 
-    dataset    = datasets.ImageFolder(dir_containing_crops, data_transform)
+#     dataset    = datasets.ImageFolder(dir_containing_crops, data_transform)
 
-    for img_path, _ in dataset.samples:
-        _, img_name = os.path.split(img_path)
-        img_name, _ = os.path.splitext(img_name)
-        pano_id, coords = img_name.split('crop')
+#     for img_path, _ in dataset.samples:
+#         _, img_name = os.path.split(img_path)
+#         img_name, _ = os.path.splitext(img_name)
+#         pano_id, coords = img_name.split('crop')
 
-        if verbose:
-            print "Getting predictions for pano {} at {}".format( pano_id, coords )
+#         if verbose:
+#             print "Getting predictions for pano {} at {}".format( pano_id, coords )
 
-        both = Image.open(img_path)
-        both = data_transform(both).float()
-        both = both.unsqueeze(0)
-        with torch.no_grad():
-            prediction = model_ft( both )
-        prediction = prediction.flatten().tolist()
+#         both = Image.open(img_path)
+#         both = data_transform(both).float()
+#         both = both.unsqueeze(0)
+#         with torch.no_grad():
+#             prediction = model_ft( both )
+#         prediction = prediction.flatten().tolist()
 
-        if verbose:         
-            print '\t'+str(prediction)
+#         if verbose:         
+#             print '\t'+str(prediction)
 
-        predictions[pano_id][coords] = prediction
+#         predictions[pano_id][coords] = prediction
 
-    return predictions
+#     return predictions
 
 def get_and_write_batch_ground_truth(dir_containing_crops):
     ground_truths = {}
@@ -467,8 +467,8 @@ pred_file_name = model_name + ".csv"
 
 
 # get and write predictions
-#bps = predict_from_crops(big_dir, verbose=True)
-#write_batch_predictions_to_file(bps, big_dir, pred_file_name)
+bps = predict_from_crops(big_dir, verbose=True)
+write_batch_predictions_to_file(bps, big_dir, pred_file_name)
 
 # get and write ground_truth
 # get_and_write_batch_ground_truth(big_dir)
@@ -477,4 +477,4 @@ pred_file_name = model_name + ".csv"
 #batch_visualize_preds(big_dir, '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/test/')
 
 # let's try this out...
-batch_p_r(big_dir, 150, 500, preds_filename=pred_file_name)
+#batch_p_r(big_dir, 150, 500, preds_filename=pred_file_name)
