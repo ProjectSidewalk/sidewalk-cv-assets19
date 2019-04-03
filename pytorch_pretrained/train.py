@@ -40,8 +40,8 @@ data_transforms = {
 }
 
 
-data_dir = '/home/gweld/sliding_window_dataset/'
-
+#data_dir = '/home/gweld/sliding_window_dataset/'
+data_dir  = '/home/gweld/centered_crops_subset_with_meta'
 
 
 image_datasets = {x:TwoFileFolder(os.path.join(data_dir, x), data_transforms[x])
@@ -181,7 +181,7 @@ model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler,
 
 
 
-torch.save(model_ft.state_dict(), '20ep_slid_win_re18_2.pt')
+torch.save(model_ft.state_dict(), '20ep_new_old_re18_2.pt')
 
 
 
