@@ -9,7 +9,7 @@ import base64, sys, json, os
 from PIL import Image, ImageDraw, ImageFont, ImageColor
 try:
 	from xml.etree import cElementTree as ET
-except ImportError, e:
+except ImportError as e:
 	from xml.etree import ElementTree as ET
 
 GSV_IMAGE_WIDTH  = 13312
@@ -62,7 +62,7 @@ def bilinear_interpolation(x, y, points):
 	if x1 != _x1 or x2 != _x2 or y1 != _y1 or y2 != _y2:
 		raise ValueError('points do not form a rectangle')
 	if not x1 <= x <= x2 or not y1 <= y <= y2:
-		print "x, y, x1, x2, y1, y2", x, y, x1, x2, y1, y2 
+		print( "x, y, x1, x2, y1, y2", x, y, x1, x2, y1, y2  )
 		raise ValueError('(x, y) not within the rectangle')
 
 	return (q11 * (x2 - x) * (y2 - y) +
@@ -311,17 +311,54 @@ def bulk_extract_crops(path_to_crop_csv, destination_dir):
 			crop_destination = os.path.join(destination_dir, str(label_type), destination_basename)
 			try:
 				make_single_crop(pano_id, sv_image_x, sv_image_y, pano_yaw_deg, crop_destination)
-				print "Successfully extracted crop to {}".format( destination_basename )
+				print( "Successfully extracted crop to {}".format( destination_basename ) )
 				success += 1
 			except Exception as e:
-				print "Cropping {} at {},{} failed.".format(pano_id, sv_image_x, sv_image_y)
-				print e
+				print( "Cropping {} at {},{} failed.".format(pano_id, sv_image_x, sv_image_y) )
+				print(e)
 				crop_fail += 1
 		else:
 			no_pano_fail += 1
-			print "Panorama image not found for {} at {}".format(pano_id, pano_img_path)
+			print( "Panorama image not found for {} at {}".format(pano_id, pano_img_path) )
 
 	print("Finished.")
-	print str(no_pano_fail) + " extractions failed because panorama image was not found."
-	print str(crop_fail) + " extractions failed because metadata was not found."
-	print "{} crops extracted successfully.".format(success)
+	print( str(no_pano_fail) + " extractions failed because panorama image was not found." )
+	print( str(crop_fail) + " extractions failed because metadata was not found." )
+	print( "{} crops extracted successfully.".format(success) )
+
+
+def add_metadata(dir_containing_json_files, function_to_apply):
+	''' loops over a directory containing .json files produced by bulk extract crops,
+		and adds to them extra elements supplied by the function_to_apply
+		function_to_apply should take in the pano_id and a meta dict and return a meta dict.
+		The exisiting meta will be passed in as a dict, and the returned dict will be written to file!
+	'''
+	skipped, edited = 0,0
+	for root, dirs, files in os.walk(dir_containing_json_files):
+		for filename in files:
+			_, ext = os.path.splitext(filename)
+			if ext != ".json":
+				# we care only about json
+				skipped += 1
+				continue
+
+			metapath = os.path.join(root, filename)
+			file_root, _ = os.path.splitext(filename)
+			pano_id, coords = file_root.split("crop")
+
+			print( 'Processing metadata for {}'.format(pano_id) )
+
+			with open(metapath) as jsonfile:
+				old_meta = json.load( jsonfile )
+			
+			new_meta = function_to_apply(pano_id, old_meta)
+
+			with open(metapath + '_test', 'w') as jsonfile:
+				json.dump(new_meta, jsonfile)
+
+			edited += 1
+
+			new = len(new_meta) - len(old_meta)
+			print("\tWrote {} extra features to file. {} old, {} total.".format(new, len(old_meta), len(new_meta)))
+
+	print('Skipped {} and wrote {} files.'.format(skipped, edited))
