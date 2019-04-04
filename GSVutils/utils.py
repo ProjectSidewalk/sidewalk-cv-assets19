@@ -83,6 +83,25 @@ def extract_panoyawdeg(path_to_metadata_xml):
 
 	return pano['projection_properties']['pano_yaw_deg']
 
+def extract_pano_lat_lng(pano_id):
+	''' given a pano_id, looks up that pano's meta from scrapes
+		returns a tuple of that pano's lat and long '''
+	metapath = os.path.join(path_to_gsv_scrapes, pano_id[:2], pano_id + ".xml")
+	root =  ET.parse(metapath).getroot()
+
+	d = dict()
+	
+	dp = root.find('data_properties')
+	for key in ('lat', 'lng'):
+		d[key] = float(dp.attrib[key])
+	for c in dp:
+		if c.tag == 'copyright': continue
+		d[c.tag] = c.text
+	pp = root.find('projection_properties')
+	for key in ('pano_yaw_deg','tilt_pitch_deg', 'tilt_yaw_deg'):
+		d[key] = float(pp.attrib[key])
+	return d['lat'], d['lng']
+
 
 def interpolated_3d_point(xi, yi, x_3d, y_3d, z_3d, scale=26):
 	"""
@@ -330,7 +349,7 @@ def bulk_extract_crops(path_to_crop_csv, destination_dir):
 def add_metadata(dir_containing_json_files, function_to_apply):
 	''' loops over a directory containing .json files produced by bulk extract crops,
 		and adds to them extra elements supplied by the function_to_apply
-		function_to_apply should take in the pano_id and a meta dict and return a meta dict.
+		function_to_apply should take in a meta dict and return a meta dict.
 		The exisiting meta will be passed in as a dict, and the returned dict will be written to file!
 	'''
 	skipped, edited = 0,0
@@ -351,7 +370,7 @@ def add_metadata(dir_containing_json_files, function_to_apply):
 			with open(metapath) as jsonfile:
 				old_meta = json.load( jsonfile )
 			
-			new_meta = function_to_apply(pano_id, old_meta)
+			new_meta = function_to_apply(deepcopy(old_meta))
 
 			with open(metapath + '_test', 'w') as jsonfile:
 				json.dump(new_meta, jsonfile)
