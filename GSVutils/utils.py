@@ -346,7 +346,7 @@ def bulk_extract_crops(path_to_crop_csv, destination_dir):
 	print( "{} crops extracted successfully.".format(success) )
 
 
-def add_metadata(dir_containing_json_files, function_to_apply):
+def add_metadata(dir_containing_json_files, function_to_apply, verbose=False):
 	''' loops over a directory containing .json files produced by bulk extract crops,
 		and adds to them extra elements supplied by the function_to_apply
 		function_to_apply should take in a meta dict and return a meta dict.
@@ -365,7 +365,8 @@ def add_metadata(dir_containing_json_files, function_to_apply):
 			file_root, _ = os.path.splitext(filename)
 			pano_id, coords = file_root.split("crop")
 
-			print( 'Processing metadata for {}'.format(pano_id) )
+			if verbose:
+				print( 'Processing metadata for {}'.format(pano_id) )
 
 			with open(metapath) as jsonfile:
 				old_meta = json.load( jsonfile )
@@ -378,6 +379,7 @@ def add_metadata(dir_containing_json_files, function_to_apply):
 			edited += 1
 
 			new = len(new_meta) - len(old_meta)
-			print("\tWrote {} extra features to file. {} old, {} total.".format(new, len(old_meta), len(new_meta)))
+			if verbose:
+				print("\tWrote {} extra features to file. {} old, {} total.".format(new, len(old_meta), len(new_meta)))
 
 	print('Skipped {} and wrote {} files.'.format(skipped, edited))
