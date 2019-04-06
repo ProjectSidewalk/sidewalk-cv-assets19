@@ -351,8 +351,12 @@ def add_metadata(dir_containing_json_files, function_to_apply, verbose=False):
 		and adds to them extra elements supplied by the function_to_apply
 		function_to_apply should take in a meta dict and return a meta dict.
 		The exisiting meta will be passed in as a dict, and the returned dict will be written to file!
+		helper should also return a bool indicating if it encountered any errors while computing new meta
 	'''
+	seen_panos = set()
+	err_panos  = set()
 	skipped, edited = 0,0
+
 	for root, dirs, files in os.walk(dir_containing_json_files):
 		for filename in files:
 			_, ext = os.path.splitext(filename)
@@ -365,15 +369,22 @@ def add_metadata(dir_containing_json_files, function_to_apply, verbose=False):
 			file_root, _ = os.path.splitext(filename)
 			pano_id, coords = file_root.split("crop")
 
+			if pano_id not in seen_panos:
+				seen_panos.add(pano_id)
+				print("Starting on new pano {}.".format(pano_id))
+
 			if verbose:
 				print( 'Processing metadata for {}'.format(pano_id) )
 
 			with open(metapath) as jsonfile:
 				old_meta = json.load( jsonfile )
 			
-			new_meta = function_to_apply(deepcopy(old_meta))
+			new_meta, err = function_to_apply(deepcopy(old_meta))
+			if err and pano_id not in err_panos:
+				print("Bad metadata or error for new pano {}.".format(pano_id))
+				err_panos.add(pano_id)
 
-			with open(metapath + '_test', 'w') as jsonfile:
+			with open(metapath, 'w') as jsonfile:
 				json.dump(new_meta, jsonfile)
 
 			edited += 1
@@ -382,4 +393,11 @@ def add_metadata(dir_containing_json_files, function_to_apply, verbose=False):
 			if verbose:
 				print("\tWrote {} extra features to file. {} old, {} total.".format(new, len(old_meta), len(new_meta)))
 
-	print('Skipped {} and wrote {} files.'.format(skipped, edited))
+	print('Skipped {} and wrote {} files from {} different panos.'.format(skipped, edited, len(seen_panos)))
+	print("Got errors computing block information for {} panos.".format(err_panos))
+
+	with open("bad_panos.txt", 'w') as badpanofile:
+		for pano in err_panos:
+			badpanofile.write(pano + '\n')
+
+	print("Wrote {} bad panos to {}.".format(len(err_panos), "bad_panos.txt"))

@@ -49,20 +49,38 @@ def helper(input_dict):
 	#print(input_dict)
 	pano_id = input_dict[u'pano id']
 
-	lat, lng = extract_pano_lat_lng(pano_id)
+	err = False
+
+	try:
+		lat, lng = extract_pano_lat_lng(pano_id)
+	except:
+		lat = float('nan')
+		lng = float('nan')
+		err = True
 	input_dict[u'latitude']  = lat
 	input_dict[u'longitude'] = lng
 
-	distance, middleness = compute_proximity(lat, lng)
+	try:
+		distance, middleness = compute_proximity(lat, lng)
+	except:
+		distance   = float('nan')
+		middleness = float('nan')
+		err = True
 	input_dict[u'dist to intersection'] = distance
 	input_dict[u'block middleness']     = middleness
 
-	bearing, distance = calc_bearing_and_distance_between_points(lat, lng)
+	try:
+		bearing, distance = calc_bearing_and_distance_between_points(lat, lng)
+	except:
+		bearing  = float('nan')
+		distance = float('nan')
+		err = True
 	input_dict[u'bearing to cbd'] = bearing
 	input_dict[u'dist to cbd']    = distance
-	return input_dict
+	return input_dict, err
 
-add_metadata('/mnt/c/Users/gweld/sidewalk/sidewalk_ml/baby_ds', helper)
+#add_metadata('/mnt/c/Users/gweld/sidewalk/sidewalk_ml/baby_ds', helper)
+add_metadata('/mnt/c/Users/gweld/sidewalk/sidewalk_ml/full_ds', helper)
 
 # us naval observatory
 #bearing, dist = calc_bearing_and_distance_between_points(38.9220, -77.0668)
