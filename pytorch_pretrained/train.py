@@ -17,6 +17,7 @@ from resnet_extended2 import extended_resnet18
 ##### IMPORTANT: READ BEFORE STARTING A RUN ######
 # Checklists:
 # Correct Model? eg right resnet_extended
+# Correct Dataloader for model?
 # Correct Dataset Source?
 # Correct Number of Epochs?
 # Correct Model Save-Path?
@@ -43,16 +44,26 @@ data_transforms = {
 #data_dir = '/home/gweld/sliding_window_dataset/'
 data_dir  = '/home/gweld/centered_crops_subset_with_meta'
 
+print("Building datasets...")
 
-image_datasets = {x:TwoFileFolder(os.path.join(data_dir, x), data_transforms[x])
+# image_datasets = {x:TwoFileFolder(os.path.join(data_dir, x), data_transforms[x])
+#                   for x in ['train', 'test']}
+image_datasets = {x:datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
                   for x in ['train', 'test']}
+
 dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=4,
                                              shuffle=True, num_workers=4)
               for x in ['train', 'test']}
+
 dataset_sizes = {x: len(image_datasets[x]) for x in ['train', 'test']}
 class_names = image_datasets['train'].classes
 
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+
+print("Finished loading data. Discovered {} classes:".format(len(class_names)))
+print(", "join(class_names))
+print("")
 
 
 
@@ -155,8 +166,11 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
 
 
 
-#model_ft = models.resnet18(pretrained=True)
-model_ft  = extended_resnet18(True, num_classes=len(class_names), len_ex_feats=7)
+model_ft = models.resnet18(pretrained=True)
+model_ft.fc = nn.Linear(num_ftrs, len(class_names))
+
+
+#model_ft  = extended_resnet18(True, num_classes=len(class_names), len_ex_feats=7)
 
 model_ft = model_ft.to(device)
 
