@@ -394,7 +394,7 @@ def add_metadata(dir_containing_json_files, function_to_apply, verbose=False):
 				print("\tWrote {} extra features to file. {} old, {} total.".format(new, len(old_meta), len(new_meta)))
 
 	print('Skipped {} and wrote {} files from {} different panos.'.format(skipped, edited, len(seen_panos)))
-	print("Got errors computing block information for {} panos.".format(err_panos))
+	print("Got errors computing block information for {} panos.".format(len(err_panos)))
 
 	with open("bad_panos.txt", 'w') as badpanofile:
 		for pano in err_panos:
