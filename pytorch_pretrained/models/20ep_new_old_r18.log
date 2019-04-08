@@ -1,0 +1,247 @@
+Building datasets...
+Finished loading data. Discovered 5 classes:
+missing_ramp, null, obstruction, ramp, sfc_problem
+
+Beginning Training on 165315 train and 20461 test images.
+Epoch 0/19
+----------
+train Loss: 0.6187 Acc: 0.8018
+test Loss: 0.5318 Acc: 0.8350
+Class Precision and Recall on Test Data
+ramp                091.62% 091.43%
+obstruction         077.59% 071.79%
+missing_ramp        065.50% 055.80%
+null                040.44% 078.99%
+sfc_problem         067.60% 046.58%
+
+
+Epoch 1/19
+----------
+train Loss: 0.5228 Acc: 0.8307
+test Loss: 0.4446 Acc: 0.8537
+Class Precision and Recall on Test Data
+ramp                092.34% 092.79%
+sfc_problem         066.07% 054.33%
+missing_ramp        072.45% 057.17%
+null                044.74% 074.84%
+obstruction         078.69% 077.43%
+
+
+Epoch 2/19
+----------
+train Loss: 0.4943 Acc: 0.8380
+test Loss: 0.4124 Acc: 0.8712
+Class Precision and Recall on Test Data
+ramp                092.85% 094.68%
+missing_ramp        068.71% 060.11%
+obstruction         078.35% 075.18%
+null                070.94% 080.75%
+sfc_problem         061.60% 057.18%
+
+
+Epoch 3/19
+----------
+train Loss: 0.4787 Acc: 0.8438
+test Loss: 0.4077 Acc: 0.8741
+Class Precision and Recall on Test Data
+ramp                092.47% 094.73%
+missing_ramp        065.72% 062.39%
+sfc_problem         068.77% 053.42%
+obstruction         079.45% 078.39%
+null                080.18% 076.86%
+
+
+Epoch 4/19
+----------
+train Loss: 0.4669 Acc: 0.8468
+test Loss: 0.3918 Acc: 0.8790
+Class Precision and Recall on Test Data
+ramp                091.58% 096.46%
+obstruction         083.03% 074.27%
+sfc_problem         075.71% 048.29%
+missing_ramp        072.46% 060.26%
+null                071.06% 080.00%
+
+
+Epoch 5/19
+----------
+train Loss: 0.4555 Acc: 0.8507
+test Loss: 0.3874 Acc: 0.8847
+Class Precision and Recall on Test Data
+ramp                092.18% 096.64%
+missing_ramp        075.45% 057.02%
+sfc_problem         069.73% 055.35%
+obstruction         080.23% 079.13%
+null                079.77% 078.36%
+
+
+Epoch 6/19
+----------
+train Loss: 0.4489 Acc: 0.8530
+test Loss: 0.3697 Acc: 0.8865
+Class Precision and Recall on Test Data
+ramp                092.39% 096.62%
+missing_ramp        076.34% 059.35%
+null                077.38% 078.74%
+obstruction         079.94% 079.50%
+sfc_problem         072.60% 053.42%
+
+
+Epoch 7/19
+----------
+train Loss: 0.4145 Acc: 0.8638
+test Loss: 0.3670 Acc: 0.8898
+Class Precision and Recall on Test Data
+ramp                093.23% 096.19%
+obstruction         082.07% 080.00%
+null                073.46% 082.52%
+sfc_problem         070.29% 060.36%
+missing_ramp        075.41% 060.77%
+
+
+Epoch 8/19
+----------
+train Loss: 0.4084 Acc: 0.8655
+test Loss: 0.3660 Acc: 0.8886
+Class Precision and Recall on Test Data
+ramp                093.27% 096.14%
+missing_ramp        074.54% 060.11%
+null                072.70% 081.38%
+obstruction         080.92% 080.55%
+sfc_problem         072.24% 059.57%
+
+
+Epoch 9/19
+----------
+train Loss: 0.4059 Acc: 0.8668
+test Loss: 0.3616 Acc: 0.8898
+Class Precision and Recall on Test Data
+ramp                093.40% 095.98%
+missing_ramp        070.74% 063.96%
+obstruction         082.64% 079.72%
+sfc_problem         072.25% 059.00%
+null                078.46% 080.63%
+
+
+Epoch 10/19
+----------
+train Loss: 0.4012 Acc: 0.8667
+test Loss: 0.3601 Acc: 0.8913
+Class Precision and Recall on Test Data
+ramp                093.16% 096.27%
+null                077.21% 082.26%
+missing_ramp        073.72% 062.14%
+obstruction         083.17% 079.54%
+sfc_problem         071.97% 060.82%
+
+
+Epoch 11/19
+----------
+train Loss: 0.3998 Acc: 0.8682
+test Loss: 0.3566 Acc: 0.8918
+Class Precision and Recall on Test Data
+ramp                093.11% 096.35%
+missing_ramp        076.49% 060.36%
+obstruction         082.22% 080.60%
+sfc_problem         071.17% 061.85%
+null                076.37% 082.52%
+
+
+Epoch 12/19
+----------
+train Loss: 0.3970 Acc: 0.8688
+test Loss: 0.3507 Acc: 0.8942
+Class Precision and Recall on Test Data
+obstruction         082.26% 081.06%
+ramp                093.00% 096.75%
+missing_ramp        077.57% 060.47%
+null                080.95% 079.12%
+sfc_problem         070.76% 062.30%
+
+
+Epoch 13/19
+----------
+train Loss: 0.3962 Acc: 0.8693
+test Loss: 0.3519 Acc: 0.8931
+Class Precision and Recall on Test Data
+missing_ramp        078.60% 059.55%
+ramp                092.98% 096.77%
+obstruction         083.11% 079.68%
+sfc_problem         070.43% 061.05%
+null                075.08% 083.40%
+
+
+Epoch 14/19
+----------
+train Loss: 0.3908 Acc: 0.8708
+test Loss: 0.3488 Acc: 0.8945
+Class Precision and Recall on Test Data
+obstruction         082.11% 081.70%
+ramp                093.08% 096.65%
+missing_ramp        077.40% 060.92%
+null                079.49% 081.89%
+sfc_problem         072.28% 059.68%
+
+
+Epoch 15/19
+----------
+train Loss: 0.3908 Acc: 0.8715
+test Loss: 0.3603 Acc: 0.8930
+Class Precision and Recall on Test Data
+null                078.14% 080.50%
+missing_ramp        075.00% 062.34%
+ramp                093.08% 096.56%
+obstruction         082.65% 080.41%
+sfc_problem         073.82% 058.77%
+
+
+Epoch 16/19
+----------
+train Loss: 0.3899 Acc: 0.8706
+test Loss: 0.3516 Acc: 0.8940
+Class Precision and Recall on Test Data
+ramp                093.13% 096.58%
+obstruction         083.54% 079.86%
+missing_ramp        076.25% 061.83%
+null                078.79% 081.76%
+sfc_problem         070.45% 062.19%
+
+
+Epoch 17/19
+----------
+train Loss: 0.3905 Acc: 0.8713
+test Loss: 0.3554 Acc: 0.8932
+Class Precision and Recall on Test Data
+null                076.93% 081.38%
+obstruction         083.37% 080.46%
+ramp                093.22% 096.44%
+sfc_problem         067.67% 063.90%
+missing_ramp        077.50% 060.77%
+
+
+Epoch 18/19
+----------
+train Loss: 0.3903 Acc: 0.8712
+test Loss: 0.3501 Acc: 0.8939
+Class Precision and Recall on Test Data
+ramp                093.11% 096.59%
+obstruction         082.19% 080.87%
+null                079.31% 081.51%
+missing_ramp        076.30% 061.83%
+sfc_problem         072.84% 059.57%
+
+
+Epoch 19/19
+----------
+train Loss: 0.3901 Acc: 0.8719
+test Loss: 0.3538 Acc: 0.8937
+Class Precision and Recall on Test Data
+missing_ramp        076.54% 061.68%
+ramp                093.09% 096.65%
+sfc_problem         072.87% 060.25%
+obstruction         082.26% 080.41%
+null                078.41% 080.88%
+
+
+Training complete in 1017m 25s
+Best test Acc: 0.894482

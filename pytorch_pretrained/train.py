@@ -62,7 +62,7 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 
 print("Finished loading data. Discovered {} classes:".format(len(class_names)))
-print(", "join(class_names))
+print(", ".join(class_names))
 print("")
 
 
@@ -167,6 +167,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
 
 
 model_ft = models.resnet18(pretrained=True)
+num_ftrs = model_ft.fc.in_features
 model_ft.fc = nn.Linear(num_ftrs, len(class_names))
 
 
@@ -195,7 +196,7 @@ model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler,
 
 
 
-torch.save(model_ft.state_dict(), '20ep_new_old_re18_2.pt')
+torch.save(model_ft.state_dict(), '20ep_new_old_r18.pt')
 
 
 
