@@ -80,8 +80,4 @@ def helper(input_dict):
 	return input_dict, err
 
 #add_metadata('/mnt/c/Users/gweld/sidewalk/sidewalk_ml/baby_ds', helper)
-add_metadata('/mnt/c/Users/gweld/sidewalk/sidewalk_ml/full_ds', helper)
-
-# us naval observatory
-#bearing, dist = calc_bearing_and_distance_between_points(38.9220, -77.0668)
-#print( "bearing:{}, dist:{}".format(bearing, dist) )
+add_metadata('/mnt/c/Users/gweld/sidewalk/sidewalk_ml/full_ds', helper, "/mnt/f/new_metadata_files")

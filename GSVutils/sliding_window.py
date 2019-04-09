@@ -467,8 +467,8 @@ pred_file_name = model_name + ".csv"
 
 
 # get and write predictions
-bps = predict_from_crops(big_dir, verbose=True)
-write_batch_predictions_to_file(bps, big_dir, pred_file_name)
+#bps = predict_from_crops(big_dir, verbose=True)
+#write_batch_predictions_to_file(bps, big_dir, pred_file_name)
 
 # get and write ground_truth
 # get_and_write_batch_ground_truth(big_dir)
@@ -477,4 +477,4 @@ write_batch_predictions_to_file(bps, big_dir, pred_file_name)
 #batch_visualize_preds(big_dir, '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/test/')
 
 # let's try this out...
-#batch_p_r(big_dir, 150, 500, preds_filename=pred_file_name)
+batch_p_r(big_dir, 150, 500, preds_filename=pred_file_name)

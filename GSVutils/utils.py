@@ -346,12 +346,15 @@ def bulk_extract_crops(path_to_crop_csv, destination_dir):
 	print( "{} crops extracted successfully.".format(success) )
 
 
-def add_metadata(dir_containing_json_files, function_to_apply, verbose=False):
+def add_metadata(dir_containing_json_files, function_to_apply, write_files_to_seperate_dir=False, verbose=False):
 	''' loops over a directory containing .json files produced by bulk extract crops,
 		and adds to them extra elements supplied by the function_to_apply
 		function_to_apply should take in a meta dict and return a meta dict.
 		The exisiting meta will be passed in as a dict, and the returned dict will be written to file!
 		helper should also return a bool indicating if it encountered any errors while computing new meta
+
+		if write_files_to_seperate_dir is set to a  different directory, the new .json files will be written
+		to this directory instead of overwriting the current files, which is the default behavior
 	'''
 	seen_panos = set()
 	err_panos  = set()
@@ -374,7 +377,7 @@ def add_metadata(dir_containing_json_files, function_to_apply, verbose=False):
 				print("Starting on new pano {}.".format(pano_id))
 
 			if verbose:
-				print( 'Processing metadata for {}'.format(pano_id) )
+				print( 'Processing metadata for {}'.format(file_root) )
 
 			with open(metapath) as jsonfile:
 				old_meta = json.load( jsonfile )
@@ -384,7 +387,15 @@ def add_metadata(dir_containing_json_files, function_to_apply, verbose=False):
 				print("Bad metadata or error for new pano {}.".format(pano_id))
 				err_panos.add(pano_id)
 
-			with open(metapath, 'w') as jsonfile:
+			if write_files_to_seperate_dir is False:
+				path_to_write = metapath
+			else:
+				path_to_write = metapath.replace(dir_containing_json_files, write_files_to_seperate_dir)
+				if not os.path.isdir( os.path.dirname(path_to_write) ):
+					os.mkdir( os.path.dirname(path_to_write) )
+
+
+			with open(path_to_write, 'w') as jsonfile:
 				json.dump(new_meta, jsonfile)
 
 			edited += 1
