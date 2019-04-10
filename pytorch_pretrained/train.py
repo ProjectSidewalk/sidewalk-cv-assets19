@@ -17,7 +17,7 @@ from resnet_extended2 import extended_resnet18
 ##### IMPORTANT: READ BEFORE STARTING A RUN ######
 # Checklists:
 # Correct Model? eg right resnet_extended
-# Correct Dataloader for model?
+# Correct Dataset class for model?
 # Correct Dataset Source?
 # Correct Number of Epochs?
 # Correct Model Save-Path?
@@ -41,15 +41,15 @@ data_transforms = {
 }
 
 
-#data_dir = '/home/gweld/sliding_window_dataset/'
-data_dir  = '/home/gweld/centered_crops_subset_with_meta'
+data_dir = '/home/gweld/sliding_window_dataset/'
+#data_dir  = '/home/gweld/centered_crops_subset_with_meta'
 
 print("Building datasets...")
 
-# image_datasets = {x:TwoFileFolder(os.path.join(data_dir, x), data_transforms[x])
-#                   for x in ['train', 'test']}
-image_datasets = {x:datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
-                  for x in ['train', 'test']}
+ image_datasets = {x:TwoFileFolder(os.path.join(data_dir, x), data_transforms[x])
+                   for x in ['train', 'test']}
+#image_datasets = {x:datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
+#                  for x in ['train', 'test']}
 
 dataloaders = {x: torch.utils.data.DataLoader(image_datasets[x], batch_size=4,
                                              shuffle=True, num_workers=4)
@@ -196,7 +196,7 @@ model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler,
 
 
 
-torch.save(model_ft.state_dict(), '20ep_new_old_r18.pt')
+torch.save(model_ft.state_dict(), '20ep_slid_win_re18_2_debug.pt')
 
 
 
