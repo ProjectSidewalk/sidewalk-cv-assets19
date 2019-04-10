@@ -181,6 +181,30 @@ class ResNet(nn.Module):
         return x
 
 
+def load_usable_params(dict_to_load, model_to_load_to):
+    # https://discuss.pytorch.org/t/how-to-load-part-of-pre-trained-model/1113/2
+    own_state = model_to_load_to.state_dict()
+    skipped, used = 0, 0
+
+    for name, param in dict_to_load.items():
+        if name not in own_state:
+            skipped += 1
+            continue
+        if isinstance(param, nn.Parameter):
+            # backwards compatibilty for serialized parameters
+            param = param.data
+        try:
+            own_state[name].copy_(param)
+            used += 1
+        except RuntimeError as e:
+            print()
+            print( 'Failed to load {}'.format(name) )
+            print(e)
+            skipped += 1
+    model.load_state_dict(own_state)
+    print( "Copied {} and skipped {} items from pretrained state dict.".format(used, skipped) )
+
+
 def extended_resnet18(pretrained=False, **kwargs):
     """Constructs a ResNet-18 model.
 
@@ -192,23 +216,7 @@ def extended_resnet18(pretrained=False, **kwargs):
     model = ResNet(BasicBlock, [2, 2, 2, 2], **kwargs)
     if pretrained:
         resnet_state_dict = model_zoo.load_url(model_urls['resnet18'])
-        own_state = model.state_dict()
-        skipped, used = 0,0
-        for name, param in resnet_state_dict.items():
-            if name not in own_state:
-                skipped += 1
-                continue
-            if isinstance(param, nn.Parameter):
-                # backwards compatibility for serialized parameters
-                param = param.data
-            try:
-                own_state[name].copy_(param)
-                used += 1
-            except RuntimeError as e:
-                print( 'Failed to load {}'.format(name) )
-                print(e)
-                skipped += 1
-        print( "Copied {} and skipped {} items from pretrained state dict.".format(used, skipped) )
+        load_usable_params(resnet_state_dict, model_to_load_to)
     return model
 
 
