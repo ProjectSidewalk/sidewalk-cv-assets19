@@ -224,7 +224,7 @@ def extended_resnet18(pretrained=False, **kwargs):
     model = ResNet(BasicBlock, [2, 2, 2, 2], **kwargs)
     if pretrained:
         resnet_state_dict = model_zoo.load_url(model_urls['resnet18'])
-        load_usable_params(resnet_state_dict, model_to_load_to)
+        load_usable_params(resnet_state_dict, model)
     return model
 
 
