@@ -17,6 +17,7 @@ import torch
 
 
 def make_dataset(dir, class_to_idx):
+    '''  reteurns a list of (img_path, meta_path, class_index) tuples ''' 
     images = []
     dir = os.path.expanduser(dir)
     for target in sorted(class_to_idx.keys()):
@@ -115,7 +116,7 @@ class TwoFileFolder(data.Dataset):
      Attributes:
         classes (list): List of the class names.
         class_to_idx (dict): Dict with items (class_name, class_index).
-        samples (list): List of (sample path, class_index) tuples
+        samples (list): List of (img_path, meta_path, class_index) tuples
         targets (list): The class_index value for each image in the dataset
     """
 
@@ -137,6 +138,10 @@ class TwoFileFolder(data.Dataset):
 
         self.transform = transform
         self.target_transform = target_transform
+
+        # automatically compute the number of extra feats
+        _, example_meta_path, _ = samples[0]
+        self.len_ex_feats = len(meta_to_tensor(example_meta_path))
 
     def _find_classes(self, dir):
         """
