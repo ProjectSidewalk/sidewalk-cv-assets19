@@ -46,7 +46,7 @@ data_dir = '/home/gweld/sliding_window_dataset/'
 
 print("Building datasets...")
 
- image_datasets = {x:TwoFileFolder(os.path.join(data_dir, x), data_transforms[x])
+image_datasets = {x:TwoFileFolder(os.path.join(data_dir, x), data_transforms[x])
                    for x in ['train', 'test']}
 #image_datasets = {x:datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
 #                  for x in ['train', 'test']}
@@ -166,12 +166,12 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
 
 
 
-model_ft = models.resnet18(pretrained=True)
-num_ftrs = model_ft.fc.in_features
-model_ft.fc = nn.Linear(num_ftrs, len(class_names))
+#model_ft = models.resnet18(pretrained=True)
+#num_ftrs = model_ft.fc.in_features
+#model_ft.fc = nn.Linear(num_ftrs, len(class_names))
 
 
-#model_ft  = extended_resnet18(True, num_classes=len(class_names), len_ex_feats=7)
+model_ft  = extended_resnet18(True, num_classes=len(class_names), len_ex_feats=7)
 
 model_ft = model_ft.to(device)
 
