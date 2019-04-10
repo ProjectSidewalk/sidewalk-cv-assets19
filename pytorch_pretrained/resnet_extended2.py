@@ -209,7 +209,7 @@ def load_usable_params(dict_to_load, model_to_load_to):
             print( 'Failed to load {}'.format(name) )
             print(e)
             skipped += 1
-    model.load_state_dict(own_state)
+    model_to_load_to.load_state_dict(own_state)
     print( "Copied {} and skipped {} items from pretrained state dict.".format(used, skipped) )
 
 
