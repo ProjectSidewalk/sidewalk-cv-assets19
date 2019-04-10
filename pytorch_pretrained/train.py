@@ -12,7 +12,7 @@ import copy
 from collections import defaultdict
 
 from TwoFileFolder import TwoFileFolder
-from resnet_extended2 import extended_resnet18
+from resnet_extended3 import extended_resnet18
 
 ##### IMPORTANT: READ BEFORE STARTING A RUN ######
 # Checklists:
@@ -40,7 +40,8 @@ data_transforms = {
     ]),
 }
 
-data_dir = '/home/gweld/sliding_window_dataset/'
+data_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/full_ds/'
+#data_dir = '/home/gweld/sliding_window_dataset/'
 #data_dir  = '/home/gweld/centered_crops_subset_with_meta'
 
 print("Building datasets...")
