@@ -198,6 +198,7 @@ class TwoFileFolder(data.Dataset):
 
         # automatically compute the number of extra feats
         _, example_meta_path, _ = samples[0]
+        print("getting extra feats with "+ example_meta_path)
         self.len_ex_feats = len(meta_to_tensor(example_meta_path, version=self.meta_to_tensor_version))
 
     def _find_classes(self, dir):
