@@ -10,6 +10,7 @@ from PIL import Image
 import os
 import os.path
 import sys
+import math
 
 import numpy as np
 import json
@@ -67,30 +68,84 @@ def default_loader(path):
     else:
         return pil_loader(path)
 
+def meta_to_tensor1(meta_dict):
+    features = []
 
-def meta_to_tensor(path_to_meta):
+    # crop size as proxy for depth
+    # hacky approximate normilization
+    features.append( meta_dict[u'crop size']/1000 )
+    
+    # pano yaw degree
+    features.append( np.sin(np.deg2rad(meta_dict[u'pano yaw'])) )
+    features.append( np.cos(np.deg2rad(meta_dict[u'pano yaw'])) )
+    
+    # sv_x converted to degree
+    horiz_degree = (meta_dict[u'sv_x'] / 13312) * 360
+    features.append( np.sin(np.deg2rad( horiz_degree )) )
+    features.append( np.cos(np.deg2rad( horiz_degree )) )
+    
+    # sv_y converted to degree
+    vert_degree = (meta_dict[u'sv_y'] / 3328) * 360
+    features.append( np.sin(np.deg2rad( vert_degree )) )
+    features.append( np.cos(np.deg2rad( vert_degree )) )
+
+    return features
+
+def meta_to_tensor2(meta_dict):
+    features = []
+
+    # crop size as proxy for depth
+    # hacky approximate normilization
+    features.append( meta_dict[u'crop size']/1000 )
+    
+    # pano yaw degree
+    features.append( np.sin(np.deg2rad(meta_dict[u'pano yaw'])) )
+    features.append( np.cos(np.deg2rad(meta_dict[u'pano yaw'])) )
+    
+    # sv_x converted to degree
+    horiz_degree = (meta_dict[u'sv_x'] / 13312) * 360
+    features.append( np.sin(np.deg2rad( horiz_degree )) )
+    features.append( np.cos(np.deg2rad( horiz_degree )) )
+    
+    # sv_y converted to degree
+    vert_degree = (meta_dict[u'sv_y'] / 3328) * 360
+    features.append( np.sin(np.deg2rad( vert_degree )) )
+    features.append( np.cos(np.deg2rad( vert_degree )) )
+
+    # dist to cbd
+    # more hacky normalization
+    dist_to_cbd = meta_dict[u'dist to cbd']
+    if math.isnan(dist_to_cbd): dist_to_cbd = 0.0
+    features.append( dist_to_cbd/10) 
+
+    # bearing to cbd broken into sin and cos
+    bearing_to_cbd = meta_dict[u'bearing to cbd']
+    if math.isnan(bearing_to_cbd): bearing_to_cbd = 0.0
+    features.append( np.sin(np.deg2rad( bearing_to_cbd )) )
+    features.append( np.cos(np.deg2rad( bearing_to_cbd )) )
+
+    # distance to intersection (feet)
+    # more hacky normalization
+    dist_to_int = meta_dict[u'dist to intersection']
+    if math.isnan(dist_to_int): dist_to_int = 0.0
+    features.append( dist_to_int/100 )
+
+    # block middleness normalized to [0,.5]
+    block_middleness = meta_dict[u'block middleness']
+    if math.isnan(block_middleness): block_middleness = 0.0
+    features.append(block_middleness/100)
+
+    return features
+
+
+def meta_to_tensor(path_to_meta, version):
     ''' used by getitem to load the meta into a tensor'''
     with open(path_to_meta) as metafile:
+        features_maker = {1: meta_to_tensor1, 2: meta_to_tensor2}
+
         meta_dict = json.load(metafile)
         
-        features = []
-        # crop size as proxy for depth
-        # hacky approximate normilization
-        features.append( meta_dict[u'crop size']/1000 )
-        
-        # pano yaw degree
-        features.append( np.sin(np.deg2rad(meta_dict[u'pano yaw'])) )
-        features.append( np.cos(np.deg2rad(meta_dict[u'pano yaw'])) )
-        
-        # sv_x converted to degree
-        horiz_degree = (meta_dict[u'sv_x'] / 13312) * 360
-        features.append( np.sin(np.deg2rad( horiz_degree )) )
-        features.append( np.cos(np.deg2rad( horiz_degree )) )
-        
-        # sv_y converted to degree
-        vert_degree = (meta_dict[u'sv_y'] / 3328) * 360
-        features.append( np.sin(np.deg2rad( vert_degree )) )
-        features.append( np.cos(np.deg2rad( vert_degree )) )
+        features = features_maker[version](meta_dict)
         
         return torch.Tensor( features )
 
@@ -120,7 +175,7 @@ class TwoFileFolder(data.Dataset):
         targets (list): The class_index value for each image in the dataset
     """
 
-    def __init__(self, root, transform=None, target_transform=None):
+    def __init__(self, root, meta_to_tensor_version, transform=None, target_transform=None):
         classes, class_to_idx = self._find_classes(root)
         samples = make_dataset(root, class_to_idx)
         if len(samples) == 0:
@@ -139,9 +194,11 @@ class TwoFileFolder(data.Dataset):
         self.transform = transform
         self.target_transform = target_transform
 
+        self.meta_to_tensor_version = meta_to_tensor_version
+
         # automatically compute the number of extra feats
         _, example_meta_path, _ = samples[0]
-        self.len_ex_feats = len(meta_to_tensor(example_meta_path))
+        self.len_ex_feats = len(meta_to_tensor(example_meta_path, version=self.meta_to_tensor_version))
 
     def _find_classes(self, dir):
         """
@@ -168,7 +225,7 @@ class TwoFileFolder(data.Dataset):
         if self.transform is not None:
             img = self.transform(img)
 
-        meta = meta_to_tensor(meta_path)
+        meta = meta_to_tensor(meta_path, version=self.meta_to_tensor_version)
         both = torch.cat((img.view(150528), meta))
 
         return both

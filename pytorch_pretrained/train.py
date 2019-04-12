@@ -12,16 +12,16 @@ import copy
 from collections import defaultdict
 
 from TwoFileFolder import TwoFileFolder
-from resnet_extended3 import extended_resnet18
+from resnet_extended2 import extended_resnet18
 
 ##### IMPORTANT: READ BEFORE STARTING A RUN ######
 # Checklists:
 # Correct Model? eg right resnet_extended
+# Correct Extra Features? eg right TwoFileFolder meta_to_tensor_version
 # Correct Dataset class for model?
 # Correct Dataset Source?
 # Correct Number of Epochs?
 # Correct Model Save-Path?
-#
 #
 ##################################################
 
@@ -46,7 +46,7 @@ data_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/full_ds/'
 
 print("Building datasets...")
 
-image_datasets = {x:TwoFileFolder(os.path.join(data_dir, x), data_transforms[x])
+image_datasets = {x:TwoFileFolder(os.path.join(data_dir, x), meta_to_tensor_verion=2, transform=data_transforms[x])
                    for x in ['train', 'test']}
 #image_datasets = {x:datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
 #                  for x in ['train', 'test']}
@@ -199,7 +199,7 @@ model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler,
 
 
 
-torch.save(model_ft.state_dict(), '20ep_slid_win_re18_2_debug.pt')
+torch.save(model_ft.state_dict(), '20ep_slid_win_re18_2_2ff2.pt')
 
 
 
