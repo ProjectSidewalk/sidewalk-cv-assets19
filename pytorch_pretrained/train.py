@@ -40,8 +40,8 @@ data_transforms = {
     ]),
 }
 
-data_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/full_ds/'
-#data_dir = '/home/gweld/sliding_window_dataset/'
+#data_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/full_ds/'
+data_dir = '/home/gweld/sliding_window_dataset/'
 #data_dir  = '/home/gweld/centered_crops_subset_with_meta'
 
 print("Building datasets...")
