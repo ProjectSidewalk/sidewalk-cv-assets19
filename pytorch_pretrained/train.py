@@ -46,7 +46,7 @@ data_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/full_ds/'
 
 print("Building datasets...")
 
-image_datasets = {x:TwoFileFolder(os.path.join(data_dir, x), meta_to_tensor_verion=2, transform=data_transforms[x])
+image_datasets = {x:TwoFileFolder(os.path.join(data_dir, x), meta_to_tensor_version=2, transform=data_transforms[x])
                    for x in ['train', 'test']}
 #image_datasets = {x:datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
 #                  for x in ['train', 'test']}
