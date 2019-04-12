@@ -71,7 +71,7 @@ print("")
 
 
 
-def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
+def train_model(model, criterion, optimizer, scheduler, num_epochs=25, file_to_save_to='model.pt'):
     since = time.time()
 
     best_model_wts = copy.deepcopy(model.state_dict())
@@ -154,6 +154,8 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25):
             if phase == 'test' and epoch_acc > best_acc:
                 best_acc = epoch_acc
                 best_model_wts = copy.deepcopy(model.state_dict())
+                print("Best model so far. Saving to {}".format(file_to_save_to))
+                torch.save(model.state_dict(), file_to_save_to)
 
         #print()
 
@@ -194,12 +196,12 @@ print('Beginning Training on {} train and {} test images.'.format(dataset_sizes[
 
 
 model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler,
-        num_epochs=20)
+        num_epochs=20, file_to_save_to='20ep_slid_win_re18_2_2ff2.pt')
 
 
 
-
-torch.save(model_ft.state_dict(), '20ep_slid_win_re18_2_2ff2.pt')
+# model now autosaves, this is no longer needed
+#torch.save(model_ft.state_dict(), '20ep_slid_win_re18_2_2ff2.pt')
 
 
 
