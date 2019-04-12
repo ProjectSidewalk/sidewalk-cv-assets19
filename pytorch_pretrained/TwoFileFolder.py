@@ -114,25 +114,41 @@ def meta_to_tensor2(meta_dict):
 
     # dist to cbd
     # more hacky normalization
-    dist_to_cbd = meta_dict[u'dist to cbd']
-    if math.isnan(dist_to_cbd): dist_to_cbd = 0.0
+    try:
+        dist_to_cbd = meta_dict[u'dist to cbd']
+    except KeyError as e:
+        dist_to_cbd = 0.0
+    if math.isnan(dist_to_cbd):
+        dist_to_cbd = 0.0
     features.append( dist_to_cbd/10) 
 
     # bearing to cbd broken into sin and cos
-    bearing_to_cbd = meta_dict[u'bearing to cbd']
-    if math.isnan(bearing_to_cbd): bearing_to_cbd = 0.0
+    try:
+        bearing_to_cbd = meta_dict[u'bearing to cbd']
+    except KeyError as e:
+        bearing_to_cbd = 0.0
+    if math.isnan(bearing_to_cbd):
+        bearing_to_cbd = 0.0
     features.append( np.sin(np.deg2rad( bearing_to_cbd )) )
     features.append( np.cos(np.deg2rad( bearing_to_cbd )) )
 
     # distance to intersection (feet)
     # more hacky normalization
-    dist_to_int = meta_dict[u'dist to intersection']
-    if math.isnan(dist_to_int): dist_to_int = 0.0
+    try:
+        dist_to_int = meta_dict[u'dist to intersection']
+    except KeyError as e:
+        dist_to_int = 0.0
+    if math.isnan(dist_to_int):
+        dist_to_int = 0.0
     features.append( dist_to_int/100 )
 
     # block middleness normalized to [0,.5]
-    block_middleness = meta_dict[u'block middleness']
-    if math.isnan(block_middleness): block_middleness = 0.0
+    try:
+        block_middleness = meta_dict[u'block middleness']
+    except KeyError as e:
+        block_middleness = 0.0
+    if math.isnan(block_middleness):
+        block_middleness = 0.0
     features.append(block_middleness/100)
 
     return features
@@ -198,7 +214,6 @@ class TwoFileFolder(data.Dataset):
 
         # automatically compute the number of extra feats
         _, example_meta_path, _ = samples[0]
-        print("getting extra feats with "+ example_meta_path)
         self.len_ex_feats = len(meta_to_tensor(example_meta_path, version=self.meta_to_tensor_version))
 
     def _find_classes(self, dir):
