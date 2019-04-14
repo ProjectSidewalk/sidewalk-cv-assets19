@@ -183,6 +183,14 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25, file_to_s
 #model_ft.fc = nn.Linear(num_ftrs, len(class_names))
 
 
+if not resume_training:
+    model_ft  = extended_resnet18(True, num_classes=len(class_names), len_ex_feats=len_ex_feats)
+
+if resume_training:
+    model_ft = extended_resnet18(False, num_classes=len(class_names), len_ex_feats=len_ex_feats)
+    model_ft.load_state_dict(torch.load(file_to_save_to))
+
+
 model_ft = model_ft.to(device)
 
 criterion = nn.CrossEntropyLoss()
@@ -196,17 +204,6 @@ exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=7, gamma=0.1)
 
 # Train and evaluate
 # ^^^^^^^^^^^^^^^^^^
-
-#model_ft = models.resnet18(pretrained=True)
-#num_ftrs = model_ft.fc.in_features
-#model_ft.fc = nn.Linear(num_ftrs, len(class_names))
-
-if not resume_training:
-    model_ft  = extended_resnet18(True, num_classes=len(class_names), len_ex_feats=len_ex_feats)
-
-if resume_training:
-    model_ft = extended_resnet18(False, num_classes=len(class_names), len_ex_feats=len_ex_feats)
-    model_ft.load_state_dict(torch.load(file_to_save_to))
 
 
 print('Beginning Training on {} train and {} test images.'.format(dataset_sizes['train'], dataset_sizes['test']))
