@@ -14,7 +14,7 @@ from collections import defaultdict
 from TwoFileFolder import TwoFileFolder
 from resnet_extended2 import extended_resnet18
 
-##### IMPORTANT: READ BEFORE STARTING A RUN ######
+################ IMPORTANT: READ BEFORE STARTING A RUN ################
 # Checklists:
 # Correct Model? eg right resnet_extended
 # Correct Extra Features? eg right TwoFileFolder meta_to_tensor_version
@@ -23,7 +23,20 @@ from resnet_extended2 import extended_resnet18
 # Correct Number of Epochs?
 # Correct Model Save-Path?
 #
-##################################################
+#######################################################################
+
+
+#data_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/full_ds/'
+data_dir = '/home/gweld/sliding_window_dataset/'
+#data_dir  = '/home/gweld/centered_crops_subset_with_meta'
+
+file_to_save_to='20ep_slid_win_re18_2_2ff2.pt'
+
+resume_training = True
+
+num_epochs=20
+
+
 
 data_transforms = {
     'train': transforms.Compose([
@@ -39,10 +52,6 @@ data_transforms = {
         transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ]),
 }
-
-#data_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/full_ds/'
-data_dir = '/home/gweld/sliding_window_dataset/'
-#data_dir  = '/home/gweld/centered_crops_subset_with_meta'
 
 print("Building datasets...")
 
@@ -169,14 +178,10 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25, file_to_s
     return model
 
 
-
-
 #model_ft = models.resnet18(pretrained=True)
 #num_ftrs = model_ft.fc.in_features
 #model_ft.fc = nn.Linear(num_ftrs, len(class_names))
 
-
-model_ft  = extended_resnet18(True, num_classes=len(class_names), len_ex_feats=len_ex_feats)
 
 model_ft = model_ft.to(device)
 
@@ -192,16 +197,24 @@ exp_lr_scheduler = lr_scheduler.StepLR(optimizer_ft, step_size=7, gamma=0.1)
 # Train and evaluate
 # ^^^^^^^^^^^^^^^^^^
 
+#model_ft = models.resnet18(pretrained=True)
+#num_ftrs = model_ft.fc.in_features
+#model_ft.fc = nn.Linear(num_ftrs, len(class_names))
+
+if not resume_training:
+    model_ft  = extended_resnet18(True, num_classes=len(class_names), len_ex_feats=len_ex_feats)
+
+if resume_training:
+    model_ft = extended_resnet18(False, num_classes=len(class_names), len_ex_feats=len_ex_feats)
+    model_ft.load_state_dict(torch.load(file_to_save_to))
+
+
 print('Beginning Training on {} train and {} test images.'.format(dataset_sizes['train'], dataset_sizes['test']))
 
 
 model_ft = train_model(model_ft, criterion, optimizer_ft, exp_lr_scheduler,
-        num_epochs=20, file_to_save_to='20ep_slid_win_re18_2_2ff2.pt')
+        num_epochs=num_epochs, file_to_save_to=file_to_save_to)
 
-
-
-# model now autosaves, this is no longer needed
-#torch.save(model_ft.state_dict(), '20ep_slid_win_re18_2_2ff2.pt')
 
 
 
