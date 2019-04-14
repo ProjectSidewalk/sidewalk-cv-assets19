@@ -34,7 +34,7 @@ file_to_save_to='20ep_slid_win_re18_2_2ff2.pt'
 
 resume_training = True
 
-num_epochs=20
+num_epochs=13
 
 
 
