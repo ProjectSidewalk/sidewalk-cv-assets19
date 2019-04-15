@@ -12,7 +12,7 @@ import copy
 from collections import defaultdict
 
 from TwoFileFolder import TwoFileFolder
-from resnet_extended2 import extended_resnet18
+from resnet_extended3 import extended_resnet18
 
 ################ IMPORTANT: READ BEFORE STARTING A RUN ################
 # Checklists:
@@ -30,11 +30,11 @@ from resnet_extended2 import extended_resnet18
 data_dir = '/home/gweld/sliding_window_dataset/'
 #data_dir  = '/home/gweld/centered_crops_subset_with_meta'
 
-file_to_save_to='20ep_slid_win_re18_2_2ff2.pt'
+file_to_save_to='20ep_slid_win_re18_3_2ff2.pt'
 
 resume_training = True
 
-num_epochs=13
+num_epochs=20
 
 
 
@@ -157,18 +157,18 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25, file_to_s
                     r = 100 * (correct / actual)
 
                     print("{:20}{:06.2f}% {:06.2f}%".format(class_name, p, r))
+
+                # deep copy the model if it's the best we've seen
+                if epoch_acc > best_acc:
+                    best_acc = epoch_acc
+                    best_model_wts = copy.deepcopy(model.state_dict())
+                    print("Best model so far. Saving to {}".format(file_to_save_to))
+                    torch.save(model.state_dict(), file_to_save_to)
                 print("\n")
 
-            # deep copy the model
-            if phase == 'test' and epoch_acc > best_acc:
-                best_acc = epoch_acc
-                best_model_wts = copy.deepcopy(model.state_dict())
-                print("Best model so far. Saving to {}".format(file_to_save_to))
-                torch.save(model.state_dict(), file_to_save_to)
-
-        #print()
 
     time_elapsed = time.time() - since
+    print("")
     print('Training complete in {:.0f}m {:.0f}s'.format(
         time_elapsed // 60, time_elapsed % 60))
     print('Best test Acc: {:4f}'.format(best_acc))
