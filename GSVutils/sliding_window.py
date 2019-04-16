@@ -38,7 +38,7 @@ path_to_gsv_scrapes  = "/mnt/f/scrapes_dump/"
 pano_db_export = '/mnt/c/Users/gweld/sidewalk/minus_onboard.csv'
 
 model_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/pytorch_pretrained/models/'
-model_name = "20ep_new_old_re18_2"
+model_name = "20ep_slid_win_re18_2_2ff2"
 #model_name = "25epoch_full_ds_resnet18"
 
 model_path = os.path.join(model_dir, model_name+'.pt')
@@ -56,7 +56,7 @@ data_transform = transforms.Compose([
     ])
 
 # use new model
-model_ft = extended_resnet18()
+model_ft = extended_resnet18(len_ex_feats=12)
 
 # use old model
 #model_ft = models.resnet18()
@@ -82,7 +82,7 @@ def predict_from_crops(dir_containing_crops, verbose=False):
 
     print "Building dataset..."
 
-    dataset    = TwoFileFolder(dir_containing_crops, data_transform)
+    dataset    = TwoFileFolder(dir_containing_crops, meta_to_tensor_version=2, transform=data_transform)
 
     for img_path, meta_path, _ in dataset.samples:
         _, img_name = os.path.split(img_path)
@@ -467,8 +467,8 @@ pred_file_name = model_name + ".csv"
 
 
 # get and write predictions
-#bps = predict_from_crops(big_dir, verbose=True)
-#write_batch_predictions_to_file(bps, big_dir, pred_file_name)
+bps = predict_from_crops(big_dir, verbose=True)
+write_batch_predictions_to_file(bps, big_dir, pred_file_name)
 
 # get and write ground_truth
 # get_and_write_batch_ground_truth(big_dir)
@@ -477,4 +477,4 @@ pred_file_name = model_name + ".csv"
 #batch_visualize_preds(big_dir, '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/test/')
 
 # let's try this out...
-batch_p_r(big_dir, 150, 500, preds_filename=pred_file_name)
+#batch_p_r(big_dir, 150, 500, preds_filename=pred_file_name)
