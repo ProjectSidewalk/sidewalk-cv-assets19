@@ -12,7 +12,7 @@ import copy
 from collections import defaultdict
 
 from TwoFileFolder import TwoFileFolder
-from resnet_extended3 import extended_resnet18
+from resnet_extended1 import extended_resnet18, extended_resnet34, extended_resnet50
 
 ################ IMPORTANT: READ BEFORE STARTING A RUN ################
 # Checklists:
@@ -30,9 +30,9 @@ from resnet_extended3 import extended_resnet18
 data_dir = '/home/gweld/sliding_window_dataset/'
 #data_dir  = '/home/gweld/centered_crops_subset_with_meta'
 
-file_to_save_to='20ep_slid_win_re18_3_2ff2.pt'
+file_to_save_to='20ep_slid_win_re34_2ff2.pt'
 
-resume_training = True
+resume_training = False
 
 num_epochs=20
 
@@ -184,7 +184,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25, file_to_s
 
 
 if not resume_training:
-    model_ft  = extended_resnet18(True, num_classes=len(class_names), len_ex_feats=len_ex_feats)
+    model_ft  = extended_resnet34(True, num_classes=len(class_names), len_ex_feats=len_ex_feats)
 
 if resume_training:
     model_ft = extended_resnet18(False, num_classes=len(class_names), len_ex_feats=len_ex_feats)

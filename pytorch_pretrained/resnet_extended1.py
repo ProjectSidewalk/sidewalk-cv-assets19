@@ -220,7 +220,7 @@ def extended_resnet18(pretrained=False, **kwargs):
     return model
 
 
-def resnet34(pretrained=False, **kwargs):
+def extended_resnet34(pretrained=False, **kwargs):
     """Constructs a ResNet-34 model.
 
     Args:
@@ -228,12 +228,12 @@ def resnet34(pretrained=False, **kwargs):
     """
     model = ResNet(BasicBlock, [3, 4, 6, 3], **kwargs)
     if pretrained:
-        assert False, "pretrained is not yet implemented"
-        model.load_state_dict(model_zoo.load_url(model_urls['resnet34']))
+        resnet_state_dict = model_zoo.load_url(model_urls['resnet18'])
+        load_usable_params(resnet_state_dict, model)
     return model
 
 
-def resnet50(pretrained=False, **kwargs):
+def extended_resnet50(pretrained=False, **kwargs):
     """Constructs a ResNet-50 model.
 
     Args:
@@ -241,8 +241,8 @@ def resnet50(pretrained=False, **kwargs):
     """
     model = ResNet(Bottleneck, [3, 4, 6, 3], **kwargs)
     if pretrained:
-        assert False, "pretrained is not yet implemented"
-        model.load_state_dict(model_zoo.load_url(model_urls['resnet50']))
+        resnet_state_dict = model_zoo.load_url(model_urls['resnet18'])
+        load_usable_params(resnet_state_dict, model)
     return model
 
 
