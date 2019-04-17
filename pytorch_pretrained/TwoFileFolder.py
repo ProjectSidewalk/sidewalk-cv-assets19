@@ -15,10 +15,12 @@ import math
 import numpy as np
 import json
 import torch
+import random
 
 
 def make_dataset(dir, class_to_idx):
-    '''  reteurns a list of (img_path, meta_path, class_index) tuples ''' 
+    '''  reteurns a list of (img_path, meta_path, class_index) tuples
+    ''' 
     images = []
     dir = os.path.expanduser(dir)
     for target in sorted(class_to_idx.keys()):
@@ -184,6 +186,7 @@ class TwoFileFolder(data.Dataset):
             E.g, ``transforms.RandomCrop`` for images.
         target_transform (callable, optional): A function/transform that takes
             in the target and transforms it.
+        downsample: randomly downsample the the dataset to the provided size
      Attributes:
         classes (list): List of the class names.
         class_to_idx (dict): Dict with items (class_name, class_index).
@@ -191,12 +194,15 @@ class TwoFileFolder(data.Dataset):
         targets (list): The class_index value for each image in the dataset
     """
 
-    def __init__(self, root, meta_to_tensor_version, transform=None, target_transform=None):
+    def __init__(self, root, meta_to_tensor_version, transform=None, target_transform=None, downsample=None):
         classes, class_to_idx = self._find_classes(root)
         samples = make_dataset(root, class_to_idx)
         if len(samples) == 0:
             raise(RuntimeError("Found 0 files in subfolders of: " + root + "\n"
                                "Supported extensions are: " + ",".join( ('.jpg', '.json') )))
+
+        if downsample is not None:
+            samples = random.sample(samples, downsample)
 
         self.root = root
         self.loader = default_loader
