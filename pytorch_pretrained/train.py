@@ -30,13 +30,17 @@ from resnet_extended1 import extended_resnet18, extended_resnet34, extended_resn
 data_dir = '/home/gweld/sliding_window_dataset/'
 #data_dir  = '/home/gweld/centered_crops_subset_with_meta'
 
-file_to_save_to='20ep_slid_win_re34_2ff2.pt'
-
 resume_training = False
 
 num_epochs=20
 
-downsample=None
+# full ds is ~370k
+downsample=1000
+
+file_to_save_to='20ep_sw{}_re18_2ff2.pt'.format(downsample)
+
+
+
 
 data_transforms = {
     'train': transforms.Compose([
@@ -184,7 +188,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25, file_to_s
 
 
 if not resume_training:
-    model_ft  = extended_resnet34(True, num_classes=len(class_names), len_ex_feats=len_ex_feats)
+    model_ft  = extended_resnet18(True, num_classes=len(class_names), len_ex_feats=len_ex_feats)
 
 if resume_training:
     model_ft = extended_resnet18(False, num_classes=len(class_names), len_ex_feats=len_ex_feats)
