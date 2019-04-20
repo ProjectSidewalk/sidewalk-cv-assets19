@@ -201,7 +201,7 @@ class TwoFileFolder(data.Dataset):
             raise(RuntimeError("Found 0 files in subfolders of: " + root + "\n"
                                "Supported extensions are: " + ",".join( ('.jpg', '.json') )))
 
-        if downsample is not None:
+        if downsample is not None and len(sample) > downsample:
             samples = random.sample(samples, downsample)
 
         self.root = root
