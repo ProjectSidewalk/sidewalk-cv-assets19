@@ -35,9 +35,10 @@ resume_training = False
 num_epochs=20
 
 # full ds is ~370k
-downsample=1000
+downsample_short = 10
+downsample=1000*downsample_short
 
-file_to_save_to='20ep_sw{}_re18_2ff2.pt'.format(downsample)
+file_to_save_to='20ep_sw{}_re18_2ff2.pt'.format(downsample_short)
 
 
 
