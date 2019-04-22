@@ -201,7 +201,7 @@ class TwoFileFolder(data.Dataset):
             raise(RuntimeError("Found 0 files in subfolders of: " + root + "\n"
                                "Supported extensions are: " + ",".join( ('.jpg', '.json') )))
 
-        if downsample is not None and len(sample) > downsample:
+        if downsample is not None and len(samples) > downsample:
             samples = random.sample(samples, downsample)
 
         self.root = root
@@ -266,7 +266,7 @@ class TwoFileFolder(data.Dataset):
         if self.target_transform is not None:
             target = self.target_transform(target)
 
-        return both, target
+        return both, target, img_path
 
     def __len__(self):
         return len(self.samples)
