@@ -36,7 +36,7 @@ num_epochs=20
 
 # full ds is ~370k
 downsample_short = .5
-downsample=1000*downsample_short
+downsample=int(1000*downsample_short)
 
 file_to_save_to='20ep_sw{}k_re18_2ff2.pt'.format(downsample_short)
 
