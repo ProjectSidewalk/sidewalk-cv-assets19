@@ -36,6 +36,9 @@ pytorch_label_from_int = ('Missing Cut', "Null", 'Obstruction', "Curb Cut", "Sfc
 
 path_to_gsv_scrapes  = "/mnt/f/scrapes_dump/"
 pano_db_export = '/mnt/c/Users/gweld/sidewalk/minus_onboard.csv'
+#pano_db_export = '/mnt/c/Users/gweld/sidewalk/minus_onboard.csv'
+
+
 
 model_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/pytorch_pretrained/models/'
 model_name = "20ep_slid_win_re18_2_2ff2"
@@ -205,6 +208,61 @@ def sliding_window(pano, stride=100, bottom_space=1600, side_space=300, cor_thre
             x += stride
         y -= stride # jump down a row
         x = side_space
+
+
+def make_sliding_window_crops(list_of_panos, dir_to_save_to):
+    ''' take a text file containing a list of panos and add to dir'''
+    panos_to_crop = set()
+
+    with open(list_of_panos) as f:
+        for line in f:
+            panos_to_crop.add(line[:-2])
+    print "Making crops for {} panos.".format(len(panos_to_crop))
+
+    num_panos = 0
+    num_crops = 0
+    num_fail  = 0
+
+    error_panos =  set()
+
+    for pano_id in panos_to_crop:
+        pano_root = os.path.join(path_to_gsv_scrapes, pano_id[:2], pano_id)
+        pano_img_path   = pano_root + ".jpg"
+        pano_xml_path   = pano_root + ".xml"
+        pano_depth_path = pano_root + ".depth.txt"
+        try:
+            pano_yaw_deg = GSVutils.utils.extract_panoyawdeg(pano_xml_path)
+        except Exception as e:
+            print "Error extracting Pano Yaw Deg:"
+            print e
+            error_panos.add(pano_id)
+            continue
+
+        destination_folder = os.path.join(dir_to_save_to, pano_id)
+        if not os.path.isdir(destination_folder):
+            os.makedirs(destination_folder)
+
+        pano = Pano()
+        pano.pano_id = pano_id
+        pano.photog_heading = None
+
+        for feat in sliding_window(pano): # ignoring labels here
+            sv_x, sv_y = feat.sv_image_x, feat.sv_image_y
+            print "cropping around ({},{})".format(sv_x, sv_y)
+            output_filebase = os.path.join(destination_folder, pano_id+'crop{},{}'.format(sv_x, sv_y))
+
+            try:
+                GSVutils.utils.make_single_crop(pano_id, sv_x, sv_y, pano_yaw_deg, output_filebase)
+                num_crops += 1
+            except Exception as e:
+                print "\t cropping failed"
+                print e
+                num_fail += 1
+        num_panos += 1
+    print "Finished. {} crops succeeded, {} failed. {} panos.".format(num_crops, num_fail, num_panos)
+    print "Failed to find XML for {} panos:".format(len(error_panos))
+    for pano_id in error_panos:
+        print pano_id
 
 
 def convert_to_sv_coords_to_real_coords(sv_x, sv_y, pano_yaw_deg):
@@ -461,6 +519,7 @@ def batch_p_r(dir_containing_preds, clust_r, cor_r, clip_val=None, preds_filenam
 
 simple_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/tiny_slid_win_crops/'
 big_dir    = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/new_sliding_window_crops/'
+gt_dir     = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/ground_truth_crops/'
 
 pred_file_name = model_name + ".csv"
 
@@ -477,4 +536,8 @@ pred_file_name = model_name + ".csv"
 #batch_visualize_preds(big_dir, '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/test/')
 
 # let's try this out...
-batch_p_r(big_dir, 150, 500, preds_filename=pred_file_name)
+#batch_p_r(big_dir, 150, 500, preds_filename=pred_file_name)
+
+ground_truth_labels = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/ground_truth/ground_truth_labels.csv'
+ground_truth_panos = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/ground_truth/ground_truth_panos.txt'
+make_sliding_window_crops(ground_truth_panos, gt_dir)
