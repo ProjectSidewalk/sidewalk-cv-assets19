@@ -38,7 +38,7 @@ num_epochs=20
 downsample_short = 10
 downsample=1000*downsample_short
 
-file_to_save_to='20ep_sw{}_re18_2ff2.pt'.format(downsample_short)
+file_to_save_to='20ep_sw{}k_re18_2ff2.pt'.format(downsample_short)
 
 
 
