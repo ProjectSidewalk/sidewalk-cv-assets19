@@ -1,0 +1,266 @@
+Building datasets...
+Couldn't find meta /home/gweld/sliding_window_dataset/test/null_crop/GOsC5TmLimIFt6ss-nmv-wcrop2900.0,-1600.0.json
+Finished loading data. Discovered 5 classes:
+missing_ramp, null_crop, obstruction, ramp, sfc_problem
+
+Using dataloader that supplies 12 extra features.
+
+
+Failed to load fc.weight
+The expanded size of the tensor (524) must match the existing size (512) at non-singleton dimension 1.  Target sizes: [5, 524].  Tensor sizes: [1000, 512]
+
+Failed to load fc.bias
+The expanded size of the tensor (5) must match the existing size (1000) at non-singleton dimension 0.  Target sizes: [5].  Tensor sizes: [1000]
+Copied 100 and skipped 2 items from pretrained state dict.
+Beginning Training on 500 train and 20307 test images.
+Epoch 0/19
+----------
+train Loss: 1.2252 Acc: 0.5400
+test Loss: 1.3668 Acc: 0.5286
+Class Precision and Recall on Test Data
+missing_ramp        037.66% 001.11%
+null_crop           074.47% 055.58%
+ramp                046.69% 084.36%
+obstruction         043.88% 046.46%
+sfc_problem         000nan% 000.00%
+Best model so far. Saving to 20ep_sw0.5k_re18_2ff2.pt
+
+
+Epoch 1/19
+----------
+train Loss: 1.2058 Acc: 0.5840
+test Loss: 1.9907 Acc: 0.3716
+Class Precision and Recall on Test Data
+null_crop           084.96% 005.86%
+missing_ramp        036.20% 002.26%
+obstruction         057.62% 020.94%
+ramp                034.67% 097.83%
+sfc_problem         000nan% 000.00%
+
+
+Epoch 2/19
+----------
+train Loss: 1.2606 Acc: 0.5640
+test Loss: 1.3205 Acc: 0.5756
+Class Precision and Recall on Test Data
+ramp                070.25% 061.15%
+missing_ramp        027.68% 002.37%
+sfc_problem         080.00% 000.31%
+obstruction         043.51% 070.55%
+null_crop           058.62% 080.63%
+Best model so far. Saving to 20ep_sw0.5k_re18_2ff2.pt
+
+
+Epoch 3/19
+----------
+train Loss: 1.0401 Acc: 0.6000
+test Loss: 1.2673 Acc: 0.5889
+Class Precision and Recall on Test Data
+missing_ramp        043.94% 004.86%
+null_crop           058.16% 076.35%
+obstruction         054.96% 056.87%
+sfc_problem         100.00% 000.08%
+ramp                061.88% 075.48%
+Best model so far. Saving to 20ep_sw0.5k_re18_2ff2.pt
+
+
+Epoch 4/19
+----------
+train Loss: 0.9825 Acc: 0.6260
+test Loss: 1.3480 Acc: 0.5461
+Class Precision and Recall on Test Data
+missing_ramp        028.11% 038.03%
+ramp                056.62% 060.55%
+null_crop           061.53% 081.24%
+obstruction         073.85% 022.91%
+sfc_problem         054.65% 003.66%
+
+
+Epoch 5/19
+----------
+train Loss: 0.9954 Acc: 0.6440
+test Loss: 1.7083 Acc: 0.5296
+Class Precision and Recall on Test Data
+null_crop           075.66% 053.73%
+sfc_problem         050.00% 001.17%
+missing_ramp        032.76% 001.46%
+ramp                043.62% 092.54%
+obstruction         069.62% 033.78%
+
+
+Epoch 6/19
+----------
+train Loss: 0.9787 Acc: 0.6500
+test Loss: 1.4378 Acc: 0.5369
+Class Precision and Recall on Test Data
+null_crop           052.98% 073.73%
+ramp                055.51% 068.08%
+missing_ramp        036.17% 015.47%
+sfc_problem         039.55% 015.19%
+obstruction         065.65% 030.54%
+
+
+Epoch 7/19
+----------
+train Loss: 0.7638 Acc: 0.7040
+test Loss: 1.2572 Acc: 0.5909
+Class Precision and Recall on Test Data
+ramp                055.90% 084.97%
+null_crop           066.69% 068.07%
+sfc_problem         050.70% 008.49%
+missing_ramp        039.95% 018.35%
+obstruction         061.62% 041.80%
+Best model so far. Saving to 20ep_sw0.5k_re18_2ff2.pt
+
+
+Epoch 8/19
+----------
+train Loss: 0.7550 Acc: 0.7260
+test Loss: 1.2557 Acc: 0.6041
+Class Precision and Recall on Test Data
+null_crop           066.89% 069.84%
+missing_ramp        046.28% 016.66%
+ramp                057.16% 085.27%
+obstruction         061.57% 047.09%
+sfc_problem         050.00% 008.57%
+Best model so far. Saving to 20ep_sw0.5k_re18_2ff2.pt
+
+
+Epoch 9/19
+----------
+train Loss: 0.6860 Acc: 0.7540
+test Loss: 1.1789 Acc: 0.6151
+Class Precision and Recall on Test Data
+ramp                061.81% 081.92%
+sfc_problem         051.92% 011.60%
+missing_ramp        045.58% 019.95%
+null_crop           063.12% 076.35%
+obstruction         063.94% 043.80%
+Best model so far. Saving to 20ep_sw0.5k_re18_2ff2.pt
+
+
+Epoch 10/19
+----------
+train Loss: 0.6098 Acc: 0.7760
+test Loss: 1.1729 Acc: 0.6192
+Class Precision and Recall on Test Data
+obstruction         061.60% 049.76%
+null_crop           067.17% 072.75%
+ramp                059.81% 084.57%
+missing_ramp        047.60% 017.89%
+sfc_problem         052.23% 011.84%
+Best model so far. Saving to 20ep_sw0.5k_re18_2ff2.pt
+
+
+Epoch 11/19
+----------
+train Loss: 0.6200 Acc: 0.7740
+test Loss: 1.1298 Acc: 0.6224
+Class Precision and Recall on Test Data
+null_crop           062.67% 079.12%
+ramp                066.31% 077.00%
+obstruction         063.51% 047.15%
+sfc_problem         045.95% 012.38%
+missing_ramp        042.58% 026.46%
+Best model so far. Saving to 20ep_sw0.5k_re18_2ff2.pt
+
+
+Epoch 12/19
+----------
+train Loss: 0.7236 Acc: 0.7460
+test Loss: 1.2291 Acc: 0.6130
+Class Precision and Recall on Test Data
+ramp                059.22% 085.00%
+null_crop           065.14% 074.22%
+obstruction         065.23% 042.92%
+sfc_problem         052.61% 008.64%
+missing_ramp        046.23% 018.58%
+
+
+Epoch 13/19
+----------
+train Loss: 0.6784 Acc: 0.7540
+test Loss: 1.1489 Acc: 0.6177
+Class Precision and Recall on Test Data
+sfc_problem         047.45% 014.49%
+obstruction         062.94% 046.73%
+ramp                062.67% 080.48%
+missing_ramp        043.83% 023.94%
+null_crop           064.48% 074.97%
+
+
+Epoch 14/19
+----------
+train Loss: 0.6789 Acc: 0.7740
+test Loss: 1.2304 Acc: 0.6121
+Class Precision and Recall on Test Data
+null_crop           068.58% 071.35%
+sfc_problem         055.23% 010.28%
+obstruction         061.79% 046.88%
+missing_ramp        046.51% 016.32%
+ramp                057.46% 086.14%
+
+
+Epoch 15/19
+----------
+train Loss: 0.6262 Acc: 0.7760
+test Loss: 1.2240 Acc: 0.6140
+Class Precision and Recall on Test Data
+obstruction         065.28% 040.98%
+ramp                060.57% 082.95%
+null_crop           064.33% 076.51%
+missing_ramp        044.44% 022.02%
+sfc_problem         052.98% 006.93%
+
+
+Epoch 16/19
+----------
+train Loss: 0.5911 Acc: 0.7980
+test Loss: 1.1788 Acc: 0.6189
+Class Precision and Recall on Test Data
+ramp                062.39% 080.88%
+null_crop           065.10% 075.62%
+obstruction         060.75% 048.34%
+sfc_problem         050.57% 010.36%
+missing_ramp        044.60% 022.29%
+
+
+Epoch 17/19
+----------
+train Loss: 0.6281 Acc: 0.7620
+test Loss: 1.1777 Acc: 0.6207
+Class Precision and Recall on Test Data
+obstruction         065.79% 042.95%
+null_crop           064.52% 076.87%
+ramp                061.24% 083.41%
+missing_ramp        047.71% 018.73%
+sfc_problem         048.97% 014.88%
+
+
+Epoch 18/19
+----------
+train Loss: 0.6149 Acc: 0.7680
+test Loss: 1.1791 Acc: 0.6189
+Class Precision and Recall on Test Data
+ramp                061.78% 082.13%
+obstruction         065.65% 042.40%
+null_crop           064.07% 076.98%
+missing_ramp        045.24% 023.29%
+sfc_problem         054.55% 010.28%
+
+
+Epoch 19/19
+----------
+train Loss: 0.5984 Acc: 0.7700
+test Loss: 1.2441 Acc: 0.6111
+Class Precision and Recall on Test Data
+ramp                058.30% 085.15%
+obstruction         066.80% 040.80%
+null_crop           065.13% 074.97%
+sfc_problem         056.84% 008.41%
+missing_ramp        046.74% 017.58%
+
+
+
+Training complete in 100m 5s
+Best test Acc: 0.622445
