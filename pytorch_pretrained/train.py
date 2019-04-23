@@ -35,7 +35,7 @@ resume_training = False
 num_epochs=20
 
 # full ds is ~370k
-downsample_short = 10
+downsample_short = .5
 downsample=1000*downsample_short
 
 file_to_save_to='20ep_sw{}k_re18_2ff2.pt'.format(downsample_short)
@@ -60,7 +60,7 @@ data_transforms = {
 
 print("Building datasets...")
 
-image_datasets = {x:TwoFileFolder(os.path.join(data_dir, x), meta_to_tensor_version=2, transform=data_transforms[x], downsample=downsample)
+image_datasets = {x:TwoFileFolder(os.path.join(data_dir, x), meta_to_tensor_version=2, transform=data_transforms[x], downsample=downsample if x=='train' else None)
                    for x in ['train', 'test']}
 #image_datasets = {x:datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
 #                  for x in ['train', 'test']}

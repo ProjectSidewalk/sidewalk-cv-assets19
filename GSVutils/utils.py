@@ -286,7 +286,7 @@ def make_single_crop(pano_id, sv_image_x, sv_image_y, PanoYawDeg, output_filebas
 
 	return
 
-def bulk_extract_crops(path_to_crop_csv, destination_dir):
+def bulk_extract_crops(path_to_crop_csv, destination_dir, path_to_gsv_scrapes=path_to_gsv_scrapes):
 	'''
 	takes a csv of rows:
 	Pano ID, SV_x, SV_y, Label, Photog Heading, Heading, Label ID 
