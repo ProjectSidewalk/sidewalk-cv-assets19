@@ -15,4 +15,10 @@ from GSVutils.utils import bulk_extract_crops
 
 # this to make old dataset
 #bulk_extract_crops('new_old_dataset_csvs/Val.csv', '/mnt/e/old_dataset/val/')
-bulk_extract_crops('new_old_dataset_csvs/Train.csv', '/mnt/e/old_dataset/train/')
+#bulk_extract_crops('new_old_dataset_csvs/Train.csv', '/mnt/e/old_dataset/train/')
+
+# this to make newberg centered dataset
+bulk_extract_crops('new_cities/newberg-labels-researchers.csv', '/mnt/e/newberg_center_crops_researchers/', '/mnt/e/scrapes_dump_newberg')
+bulk_extract_crops('new_cities/newberg-labels.csv', '/mnt/e/newberg_center_crops_all/', '/mnt/e/scrapes_dump_newberg')
+
+
