@@ -35,10 +35,9 @@ resume_training = False
 num_epochs=20
 
 # full ds is ~370k
-downsample_short = .5
-downsample=int(1000*downsample_short)
+downsample= None
 
-file_to_save_to='20ep_sw{}k_re18_2ff2.pt'.format(downsample_short)
+file_to_save_to='20ep_sw_re18_2ff2.pt'
 
 
 
@@ -60,7 +59,7 @@ data_transforms = {
 
 print("Building datasets...")
 
-image_datasets = {x:TwoFileFolder(os.path.join(data_dir, x), meta_to_tensor_version=2, transform=data_transforms[x], downsample=downsample if x=='train' else None)
+image_datasets = {x:TwoFileFolder(os.path.join(data_dir, x), meta_to_tensor_version=2, transform=data_transforms[x], downsample=downsample)
                    for x in ['train', 'test']}
 #image_datasets = {x:datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
 #                  for x in ['train', 'test']}
@@ -112,7 +111,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25, file_to_s
                 class_predicted = defaultdict(int)
 
             # Iterate over data.
-            for inputs, labels, _ in dataloaders[phase]:
+            for inputs, labels in dataloaders[phase]:
                 inputs = inputs.to(device)
                 labels = labels.to(device)
 
