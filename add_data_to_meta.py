@@ -80,4 +80,4 @@ def helper(input_dict):
 	return input_dict, err
 
 #add_metadata('/mnt/c/Users/gweld/sidewalk/sidewalk_ml/baby_ds', helper)
-add_metadata('/mnt/c/Users/gweld/sidewalk/sidewalk_ml/full_ds', helper, "/mnt/f/new_metadata_files")
+add_metadata('/mnt/e/new_old_dataset', helper, "/mnt/e/new_metadata_files_for_cc")

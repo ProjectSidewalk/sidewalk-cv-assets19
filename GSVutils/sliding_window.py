@@ -210,7 +210,7 @@ def sliding_window(pano, stride=100, bottom_space=1600, side_space=300, cor_thre
         x = side_space
 
 
-def make_sliding_window_crops(list_of_panos, dir_to_save_to):
+def make_sliding_window_crops(list_of_panos, dir_to_save_to, skip_existing_dirs=False):
     ''' take a text file containing a list of panos and add to dir'''
     panos_to_crop = set()
 
@@ -239,6 +239,9 @@ def make_sliding_window_crops(list_of_panos, dir_to_save_to):
             continue
 
         destination_folder = os.path.join(dir_to_save_to, pano_id)
+        if os.path.isdir(destination_folder) and skip_existing_dirs:
+            print "Skipping existing crops for pano {}".format(pano_id)
+            continue
         if not os.path.isdir(destination_folder):
             os.makedirs(destination_folder)
 
@@ -540,4 +543,4 @@ pred_file_name = model_name + ".csv"
 
 ground_truth_labels = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/ground_truth/ground_truth_labels.csv'
 ground_truth_panos = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/ground_truth/ground_truth_panos.txt'
-make_sliding_window_crops(ground_truth_panos, gt_dir)
+make_sliding_window_crops(ground_truth_panos, gt_dir, skip_existing_dirs=True)
