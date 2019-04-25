@@ -111,7 +111,7 @@ def train_model(model, criterion, optimizer, scheduler, num_epochs=25, file_to_s
                 class_predicted = defaultdict(int)
 
             # Iterate over data.
-            for inputs, labels in dataloaders[phase]:
+            for inputs, labels, _ in dataloaders[phase]:
                 inputs = inputs.to(device)
                 labels = labels.to(device)
 

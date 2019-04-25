@@ -13,7 +13,7 @@ import csv
 from collections import defaultdict
 
 from TwoFileFolder import TwoFileFolder
-from resnet_extended1 import extended_resnet18, extended_resnet34, extended_resnet50
+from resnet_extended2 import extended_resnet18 #extended_resnet34, extended_resnet50
 
 ################ IMPORTANT: READ BEFORE STARTING A RUN ################
 # Checklists:
@@ -27,16 +27,16 @@ from resnet_extended1 import extended_resnet18, extended_resnet34, extended_resn
 #######################################################################
 
 
-data_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/mini_ds/'
+#data_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/mini_ds/'
 #data_dir = '/home/gweld/sliding_window_dataset/'
-#data_dir  = '/home/gweld/centered_crops_subset_with_meta'
+data_dir  = '/home/gweld/centered_crops_subset_with_meta'
 
 
-model_basename  = '20e_slid_win_w_feats_r18'
+model_basename  = '20ep_new_old_re18_2'
 model_to_load ='models/{}.pt'.format(model_basename)
 ouput_path = '{}.csv'.format(model_basename)
 
-downsample = 100
+downsample = None
 
 
 
@@ -124,4 +124,4 @@ with open(ouput_path, 'w') as f:
         #print "{:<70} {:<20} {:<20}".format(shortpath, class_names[true], class_names[predicted])
         writer.writerow((shortpath, class_names[true], class_names[predicted]))
         counter += 1
-print "Wrote {} rows to {}".format(counter, ouput_path)
+print("Wrote {} rows to {}".format(counter, ouput_path))
