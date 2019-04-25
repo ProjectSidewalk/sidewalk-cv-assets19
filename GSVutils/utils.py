@@ -235,7 +235,7 @@ def predict_crop_size(x, y, im_width, im_height, path_to_depth_file):
 	return crop_size
 
 
-def make_single_crop(pano_id, sv_image_x, sv_image_y, PanoYawDeg, output_filebase):
+def make_single_crop(pano_id, sv_image_x, sv_image_y, PanoYawDeg, output_filebase, path_to_gsv_scrapes=path_to_gsv_scrapes):
 	img_filename  = output_filebase + '.jpg'
 	meta_filename = output_filebase + '.json'
 
@@ -293,6 +293,8 @@ def bulk_extract_crops(path_to_crop_csv, destination_dir, path_to_gsv_scrapes=pa
 	and get depth-proportioned crops around each features described by each row
 	writes each crop to a file in a directory within destination_dir named by that label
 	'''
+	missing_panos = set()
+
 	csv_file = open(path_to_crop_csv)
 	csv_f = csv.reader(csv_file)
 	counter = 0
@@ -329,7 +331,7 @@ def bulk_extract_crops(path_to_crop_csv, destination_dir, path_to_gsv_scrapes=pa
 
 			crop_destination = os.path.join(destination_dir, str(label_type), destination_basename)
 			try:
-				make_single_crop(pano_id, sv_image_x, sv_image_y, pano_yaw_deg, crop_destination)
+				make_single_crop(pano_id, sv_image_x, sv_image_y, pano_yaw_deg, crop_destination, path_to_gsv_scrapes)
 				print( "Successfully extracted crop to {}".format( destination_basename ) )
 				success += 1
 			except Exception as e:
@@ -339,11 +341,17 @@ def bulk_extract_crops(path_to_crop_csv, destination_dir, path_to_gsv_scrapes=pa
 		else:
 			no_pano_fail += 1
 			print( "Panorama image not found for {} at {}".format(pano_id, pano_img_path) )
+			missing_panos.add(pano_id)
 
 	print("Finished.")
 	print( str(no_pano_fail) + " extractions failed because panorama image was not found." )
 	print( str(crop_fail) + " extractions failed because metadata was not found." )
 	print( "{} crops extracted successfully.".format(success) )
+
+	with open('missing_panos.txt', 'w') as f:
+		for pano_id in missing_panos:
+			f.writelines(pano_id+'\n')
+	print "Wrote {} missing panos to {}".format(len(missing_panos), 'missing_panos.txt')
 
 
 def add_metadata(dir_containing_json_files, function_to_apply, write_files_to_seperate_dir=False, verbose=False):
