@@ -13,7 +13,7 @@ import csv
 from collections import defaultdict
 
 from TwoFileFolder import TwoFileFolder
-from resnet_extended1 import extended_resnet18, extended_resnet34, extended_resnet50
+from resnet_extended2 import extended_resnet18 #extended_resnet34, extended_resnet50
 
 ################ IMPORTANT: READ BEFORE STARTING A RUN ################
 # Checklists:
@@ -124,4 +124,4 @@ with open(ouput_path, 'w') as f:
         #print "{:<70} {:<20} {:<20}".format(shortpath, class_names[true], class_names[predicted])
         writer.writerow((shortpath, class_names[true], class_names[predicted]))
         counter += 1
-print "Wrote {} rows to {}".format(counter, ouput_path)
+print("Wrote {} rows to {}".format(counter, ouput_path))
