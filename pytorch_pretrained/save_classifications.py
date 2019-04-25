@@ -27,16 +27,16 @@ from resnet_extended1 import extended_resnet18, extended_resnet34, extended_resn
 #######################################################################
 
 
-data_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/mini_ds/'
+#data_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/mini_ds/'
 #data_dir = '/home/gweld/sliding_window_dataset/'
-#data_dir  = '/home/gweld/centered_crops_subset_with_meta'
+data_dir  = '/home/gweld/centered_crops_subset_with_meta'
 
 
-model_basename  = '20e_slid_win_w_feats_r18'
+model_basename  = '20ep_new_old_re18_2'
 model_to_load ='models/{}.pt'.format(model_basename)
 ouput_path = '{}.csv'.format(model_basename)
 
-downsample = 100
+downsample = None
 
 
 
