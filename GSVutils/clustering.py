@@ -121,6 +121,8 @@ def non_max_sup(predictions, radius=1.1, clip_val=None, ignore_ind=None):
         i.e. if null_crop is feature 4, set ignore_ind to 4 to
         ignore nulls
 
+        clip_val ignores points with strengths less than clip_val
+
         note that the clustered predictions returned by this function
         will have their predictions array converted to a single int prediction
     '''

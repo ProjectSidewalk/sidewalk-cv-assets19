@@ -17,6 +17,7 @@ from GSVutils.pano_feats import Pano as Pano
 from GSVutils.pano_feats import Feat as Feat
 from GSVutils.clustering import non_max_sup
 from GSVutils.precision_recall import precision_recall, partition_based_on_correctness
+from GSVutils.scoring import score
 
 import torchvision
 from torchvision import datasets, models, transforms
@@ -135,7 +136,7 @@ def get_and_write_batch_ground_truth(dir_containing_crops):
 
         print "\tFound {} ground truth labels.".format(len(gt))
         ground_truths[pano_id] = gt
-        sizess                 = sizes
+        sizess[pano_id]        = sizes
 
     write_batch_predictions_to_file(ground_truths,dir_containing_crops, 'ground_truth.csv')
     write_batch_predictions_to_file(sizess, dir_containing_crops, 'gt_sizes.csv')
@@ -320,7 +321,11 @@ def read_predictions_from_file(path):
             prediction = map(float, row[2:])
 
             # let this work for processed predictions, as well
-            if len(prediction) == 1: prediction = int(prediction[0])
+            if len(prediction) == 1:
+                try:
+                    prediction = int(prediction[0])
+                except ValueError:
+                    continue
 
             predictions["{},{}".format(x,y)] = prediction
     return predictions
@@ -435,18 +440,20 @@ def batch_visualize_preds(dir_containing_panos, outdir, predictions_file=None):
     return
 
 
-def batch_p_r(dir_containing_preds, clust_r, cor_r, clip_val=None, preds_filename='predictions.csv'):
+def batch_p_r(dir_containing_preds, clust_r, cor_r, preds_filename='predictions.csv'):
     """ Computes precision and recall given a directory containing subdirectories
         containg predictions and ground truth csvs
 
         clust_r sets the distance below which adjacent predictions will be clustered together
-        cor_r sets the 'correct' distance, a prediction within this distance of a 
-            ground truth  point will be considered correct
-        clip_val will ignore predictions with a strength less than this value
-    """
 
-    # sum_pr keeps track of the counts of [correct, predicted, actual]
-    sum_pr = np.zeros((4,3))
+        cor_r is a radius for correctness. This float is a fraction of the crop size,
+        eg: for a feature to be marked correct, it must be within r * crop_size (length of a single edge)
+    """
+    num_panos = 0
+
+    num_correct = defaultdict(int)
+    num_actual  = defaultdict(int)
+    num_pred    = defaultdict(int)
 
     for root, dirs, files in os.walk(dir_containing_preds):
 
@@ -456,71 +463,67 @@ def batch_p_r(dir_containing_preds, clust_r, cor_r, clip_val=None, preds_filenam
 
         pano_root = os.path.basename(root)
         print "Processing predictions for {}".format(pano_root)
-        p_file = os.path.join(root, preds_filename)
-        gt_file = os.path.join(root, 'ground_truth.csv') 
+        p_file     = os.path.join(root, preds_filename)
+        gt_file    = os.path.join(root, 'ground_truth.csv')
+        sizes_file = os.path.join(root, 'gt_sizes.csv')
 
         try:
             predictions = read_predictions_from_file(p_file)
-            gt = read_predictions_from_file(gt_file)
-
+            gt          = read_predictions_from_file(gt_file)
+            sizes       = read_predictions_from_file(sizes_file)
             print "\t Loaded {} predictions and {} true labels".format(len(predictions), len(gt))
 
-            # here predictions are still a dict of arrays
-            predictions = non_max_sup(predictions, radius=clust_r, clip_val=clip_val, ignore_ind=1)
-            # now predictions are ints
+            corrects, incorrects = score(predictions, gt, sizes, cor_r, clust_r)
+            # taking care of converting predictions to single int labels
+            predictions = {}
+            for d in (corrects, incorrects):
+                for coords, label in d.items():
+                    predictions[coords] =  label
 
-            # in here we need to map from pytorch class numbering to
-            # [ramp, no ramp, obstruction, sfc_prob] zero indexed
-            # ground truth is stored in DB using above encoding but 1-indexed
-            # this is compensted when loaded using get_ground_truth
-            for coord in predictions:
-                pytorch_label = predictions[coord]
-                label = label_from_int.index( pytorch_label_from_int[ pytorch_label ] )
-                predictions[coord] = label
+            # now we can compute the number of corrects, predicteds, and actual for each label
+            for d_to_add, d_to_iter in ((num_correct, corrects), (num_actual, gt), (num_pred, predictions)):
+                for _, label_int in d_to_iter.items():
+                    label_name = label_from_int[label_int]
+                    d_to_add[label_name] += 1
 
-            # now we can compute the correxts, predicteds, and actual
-            pr = precision_recall(predictions, gt, cor_r, N_classes=4)
-
-            # sum_pr keeps track of the counts of [correct, predicted, actual]
-            sum_pr += pr
-
+            num_panos += 1
         except IOError as e:
             print "\t Could not read predictions for {}, skipping.".format(pano_root)
-            
-    pr_dict = {}
-    total_cor    = 0
-    total_pred   = 0
-    total_actual = 0
-    for num, name in enumerate(label_from_int):
-        cor, pred, actual = sum_pr[num,:]
+    print('Scored predictions for {} panos.'.format(num_panos))
 
-        total_cor    += cor
-        total_pred   += pred
-        total_actual += actual
+    print("{:<20}{:^6} {:^6} {:^6}".format("Label", "cor", "pred", 'act'))
+    for label in num_actual:
+        correct   = int(num_correct[label])
+        predicted = int(num_pred[label])
+        actual    = int(num_actual[label])
+        print("{:20}{:6d} {:6d} {:6d}".format(label, correct, predicted, actual))
+    print("")
 
-        if pred > 0:
-            precision = 100 * float(cor)/pred
-        else: precision = float('nan')
 
-        if actual > 0:
-            recall = 100 * float(cor)/actual
-        else: recall = float('nan')
+    print("{:<20}{:^6}   {:^6} ".format("Label", "p", "r"))
+    for label in num_actual:
+        correct   = float(num_correct[label])
+        predicted = float(num_pred[label])
+        actual    = float(num_actual[label])
 
-        pr_dict[name] = (precision,recall)
+        p = 100 * (correct / predicted) if predicted >0 else float('nan')
+        r = 100 * (correct / actual)
 
-        print "{:15}\t{:5.2f}\t{:5.2f}".format(name, precision, recall)
+        print("{:20}{:6f}%  {:06.2f}%".format(label, p, r))
+    # let's do for overall
+    correct   = float(sum( num_correct.values() ) )
+    predicted = float(sum( num_pred.values()    ) )
+    actual    = float(sum( num_actual.values()  ) )
 
-    # calculate overall averages
-    if total_pred > 0:
-        precision = 100 * float(total_cor)/total_pred
-    else: precision = float('nan')
+    p = 100 * (correct / predicted) if predicted >0 else float('nan')
+    r = 100 * (correct / actual)
+    print("{:20}{:06.2f}%  {:06.2f}%".format("Overall", p, r))
 
-    if total_actual > 0:
-        recall = 100 * float(total_cor)/total_actual
-    else: recall = float('nan')
-    print "{:15}\t{:5.2f}\t{:5.2f}".format('Total', precision, recall)
 
-    return pr_dict
+
+
+
+
 
 
 simple_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/gt_crops_small/'
@@ -536,13 +539,13 @@ pred_file_name = model_name + ".csv"
 #write_batch_predictions_to_file(bps, gt_dir, pred_file_name)
 
 # get and write ground_truth
-#get_and_write_batch_ground_truth(simple_dir)
+#get_and_write_batch_ground_truth(gt_dir)
 
 # see if ground truth looks good
-batch_visualize_preds(simple_dir, '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/test/', pred_file_name)
+#batch_visualize_preds(simple_dir, '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/test/', pred_file_name)
 
 # let's try this out...
-#batch_p_r(big_dir, 150, 500, preds_filename=pred_file_name)
+batch_p_r(simple_dir, 150, 1.0, preds_filename=pred_file_name)
 
 
 # stuff for genrerating ground truth crops here
