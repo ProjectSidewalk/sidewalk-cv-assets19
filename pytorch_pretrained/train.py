@@ -27,18 +27,18 @@ from resnet_extended1 import extended_resnet18, extended_resnet34, extended_resn
 
 
 #data_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/full_ds/'
-data_dir = '/home/gweld/sliding_window_dataset/'
-#data_dir  = '/home/gweld/centered_crops_subset_with_meta'
+#data_dir = '/home/gweld/sliding_window_dataset/'
+data_dir  = '/home/gweld/centered_crops_subset_with_meta'
 
-resume_training = True
+resume_training = False
 if resume_training: print("Resuming Training")
 
-num_epochs=5
+num_epochs=20
 
 # full ds is ~370k
 downsample= None
 
-file_to_save_to='20ep_sw_re18_2ff2.pt'
+file_to_save_to='20ep_cc_re18_2ff2.pt'
 
 
 
