@@ -1,0 +1,74 @@
+Resuming Training
+Building datasets...
+Couldn't find meta /home/gweld/sliding_window_dataset/test/null_crop/GOsC5TmLimIFt6ss-nmv-wcrop2900.0,-1600.0.json
+Finished loading data. Discovered 5 classes:
+missing_ramp, null_crop, obstruction, ramp, sfc_problem
+
+Using dataloader that supplies 12 extra features.
+
+Beginning Training on 352650 train and 20307 test images.
+Epoch 0/4
+----------
+train Loss: 0.5225 Acc: 0.8201
+test Loss: 0.6359 Acc: 0.7899
+Class Precision and Recall on Test Data
+null_crop           075.48% 089.02%
+obstruction         084.25% 070.10%
+ramp                080.62% 091.81%
+missing_ramp        081.31% 047.99%
+sfc_problem         075.24% 048.29%
+Best model so far. Saving to 20ep_sw_re18_2ff2.pt
+
+
+Epoch 1/4
+----------
+train Loss: 0.5193 Acc: 0.8202
+test Loss: 0.6532 Acc: 0.7841
+Class Precision and Recall on Test Data
+null_crop           075.66% 088.38%
+obstruction         084.89% 064.77%
+ramp                079.29% 093.01%
+missing_ramp        079.27% 048.91%
+sfc_problem         074.25% 048.05%
+
+
+Epoch 2/4
+----------
+train Loss: 0.5160 Acc: 0.8218
+test Loss: 0.6429 Acc: 0.7900
+Class Precision and Recall on Test Data
+null_crop           075.32% 089.40%
+ramp                081.44% 091.73%
+obstruction         080.83% 074.27%
+missing_ramp        082.46% 043.58%
+sfc_problem         079.45% 045.17%
+Best model so far. Saving to 20ep_sw_re18_2ff2.pt
+
+
+Epoch 3/4
+----------
+train Loss: 0.5106 Acc: 0.8239
+test Loss: 0.6633 Acc: 0.7799
+Class Precision and Recall on Test Data
+missing_ramp        083.53% 042.74%
+ramp                079.78% 091.50%
+sfc_problem         077.63% 039.72%
+null_crop           073.52% 089.61%
+obstruction         083.37% 070.85%
+
+
+Epoch 4/4
+----------
+train Loss: 0.5090 Acc: 0.8251
+test Loss: 0.6344 Acc: 0.7899
+Class Precision and Recall on Test Data
+obstruction         082.45% 072.40%
+ramp                079.98% 090.95%
+missing_ramp        081.03% 049.41%
+null_crop           076.35% 088.54%
+sfc_problem         078.29% 046.34%
+
+
+
+Training complete in 651m 9s
+Best test Acc: 0.790023
