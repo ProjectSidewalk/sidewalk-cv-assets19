@@ -101,23 +101,23 @@ def meta_to_tensor2(meta_dict):
     features.append( meta_dict[u'crop size']/1000 )
     
     # pano yaw degree
-    features.append( np.sin(np.deg2rad(meta_dict[u'pano yaw'])) )
-    features.append( np.cos(np.deg2rad(meta_dict[u'pano yaw'])) )
+    features.append( np.sin(np.deg2rad(float(meta_dict[u'pano yaw']))) )
+    features.append( np.cos(np.deg2rad(float(meta_dict[u'pano yaw']))) )
     
     # sv_x converted to degree
-    horiz_degree = (meta_dict[u'sv_x'] / 13312) * 360
+    horiz_degree = (float(meta_dict[u'sv_x']) / 13312) * 360
     features.append( np.sin(np.deg2rad( horiz_degree )) )
     features.append( np.cos(np.deg2rad( horiz_degree )) )
     
     # sv_y converted to degree
-    vert_degree = (meta_dict[u'sv_y'] / 3328) * 360
+    vert_degree = (float(meta_dict[u'sv_y']) / 3328) * 360
     features.append( np.sin(np.deg2rad( vert_degree )) )
     features.append( np.cos(np.deg2rad( vert_degree )) )
 
     # dist to cbd
     # more hacky normalization
     try:
-        dist_to_cbd = meta_dict[u'dist to cbd']
+        dist_to_cbd = float(meta_dict[u'dist to cbd'])
     except KeyError as e:
         dist_to_cbd = 0.0
     if math.isnan(dist_to_cbd):
@@ -126,7 +126,7 @@ def meta_to_tensor2(meta_dict):
 
     # bearing to cbd broken into sin and cos
     try:
-        bearing_to_cbd = meta_dict[u'bearing to cbd']
+        bearing_to_cbd = float(meta_dict[u'bearing to cbd'])
     except KeyError as e:
         bearing_to_cbd = 0.0
     if math.isnan(bearing_to_cbd):
@@ -137,7 +137,7 @@ def meta_to_tensor2(meta_dict):
     # distance to intersection (feet)
     # more hacky normalization
     try:
-        dist_to_int = meta_dict[u'dist to intersection']
+        dist_to_int = float(meta_dict[u'dist to intersection'])
     except KeyError as e:
         dist_to_int = 0.0
     if math.isnan(dist_to_int):
@@ -146,7 +146,7 @@ def meta_to_tensor2(meta_dict):
 
     # block middleness normalized to [0,.5]
     try:
-        block_middleness = meta_dict[u'block middleness']
+        block_middleness = float(meta_dict[u'block middleness'])
     except KeyError as e:
         block_middleness = 0.0
     if math.isnan(block_middleness):

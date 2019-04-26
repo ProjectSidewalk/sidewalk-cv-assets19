@@ -80,4 +80,7 @@ def helper(input_dict):
 	return input_dict, err
 
 #add_metadata('/mnt/c/Users/gweld/sidewalk/sidewalk_ml/baby_ds', helper)
-add_metadata('/mnt/e/new_old_dataset', helper, "/mnt/e/new_metadata_files_for_cc")
+#add_metadata('/mnt/e/new_old_dataset', helper, "/mnt/e/new_metadata_files_for_cc")
+
+# let's do this for ground truth
+add_metadata('/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/ground_truth_crops', helper)
