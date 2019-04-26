@@ -30,7 +30,7 @@ from resnet_extended2 import extended_resnet18 #extended_resnet34, extended_resn
 #data_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/mini_ds/'
 #data_dir = '/home/gweld/sliding_window_dataset/'
 #data_dir  = '/home/gweld/centered_crops_subset_with_meta'
-data_dir  = '/home/gweld/newberg_centered_crops_researcher'
+data_dir  = '/home/gweld/seattle_center_crops_researchers'
 
 
 #model_basename  = '20ep_new_old_re18_2'
@@ -43,15 +43,15 @@ downsample = None
 # testing on a new city?
 testing_on_new_city = True
 
-cityname = 'newberg'
-#cityname = 'seattle'
+#cityname = 'newberg'
+cityname = 'seattle'
 
 
 
 
 if testing_on_new_city:
     ouput_path = cityname + '_' + ouput_path
-if not testing_on_new_city
+if not testing_on_new_city:
     data_dir = os.path.join(data_dir, 'test')
 
 
