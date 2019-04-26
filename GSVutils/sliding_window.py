@@ -35,8 +35,8 @@ label_from_int = ('Curb Cut', 'Missing Cut', 'Obstruction', 'Sfc Problem')
 pytorch_label_from_int = ('Missing Cut', "Null", 'Obstruction', "Curb Cut", "Sfc Problem")
 
 path_to_gsv_scrapes  = "/mnt/f/scrapes_dump/"
-pano_db_export = '/mnt/c/Users/gweld/sidewalk/minus_onboard.csv'
 #pano_db_export = '/mnt/c/Users/gweld/sidewalk/minus_onboard.csv'
+pano_db_export = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/ground_truth/ground_truth_labels.csv'
 
 
 
@@ -125,17 +125,20 @@ def predict_from_crops(dir_containing_crops, verbose=False):
 
 def get_and_write_batch_ground_truth(dir_containing_crops):
     ground_truths = {}
+    sizess        = {}
     for pano_id in os.listdir(dir_containing_crops):
         print "Getting ground truth for pano {}".format(pano_id)
         pano_xml_path   = os.path.join(path_to_gsv_scrapes, pano_id[:2], pano_id + ".xml")
         true_pano_yaw_deg = GSVutils.utils.extract_panoyawdeg(pano_xml_path)
 
-        gt = get_ground_truth(pano_id, true_pano_yaw_deg)
+        gt, sizes = get_ground_truth(pano_id, true_pano_yaw_deg)
 
         print "\tFound {} ground truth labels.".format(len(gt))
         ground_truths[pano_id] = gt
+        sizess                 = sizes
 
     write_batch_predictions_to_file(ground_truths,dir_containing_crops, 'ground_truth.csv')
+    write_batch_predictions_to_file(sizess, dir_containing_crops, 'gt_sizes.csv')
 
 
 def write_predictions_to_file(predictions, path):
@@ -269,8 +272,13 @@ def convert_to_sv_coords(x, y, pano_yaw_deg):
 
 
 def get_ground_truth(pano_id, true_pano_yaw_deg):
-    ''' returns dict of str coords mapped to int label '''
+    ''' returns dict of str coords mapped to int label, and
+        a dict of crop sizes for each gt label
+     '''
+    path_to_depth = os.path.join(path_to_gsv_scrapes, pano_id[:2], pano_id+'.depth.txt')
+
     labels = {}
+    sizes =  {}
     with open(pano_db_export, 'r') as csvfile:
         reader = csv.reader(csvfile)
 
@@ -283,14 +291,22 @@ def get_ground_truth(pano_id, true_pano_yaw_deg):
 
             pano_yaw_deg = 180 - photog_heading
 
-            x, y = convert_to_real_coords(x, y, pano_yaw_deg)
+            # I don't entirely know why this is needed, but it is
+            # my guess is to convert from viewer to photog yaw
+            x, y = convert_to_sv_coords_to_real_coords(x, y, pano_yaw_deg)
             x, y = convert_to_sv_coords(x, y, true_pano_yaw_deg)
+
+            try:
+                predicted_crop_size = GSVutils.utils.predict_crop_size(x, y, GSV_IMAGE_WIDTH, GSV_IMAGE_HEIGHT, path_to_depth)
+            except (ValueError, IndexError) as e:
+                predicted_crop_size = GSVutils.utils.predict_crop_size_by_position(x, y, GSV_IMAGE_WIDTH, GSV_IMAGE_HEIGHT)
 
             # ignore other labels 
             if label not in range(4): continue
 
             labels["{},{}".format(x,y)] = label
-    return labels
+            sizes["{},{}".format(x,y)]  = predicted_crop_size
+    return labels, sizes
 
 
 def read_predictions_from_file(path):
@@ -379,7 +395,7 @@ def show_predictions_on_image(pano_root, predictions, out_img, ground_truth=True
 
     
     if ground_truth:
-        gt = get_ground_truth(os.path.split(pano_root)[1], pano_yaw_deg)
+        gt, _ = get_ground_truth(os.path.split(pano_root)[1], pano_yaw_deg)
         for coord in gt: # convert to string labels
             gt[coord] = label_from_int[gt[coord]]
         true = annotate_batch(gt, true_color)
@@ -397,13 +413,16 @@ def show_predictions_on_image(pano_root, predictions, out_img, ground_truth=True
     return
 
 
-def batch_visualize_preds(dir_containing_panos, outdir, predictions_file):
+def batch_visualize_preds(dir_containing_panos, outdir, predictions_file=None):
     count = 0
     for pano_id in os.listdir(dir_containing_panos):
         print "Annotating {}".format(pano_id)
-        predictions_file = os.path.join(dir_containing_panos, pano_id, predictions_file)
-        predictions = read_predictions_from_file(predictions_file)
-        predictions = non_max_sup(predictions, radius=200, clip_val=None, ignore_ind=1)
+        if predictions_file is not None:
+            predictions_file = os.path.join(dir_containing_panos, pano_id, predictions_file)
+            predictions = read_predictions_from_file(predictions_file)
+            predictions = non_max_sup(predictions, radius=200, clip_val=None, ignore_ind=1)
+        else:
+            predictions = {}
 
         outfile = os.path.join(outdir, pano_id+'.jpg')
 
@@ -504,8 +523,8 @@ def batch_p_r(dir_containing_preds, clust_r, cor_r, clip_val=None, preds_filenam
     return pr_dict
 
 
-simple_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/tiny_slid_win_crops/'
-big_dir    = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/new_sliding_window_crops/'
+simple_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/gt_crops_small/'
+#big_dir    = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/new_sliding_window_crops/'
 gt_dir     = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/ground_truth_crops/'
 
 pred_file_name = model_name + ".csv"
@@ -513,14 +532,14 @@ pred_file_name = model_name + ".csv"
 
 
 # get and write predictions
-bps = predict_from_crops(gt_dir, verbose=True)
-write_batch_predictions_to_file(bps, gt_dir, pred_file_name)
+#bps = predict_from_crops(gt_dir, verbose=True)
+#write_batch_predictions_to_file(bps, gt_dir, pred_file_name)
 
 # get and write ground_truth
-# get_and_write_batch_ground_truth(big_dir)
+#get_and_write_batch_ground_truth(simple_dir)
 
 # see if ground truth looks good
-#batch_visualize_preds(big_dir, '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/test/')
+batch_visualize_preds(simple_dir, '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/test/', pred_file_name)
 
 # let's try this out...
 #batch_p_r(big_dir, 150, 500, preds_filename=pred_file_name)
