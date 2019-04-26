@@ -29,16 +29,30 @@ from resnet_extended2 import extended_resnet18 #extended_resnet34, extended_resn
 
 #data_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/mini_ds/'
 #data_dir = '/home/gweld/sliding_window_dataset/'
-data_dir  = '/home/gweld/centered_crops_subset_with_meta'
+#data_dir  = '/home/gweld/centered_crops_subset_with_meta'
+data_dir  = '/home/gweld/newberg_centered_crops_researcher'
 
 
-model_basename  = '20ep_new_old_re18_2'
+#model_basename  = '20ep_new_old_re18_2'
+model_basename   = '20ep_new_old_re18_2'
 model_to_load ='models/{}.pt'.format(model_basename)
 ouput_path = '{}.csv'.format(model_basename)
 
 downsample = None
 
+# testing on a new city?
+testing_on_new_city = True
 
+cityname = 'newberg'
+#cityname = 'seattle'
+
+
+
+
+if testing_on_new_city:
+    ouput_path = cityname + '_' + ouput_path
+if not testing_on_new_city
+    data_dir = os.path.join(data_dir, 'test')
 
 
 
@@ -51,7 +65,7 @@ data_transform = transforms.Compose([
 
 print("Building datasets...")
 
-image_dataset = TwoFileFolder(os.path.join(data_dir, 'test'), meta_to_tensor_version=1, transform=data_transform, downsample=downsample)
+image_dataset = TwoFileFolder(data_dir, meta_to_tensor_version=1, transform=data_transform, downsample=downsample)
 #image_datasets = {x:datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
 #                  for x in ['train', 'test']}
 
@@ -71,7 +85,7 @@ print("Using dataloader that supplies {} extra features.".format(len_ex_feats))
 print("")
 
 # build model
-model_ft = extended_resnet18(False, num_classes=len(class_names), len_ex_feats=len_ex_feats)
+model_ft = extended_resnet18(False, num_classes=5, len_ex_feats=len_ex_feats)
 try:
     model_ft.load_state_dict(torch.load(model_to_load))
 except RuntimeError as e:
