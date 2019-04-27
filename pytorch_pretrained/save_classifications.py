@@ -13,7 +13,7 @@ import csv
 from collections import defaultdict
 
 from TwoFileFolder import TwoFileFolder
-from resnet_extended2 import extended_resnet18 #extended_resnet34, extended_resnet50
+from resnet_extended import extended_resnet18 #extended_resnet34, extended_resnet50
 
 ################ IMPORTANT: READ BEFORE STARTING A RUN ################
 # Checklists:
@@ -35,7 +35,7 @@ data_dir = '/home/gweld/ground_truth_cc_dataset'
 
 
 #model_basename  = '20ep_new_old_re18_2'
-model_basename   = '20ep_new_old_re18_2'
+model_basename   = '20ep_cc_re18_2_2ff2'
 model_to_load ='models/{}.pt'.format(model_basename)
 ouput_path = '{}.csv'.format(model_basename)
 
