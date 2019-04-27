@@ -12,7 +12,7 @@ import copy
 from collections import defaultdict
 
 from TwoFileFolder import TwoFileFolder
-from resnet_extended2 import extended_resnet18, extended_resnet34, extended_resnet50
+from resnet_extended2 import extended_resnet18
 
 ################ IMPORTANT: READ BEFORE STARTING A RUN ################
 # Checklists:
@@ -33,15 +33,15 @@ data_dir  = '/home/gweld/newberg_cc_researchers_partitioned'
 
 
 
-num_epochs=5
+num_epochs=20
 
 # full ds is ~370k
 downsample= None
 
-file_to_save_to='newberg_20ep_cc_re18_2_2ff1.pt'
+file_to_save_to='newberg_pt_20ep_cc_re18_2_2ff1.pt'
 file_to_load_from='models/20ep_new_old_re18_2.pt' # leave none to use save path
 
-resume_training = False
+resume_training =True
 if resume_training: print("Resuming Training")
 
 
@@ -196,7 +196,11 @@ if not resume_training:
 
 if resume_training:
     model_ft = extended_resnet18(False, num_classes=len(class_names), len_ex_feats=len_ex_feats)
-    model_ft.load_state_dict(torch.load(file_to_save_to))
+    if file_to_load_from is None:
+        model_ft.load_state_dict(torch.load(file_to_save_to))
+    else:
+        model_ft.load_state_dict(torch.load(file_to_load_from))
+
 
 
 model_ft = model_ft.to(device)
