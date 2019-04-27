@@ -12,7 +12,7 @@ import copy
 from collections import defaultdict
 
 from TwoFileFolder import TwoFileFolder
-from resnet_extended1 import extended_resnet18, extended_resnet34, extended_resnet50
+from resnet_extended2 import extended_resnet18, extended_resnet34, extended_resnet50
 
 ################ IMPORTANT: READ BEFORE STARTING A RUN ################
 # Checklists:
@@ -31,16 +31,18 @@ from resnet_extended1 import extended_resnet18, extended_resnet34, extended_resn
 #data_dir  = '/home/gweld/centered_crops_subset_with_meta'
 data_dir  = '/home/gweld/newberg_cc_researchers_partitioned'
 
-resume_training = False
-if resume_training: print("Resuming Training")
+
 
 num_epochs=5
 
 # full ds is ~370k
 downsample= None
 
-file_to_save_to='newberg_20ep_cc_re18_2ff1.pt'
+file_to_save_to='newberg_20ep_cc_re18_2_2ff1.pt'
+file_to_load_from='models/20ep_new_old_re18_2.pt' # leave none to use save path
 
+resume_training = False
+if resume_training: print("Resuming Training")
 
 
 
