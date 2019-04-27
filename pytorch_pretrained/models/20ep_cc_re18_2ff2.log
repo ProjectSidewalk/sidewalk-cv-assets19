@@ -1,0 +1,74 @@
+Resuming Training
+Building datasets...
+Finished loading data. Discovered 5 classes:
+missing_ramp, null, obstruction, ramp, sfc_problem
+
+Using dataloader that supplies 12 extra features.
+
+Beginning Training on 165315 train and 20461 test images.
+Epoch 0/4
+----------
+train Loss: 0.4101 Acc: 0.8645
+test Loss: 0.3465 Acc: 0.8907
+Class Precision and Recall on Test Data
+ramp                092.85% 096.15%
+obstruction         081.67% 080.14%
+sfc_problem         066.71% 059.34%
+null                088.70% 086.92%
+missing_ramp        074.25% 060.52%
+Best model so far. Saving to 20ep_cc_re18_2ff2.pt
+
+
+Epoch 1/4
+----------
+train Loss: 0.4059 Acc: 0.8651
+test Loss: 0.3643 Acc: 0.8885
+Class Precision and Recall on Test Data
+obstruction         081.62% 078.44%
+ramp                093.09% 095.78%
+missing_ramp        069.98% 063.91%
+sfc_problem         069.33% 056.38%
+null                087.99% 087.55%
+
+
+Epoch 2/4
+----------
+train Loss: 0.4041 Acc: 0.8657
+test Loss: 0.4304 Acc: 0.8685
+Class Precision and Recall on Test Data
+ramp                093.75% 092.28%
+missing_ramp        056.97% 067.11%
+obstruction         080.07% 080.92%
+null                081.18% 088.43%
+sfc_problem         071.64% 054.10%
+
+
+Epoch 3/4
+----------
+train Loss: 0.4003 Acc: 0.8668
+test Loss: 0.3509 Acc: 0.8912
+Class Precision and Recall on Test Data
+ramp                093.72% 095.41%
+null                088.85% 087.17%
+sfc_problem         068.79% 060.25%
+obstruction         082.87% 080.09%
+missing_ramp        068.33% 066.04%
+Best model so far. Saving to 20ep_cc_re18_2ff2.pt
+
+
+Epoch 4/4
+----------
+train Loss: 0.3977 Acc: 0.8685
+test Loss: 0.3434 Acc: 0.8930
+Class Precision and Recall on Test Data
+ramp                093.26% 096.07%
+obstruction         083.44% 078.58%
+missing_ramp        071.33% 065.43%
+null                089.65% 086.04%
+sfc_problem         068.91% 059.57%
+Best model so far. Saving to 20ep_cc_re18_2ff2.pt
+
+
+
+Training complete in 442m 32s
+Best test Acc: 0.892967

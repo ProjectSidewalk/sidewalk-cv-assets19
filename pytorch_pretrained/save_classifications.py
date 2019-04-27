@@ -30,7 +30,8 @@ from resnet_extended2 import extended_resnet18 #extended_resnet34, extended_resn
 #data_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/mini_ds/'
 #data_dir = '/home/gweld/sliding_window_dataset/'
 #data_dir  = '/home/gweld/centered_crops_subset_with_meta'
-data_dir  = '/home/gweld/seattle_center_crops_researchers'
+#data_dir  = '/home/gweld/seattle_center_crops_researchers'
+data_dir = '/home/gweld/ground_truth_cc_dataset'
 
 
 #model_basename  = '20ep_new_old_re18_2'
@@ -44,7 +45,7 @@ downsample = None
 testing_on_new_city = True
 
 #cityname = 'newberg'
-cityname = 'seattle'
+cityname = 'gt'
 
 
 
@@ -65,7 +66,7 @@ data_transform = transforms.Compose([
 
 print("Building datasets...")
 
-image_dataset = TwoFileFolder(data_dir, meta_to_tensor_version=1, transform=data_transform, downsample=downsample)
+image_dataset = TwoFileFolder(data_dir, meta_to_tensor_version=2, transform=data_transform, downsample=downsample)
 #image_datasets = {x:datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
 #                  for x in ['train', 'test']}
 

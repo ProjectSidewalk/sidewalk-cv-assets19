@@ -30,10 +30,10 @@ from resnet_extended1 import extended_resnet18, extended_resnet34, extended_resn
 #data_dir = '/home/gweld/sliding_window_dataset/'
 data_dir  = '/home/gweld/centered_crops_subset_with_meta'
 
-resume_training = False
+resume_training = True
 if resume_training: print("Resuming Training")
 
-num_epochs=20
+num_epochs=5
 
 # full ds is ~370k
 downsample= None
