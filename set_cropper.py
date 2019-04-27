@@ -5,6 +5,7 @@
 # Pano ID, SV_x, SV_y, Label, Photog Heading, Heading, Label ID 
 
 from GSVutils.utils import bulk_extract_crops
+import os
 
 
 # use this to make new sliding window crops for analysis
@@ -25,5 +26,13 @@ from GSVutils.utils import bulk_extract_crops
 # use this to make seattle centered dataset
 #bulk_extract_crops('new_cities/seattle-labels-researchers.csv', '/mnt/g/seattle_center_crops_researchers/', '/mnt/g/scrapes_dump_seattle')
 #bulk_extract_crops('new_cities/seattle-labels.csv', '/mnt/e/seattle_center_crops_all/', '/mnt/e/scrapes_dump_seattle')
-bulk_extract_crops('new_cities/seattle-labels-null.csv', '/mnt/g/seattle_center_crops_researchers/', '/mnt/g/scrapes_dump_seattle')
+#bulk_extract_crops('new_cities/seattle-labels-null.csv', '/mnt/g/seattle_center_crops_researchers/', '/mnt/g/scrapes_dump_seattle')
+if not os.path.isdir('/mnt/g/seattle_debug/'):
+	os.mkdir('/mnt/g/seattle_debug/')
+bulk_extract_crops('new_cities/seattle-labels-debug.csv', '/mnt/g/seattle_debug/', '/mnt/g/scrapes_dump_seattle')
+
+
+# use this to make ground truth centered crops dataset
+#bulk_extract_crops('ground_truth/ground_truth_labels.csv', '/mnt/g/ground_truth_cc_dataset/')
+#bulk_extract_crops('ground_truth/ground_truth_labels-null.csv', '/mnt/g/ground_truth_cc_dataset/')
 

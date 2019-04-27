@@ -2,6 +2,7 @@
 # Use this to add metadata to existing sidecars
 
 import sys
+import os
 label_intersection_dir = '/mnt/c/Users/gweld/sidewalk/label-intersection-proximity'
 sys.path.append( label_intersection_dir )
 from intersection_proximity import compute_proximity
@@ -83,4 +84,7 @@ def helper(input_dict):
 #add_metadata('/mnt/e/new_old_dataset', helper, "/mnt/e/new_metadata_files_for_cc")
 
 # let's do this for ground truth
-add_metadata('/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/ground_truth_crops', helper)
+#add_metadata('/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/ground_truth_crops', helper)
+if not os.path.isdir('/mnt/g/ground_truth_cc_dataset/updated_meta'):
+	os.mkdir('/mnt/g/ground_truth_cc_dataset/updated_meta')
+add_metadata('/mnt/g/ground_truth_cc_dataset', helper)
