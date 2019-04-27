@@ -440,7 +440,7 @@ def batch_visualize_preds(dir_containing_panos, outdir, predictions_file=None):
     return
 
 
-def batch_p_r(dir_containing_preds, clust_r, cor_r, preds_filename='predictions.csv'):
+def batch_p_r(dir_containing_preds, clust_r, cor_r, dynamic_r=True, clip_val=None, preds_filename='predictions.csv'):
     """ Computes precision and recall given a directory containing subdirectories
         containg predictions and ground truth csvs
 
@@ -473,7 +473,7 @@ def batch_p_r(dir_containing_preds, clust_r, cor_r, preds_filename='predictions.
             sizes       = read_predictions_from_file(sizes_file)
             print "\t Loaded {} predictions and {} true labels".format(len(predictions), len(gt))
 
-            corrects, incorrects = score(predictions, gt, sizes, cor_r, clust_r)
+            corrects, incorrects, _, _ = score(predictions, gt, sizes, cor_r, clust_r, dynamic_r=dynamic_r, clip_val=clip_val)
             # taking care of converting predictions to single int labels
             predictions = {}
             for d in (corrects, incorrects):
@@ -509,7 +509,7 @@ def batch_p_r(dir_containing_preds, clust_r, cor_r, preds_filename='predictions.
         p = 100 * (correct / predicted) if predicted >0 else float('nan')
         r = 100 * (correct / actual)
 
-        print("{:20}{:6f}%  {:06.2f}%".format(label, p, r))
+        print("{:20}{:6.2f}%  {:06.2f}%".format(label, p, r))
     # let's do for overall
     correct   = float(sum( num_correct.values() ) )
     predicted = float(sum( num_pred.values()    ) )
@@ -545,7 +545,7 @@ pred_file_name = model_name + ".csv"
 #batch_visualize_preds(simple_dir, '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/test/', pred_file_name)
 
 # let's try this out...
-batch_p_r(simple_dir, 150, 1.0, preds_filename=pred_file_name)
+batch_p_r(gt_dir, 150, 1.0, clip_val = 5.0, preds_filename=pred_file_name)
 
 
 # stuff for genrerating ground truth crops here
