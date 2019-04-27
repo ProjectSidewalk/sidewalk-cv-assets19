@@ -20,6 +20,10 @@ def count_blacks(dir_to_scan=dir_to_scan):
 	for root, dirs, files in os.walk(dir_to_scan):
 		_, folder = os.path.split(root)
 		print "Starting on {}".format(folder)
+		print "Currently at {} files. Found {} black.".format(total, black)
+		if total >0:
+			print "{}% black.".format(100*(float(black)/total))
+
 
 		for f in files:
 			_, ext = os.path.splitext(f)
