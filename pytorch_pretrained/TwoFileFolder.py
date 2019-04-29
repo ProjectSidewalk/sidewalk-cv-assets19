@@ -187,6 +187,8 @@ class TwoFileFolder(data.Dataset):
         target_transform (callable, optional): A function/transform that takes
             in the target and transforms it.
         downsample: randomly downsample the the dataset to the provided size
+        second_root is used to make a singele dataset from two roots. classes must match
+        identically
      Attributes:
         classes (list): List of the class names.
         class_to_idx (dict): Dict with items (class_name, class_index).
@@ -194,9 +196,23 @@ class TwoFileFolder(data.Dataset):
         targets (list): The class_index value for each image in the dataset
     """
 
-    def __init__(self, root, meta_to_tensor_version, transform=None, target_transform=None, downsample=None):
+    def __init__(self, root, meta_to_tensor_version, transform=None, target_transform=None, downsample=None, second_root=None):
         classes, class_to_idx = self._find_classes(root)
         samples = make_dataset(root, class_to_idx)
+
+        if second_root is not None:
+            print('Computing second dataset directory {}'.format(second_root))
+            snd_clss, snd_2_idx = self._find_classes(second_root)
+            assert snd_clss == classes
+
+            snd_samples = make_dataset(second_root, class_to_idx)
+
+            print('Found {} additional images.'.format(len(snd_samples)))
+
+            samples += snd_samples
+
+
+
         if len(samples) == 0:
             raise(RuntimeError("Found 0 files in subfolders of: " + root + "\n"
                                "Supported extensions are: " + ",".join( ('.jpg', '.json') )))
@@ -238,6 +254,7 @@ class TwoFileFolder(data.Dataset):
         else:
             classes = [d for d in os.listdir(dir) if os.path.isdir(os.path.join(dir, d))]
         classes.sort()
+        classes = tuple(classes)
         class_to_idx = {classes[i]: i for i in range(len(classes))}
         return classes, class_to_idx
 
