@@ -1,0 +1,39 @@
+Starting processing /mnt/f/crops_for_esther_galen/all_sidewalk
+Starting on all_sidewalk
+Currently at 0 files. Found 0 black.
+Starting on train
+Currently at 0 files. Found 0 black.
+Starting on not_ramp
+Currently at 0 files. Found 0 black.
+Starting on null
+Currently at 15281 files. Found 0 black.
+0.0% black.
+Starting on obstruction
+Currently at 21338 files. Found 0 black.
+0.0% black.
+Starting on ramp
+Currently at 38666 files. Found 0 black.
+0.0% black.
+Starting on sfc_prob
+Currently at 154272 files. Found 5 black.
+0.00324102883219% black.
+Starting on val
+Currently at 161040 files. Found 5 black.
+0.00310481867859% black.
+Starting on not_ramp
+Currently at 161040 files. Found 5 black.
+0.00310481867859% black.
+Starting on null
+Currently at 164861 files. Found 5 black.
+0.00303285798339% black.
+Starting on obstruction
+Currently at 166376 files. Found 5 black.
+0.00300524114055% black.
+Starting on ramp
+Currently at 170709 files. Found 5 black.
+0.00292896098038% black.
+Starting on sfc_prob
+Currently at 199611 files. Found 5 black.
+0.00250487197599% black.
+Checked 201303 files. Found 5 black.
+0.00248381792621% black.

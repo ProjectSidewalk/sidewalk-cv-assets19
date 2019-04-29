@@ -17,6 +17,7 @@ def count_blacks(dir_to_scan=dir_to_scan):
 	''' counts the number of total and black images in dir_to_scan and subfolders'''
 	total = 0
 	black = 0
+	print "Starting processing {}".format(dir_to_scan)
 	for root, dirs, files in os.walk(dir_to_scan):
 		_, folder = os.path.split(root)
 		print "Starting on {}".format(folder)
