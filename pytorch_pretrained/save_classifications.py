@@ -31,18 +31,18 @@ from resnet_extended1 import extended_resnet18 #extended_resnet34, extended_resn
 #data_dir = '/home/gweld/sliding_window_dataset/'
 #data_dir  = '/home/gweld/centered_crops_subset_with_meta'
 #data_dir  = '/home/gweld/seattle_center_crops_researchers'
-data_dir = '/home/gweld/ground_truth_cc_dataset'
+data_dir = '/home/gweld/newberg_cc_researchers_partitioned'
 
 
-#model_basename  = '20ep_new_old_re18_2'
-model_basename   = '20ep_cc_re18_2ff2'
+model_basename  = 'nbcc_dccc_20ep_re18_2ff1'
+#model_basename   = '20ep_cc_re18_2ff2'
 model_to_load ='models/{}.pt'.format(model_basename)
 ouput_path = '{}.csv'.format(model_basename)
 
 downsample = None
 
 # testing on a new city?
-testing_on_new_city = True
+testing_on_new_city = False
 
 #cityname = 'newberg'
 cityname = 'gt'
@@ -66,7 +66,7 @@ data_transform = transforms.Compose([
 
 print("Building datasets...")
 
-image_dataset = TwoFileFolder(data_dir, meta_to_tensor_version=2, transform=data_transform, downsample=downsample)
+image_dataset = TwoFileFolder(data_dir, meta_to_tensor_version=1, transform=data_transform, downsample=downsample)
 #image_datasets = {x:datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
 #                  for x in ['train', 'test']}
 
