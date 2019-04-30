@@ -16,8 +16,13 @@ from math import sin, cos, atan2, radians, degrees, sqrt
 dc_lat, dc_lng = 38.8977, -77.0366
 # this is the middle of the White House
 
+# DEFINE THE CENTER OF NEWBERG HERE
+nb_lat, nb_lng = 45.3003, -122.9755
 
-def calc_bearing_and_distance_between_points(lat1, lng1, lat2=dc_lat, lng2=dc_lng):
+center = (nb_lat, nb_lng)
+
+
+def calc_bearing_and_distance_between_points(lat1, lng1, lat2=center[0], lng2=center[1]):
 	''' returns a tuple of the bearing and distance between
 		two latitude and longitude points'''
 	lat1 = radians(lat1)
@@ -53,8 +58,9 @@ def helper(input_dict):
 	err = False
 
 	try:
-		lat, lng = extract_pano_lat_lng(pano_id)
-	except:
+		lat, lng = extract_pano_lat_lng(pano_id, '/mnt/g/scrapes_dump_newberg')
+	except Exception as e:
+		print(e)
 		lat = float('nan')
 		lng = float('nan')
 		err = True
@@ -63,7 +69,8 @@ def helper(input_dict):
 
 	try:
 		distance, middleness = compute_proximity(lat, lng)
-	except:
+	except Exception as e:
+		print(e)
 		distance   = float('nan')
 		middleness = float('nan')
 		err = True
@@ -72,7 +79,8 @@ def helper(input_dict):
 
 	try:
 		bearing, distance = calc_bearing_and_distance_between_points(lat, lng)
-	except:
+	except Exception as e:
+		print(e)
 		bearing  = float('nan')
 		distance = float('nan')
 		err = True
@@ -85,6 +93,6 @@ def helper(input_dict):
 
 # let's do this for ground truth
 #add_metadata('/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/ground_truth_crops', helper)
-if not os.path.isdir('/mnt/g/ground_truth_cc_dataset/updated_meta'):
-	os.mkdir('/mnt/g/ground_truth_cc_dataset/updated_meta')
-add_metadata('/mnt/g/ground_truth_cc_dataset', helper)
+if not os.path.isdir('/mnt/g/newberg_new_cc_meta/partitioned/'):
+	os.mkdir('/mnt/g/newberg_new_cc_meta/partitioned/')
+add_metadata('/mnt/g/newberg_cc_researchers_partitioned', helper, '/mnt/g/newberg_new_cc_meta/partitioned')

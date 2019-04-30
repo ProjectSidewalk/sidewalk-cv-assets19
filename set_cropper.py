@@ -24,12 +24,10 @@ import os
 #bulk_extract_crops('new_cities/newberg-labels-null.csv', '/mnt/g/newberg_center_crops_researchers/', '/mnt/g/scrapes_dump_newberg')
 
 # use this to make seattle centered dataset
-#bulk_extract_crops('new_cities/seattle-labels-researchers.csv', '/mnt/g/seattle_center_crops_researchers/', '/mnt/g/scrapes_dump_seattle')
+bulk_extract_crops('new_cities/seattle-labels-researchers.csv', '/mnt/g/seattle_center_crops_researchers/', '/mnt/g/scrapes_dump_seattle')
 #bulk_extract_crops('new_cities/seattle-labels.csv', '/mnt/e/seattle_center_crops_all/', '/mnt/e/scrapes_dump_seattle')
 #bulk_extract_crops('new_cities/seattle-labels-null.csv', '/mnt/g/seattle_center_crops_researchers/', '/mnt/g/scrapes_dump_seattle')
-if not os.path.isdir('/mnt/g/seattle_debug/'):
-	os.mkdir('/mnt/g/seattle_debug/')
-bulk_extract_crops('new_cities/seattle-labels-debug.csv', '/mnt/g/seattle_debug/', '/mnt/g/scrapes_dump_seattle')
+
 
 
 # use this to make ground truth centered crops dataset

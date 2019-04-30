@@ -15,6 +15,10 @@ except ImportError as e:
 GSV_IMAGE_WIDTH  = 13312
 GSV_IMAGE_HEIGHT = 6656
 
+#special values for Seattle scrapes:
+#GSV_IMAGE_WIDTH  = 16384
+#GSV_IMAGE_HEIGHT = 8192
+
 label_from_int   = ('Curb Cut', 'Missing Cut', 'Obstruction', 'Sfc Problem')
 
 path_to_gsv_scrapes = "/mnt/f/scrapes_dump/"
@@ -83,7 +87,7 @@ def extract_panoyawdeg(path_to_metadata_xml):
 
 	return pano['projection_properties']['pano_yaw_deg']
 
-def extract_pano_lat_lng(pano_id):
+def extract_pano_lat_lng(pano_id, path_to_gsv_scrapes=path_to_gsv_scrapes):
 	''' given a pano_id, looks up that pano's meta from scrapes
 		returns a tuple of that pano's lat and long '''
 	metapath = os.path.join(path_to_gsv_scrapes, pano_id[:2], pano_id + ".xml")
