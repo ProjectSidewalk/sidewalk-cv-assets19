@@ -34,7 +34,7 @@ from resnet_extended1 import extended_resnet18 #extended_resnet34, extended_resn
 data_dir = '/home/gweld/newberg_cc_researchers_partitioned'
 
 
-model_basename  = 'nbcc_dccc_20ep_re18_2ff1'
+model_basename  = '20ep_cc_re18_2ff2'
 #model_basename   = '20ep_cc_re18_2ff2'
 model_to_load ='models/{}.pt'.format(model_basename)
 ouput_path = '{}.csv'.format(model_basename)
@@ -42,10 +42,9 @@ ouput_path = '{}.csv'.format(model_basename)
 downsample = None
 
 # testing on a new city?
-testing_on_new_city = False
+testing_on_new_city = True
 
-#cityname = 'newberg'
-cityname = 'gt'
+cityname = 'newberg'
 
 
 
