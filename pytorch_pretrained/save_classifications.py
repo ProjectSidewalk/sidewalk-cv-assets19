@@ -31,8 +31,8 @@ from resnet_extended1 import extended_resnet18 #extended_resnet34, extended_resn
 #data_dir = '/home/gweld/sliding_window_dataset/'
 #data_dir  = '/home/gweld/centered_crops_subset_with_meta'
 #data_dir  = '/home/gweld/seattle_center_crops_researchers'
-#data_dir = '/home/gweld/newberg_cc_researchers_partitioned'
-data_dir = '/home/gweld/newberg_center_crops_researchers'
+data_dir = '/home/gweld/newberg_cc_researchers_partitioned/test'
+#data_dir = '/home/gweld/newberg_center_crops_researchers'
 
 
 model_basename  = '20ep_cc_re18_2ff2'
