@@ -38,10 +38,10 @@ num_epochs=20
 # full ds is ~370k
 downsample= None
 
-file_to_save_to='nb_20ep_re18_2ff2.pt'
-file_to_load_from='models/20ep_new_old_re18_2.pt' # leave none to use save path
+file_to_save_to='nb_pt_20ep_re18_2ff2.pt'
+file_to_load_from='models/20ep_cc_re18_2ff2.pt' # leave none to use save path
 
-resume_training =False
+resume_training =True
 if resume_training: print("Resuming Training")
 
 
@@ -63,7 +63,7 @@ data_transforms = {
 
 print("Building datasets...")
 
-image_datasets = {x:TwoFileFolder(os.path.join(data_dir, x), meta_to_tensor_version=2, transform=data_transforms[x], downsample=downsample, second_root=os.path.join(nb_dir, x))
+image_datasets = {x:TwoFileFolder(os.path.join(data_dir, x), meta_to_tensor_version=2, transform=data_transforms[x], downsample=downsample)
                    for x in ['train', 'test']}
 #image_datasets = {x:datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
 #                  for x in ['train', 'test']}
