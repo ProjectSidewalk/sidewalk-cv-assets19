@@ -4,6 +4,7 @@ from collections import defaultdict
 import sys
 import os
 import csv
+import shutil
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append( os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'pytorch_pretrained') )
 
@@ -448,6 +449,24 @@ def batch_visualize_preds(dir_containing_panos, outdir, clust_r, cor_r, dynamic_
     return
 
 
+def fetch_unlabeled_panos(dir_containing_panos, outdir):
+    ''' simply copy panos from the scrapes folder to outdir '''
+    count = 0
+    for pano_id in os.listdir(dir_containing_panos):
+        print "Getting {}".format(pano_id)
+
+        panofile = os.path.join(path_to_gsv_scrapes, pano_id[:2], pano_id+'.jpg')
+
+        outfile = os.path.join(outdir, pano_id+'.jpg')
+
+        shutil.copy(panofile, outfile)
+        count += 1
+
+        #if count > 0: break
+    print "Copied {} panos to {}".format(count, outdir)
+    return
+
+
 def batch_p_r(dir_containing_preds, clust_r, cor_r, dynamic_r=True, clip_val=None, preds_filename='predictions.csv'):
     """ Computes precision and recall given a directory containing subdirectories
         containg predictions and ground truth csvs
@@ -566,5 +585,10 @@ pred_file_name = model_name + ".csv"
 #make_sliding_window_crops(ground_truth_panos, gt_dir, skip_existing_dirs=True)
 
 # show labels
-outdir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/labeled_panos'
-batch_visualize_preds(gt_dir, outdir, 150, 1.0, clip_val=4.5, preds_filename=pred_file_name)
+#outdir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/labeled_panos'
+#batch_visualize_preds(gt_dir, outdir, 150, 1.0, clip_val=4.5, preds_filename=pred_file_name)
+
+# fetch panos
+#outdir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/unlabeled_gt_panos'
+#fetch_unlabeled_panos(gt_dir, outdir)
+
