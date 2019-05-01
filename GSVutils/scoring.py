@@ -34,7 +34,7 @@ class Point(object):
 
     @classmethod
     def from_str(cls, s):
-        x,y = map(float, s.split(','))
+        x,y = map(lambda x: int(float(x)), s.split(','))
         return cls(x,y)
 
 def score(pred_dict, truth_dict, sizes_dict, r=.9, clust_r=150, dynamic_r=True, clip_val=None):
@@ -62,6 +62,8 @@ def score(pred_dict, truth_dict, sizes_dict, r=.9, clust_r=150, dynamic_r=True, 
     # here predictions are still a dict of arrays
     pred_dict = non_max_sup(pred_dict, radius=clust_r, clip_val=clip_val, ignore_ind=1)
     # now predictions are ints
+
+    print "\tComparing to {} ground truth points.".format(len(truth_dict))
 
     # in here we need to map from pytorch class numbering to
     # [ramp, no ramp, obstruction, sfc_prob] zero indexed
@@ -126,4 +128,5 @@ def score(pred_dict, truth_dict, sizes_dict, r=.9, clust_r=150, dynamic_r=True, 
             missed_gt_points[coords] = label
 
     print "Returning {} correct and {} incorrect.".format(len(correct), len(incorrect))
+    print "Returning {} predicted and {} missed.".format(len(predicted_gt_pts), len(missed_gt_points))
     return correct, incorrect, predicted_gt_pts, missed_gt_points

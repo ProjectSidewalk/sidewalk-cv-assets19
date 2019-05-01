@@ -356,9 +356,12 @@ def annotate(img, pano_yaw_deg, coords, label, color, show_coords=True, box=None
     draw.text((x+r+10, y), label, fill=color, font=font)
 
 
-def show_predictions_on_image(pano_root, predictions, out_img, ground_truth=True, show_coords=True, show_box=False):
-    ''' annotates an image with a dict of string coordinates and labels
-        if ground truth: also gets the ground truth and displays that as well '''
+def show_predictions_on_image(pano_root, correct, incorrect, out_img, predicted_gt_pts={}, missed_gt_points={}, show_coords=True, show_box=False):
+    ''' annotates an image with with predictions. 
+        each of the arguments in (correct, incorrect, predicted_gt_pts, missed_gt_points is
+        a dict of string coordinates and labels (output from scoring.score)
+        leave predicted and missed as default to skip ground truth
+        show_coords will plot the coords, and show box will plot the bounding box. '''
     pano_img_path   = pano_root + ".jpg"
     pano_xml_path   = pano_root + ".xml"
     pano_depth_path = pano_root + ".depth.txt"
@@ -367,9 +370,10 @@ def show_predictions_on_image(pano_root, predictions, out_img, ground_truth=True
     img = Image.open(pano_img_path)
 
     # convert from pytorch encoding to str
-    for coord in predictions:
-        int_label = predictions[coord]
-        predictions[coord] = pytorch_label_from_int[int_label]
+    for d in (correct, incorrect, predicted_gt_pts, missed_gt_points):
+        for coord in d:
+            int_label = d[coord]
+            d[coord] = label_from_int[int_label]
 
     def annotate_batch(predictions, color):
         count = 0
@@ -393,24 +397,23 @@ def show_predictions_on_image(pano_root, predictions, out_img, ground_truth=True
             count += 1
         return count
 
-    true_color = ImageColor.getrgb('Navy')
-    pred_color = ImageColor.getrgb('red')
-    cor_color  = ImageColor.getrgb('Chocolate')
-    inc_color  = ImageColor.getrgb('FireBrick')
+    # gt colors
+    true_color = ImageColor.getrgb('lightseagreen')
+    miss_color = ImageColor.getrgb('darkseagreen')
 
-    
-    if ground_truth:
-        gt, _ = get_ground_truth(os.path.split(pano_root)[1], pano_yaw_deg)
-        for coord in gt: # convert to string labels
-            gt[coord] = label_from_int[gt[coord]]
-        true = annotate_batch(gt, true_color)
+    # prediction colors
+    cor_color  = ImageColor.getrgb('palegreen')
+    inc_color  = ImageColor.getrgb('lightsalmon')
 
-        correct, incorrect = partition_based_on_correctness(predictions, gt, R=200)
-        pred = annotate_batch(correct, cor_color)
-        pred += annotate_batch(incorrect, inc_color)
-    else: true = 0
+    true = 0
+    pred = 0
+    for color, d in ((true_color, predicted_gt_pts), (miss_color, missed_gt_points), (cor_color, correct), (inc_color, incorrect)):
+        marked = annotate_batch(d, color)
 
-    if not ground_truth: pred = annotate_batch(predictions, pred_color)
+        if d in (predicted_gt_pts, missed_gt_points):
+            true += 1
+        if d in (correct, incorrect):
+            pred += 1
 
     img.save(out_img)
     print "Marked {} predicted and {} true labels on {}.".format(pred, true, out_img)
@@ -418,21 +421,26 @@ def show_predictions_on_image(pano_root, predictions, out_img, ground_truth=True
     return
 
 
-def batch_visualize_preds(dir_containing_panos, outdir, predictions_file=None):
+def batch_visualize_preds(dir_containing_panos, outdir, clust_r, cor_r, dynamic_r=True, clip_val=None, preds_filename='predictions.csv'):
     count = 0
     for pano_id in os.listdir(dir_containing_panos):
         print "Annotating {}".format(pano_id)
-        if predictions_file is not None:
-            predictions_file = os.path.join(dir_containing_panos, pano_id, predictions_file)
-            predictions = read_predictions_from_file(predictions_file)
-            predictions = non_max_sup(predictions, radius=200, clip_val=None, ignore_ind=1)
-        else:
-            predictions = {}
+
+        predictions_file = os.path.join(dir_containing_panos, pano_id, preds_filename)
+        pred = read_predictions_from_file(predictions_file)
+
+        gt_file = os.path.join(dir_containing_panos, pano_id, 'ground_truth.csv')
+        gt = read_predictions_from_file(gt_file)
+
+        sizes_file = os.path.join(dir_containing_panos, pano_id, 'gt_sizes.csv')
+        s = read_predictions_from_file(sizes_file)
+
+        correct, incorrect, predicted, missed = score(pred, gt, s, cor_r, clust_r=clust_r, dynamic_r=dynamic_r, clip_val=clip_val)
 
         outfile = os.path.join(outdir, pano_id+'.jpg')
 
         pano_root = os.path.join(path_to_gsv_scrapes, pano_id[:2], pano_id)
-        show_predictions_on_image(pano_root, predictions, outfile, ground_truth=True, show_coords=False, show_box=True)
+        show_predictions_on_image(pano_root, correct, incorrect, outfile, predicted, missed, show_coords=False, show_box=True)
         count += 1
 
         #if count > 0: break
@@ -549,10 +557,14 @@ pred_file_name = model_name + ".csv"
 #batch_visualize_preds(simple_dir, '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/test/', pred_file_name)
 
 # let's try this out...
-#batch_p_r(gt_dir, 150, 1.0, clip_val = 5.0, preds_filename=pred_file_name)
+#batch_p_r(simple_dir, 150, 1.0, clip_val=4.5, preds_filename=pred_file_name)
 
 
 # stuff for genrerating ground truth crops here
 #ground_truth_labels = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/ground_truth/ground_truth_labels.csv'
 #ground_truth_panos = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/ground_truth/ground_truth_panos.txt'
 #make_sliding_window_crops(ground_truth_panos, gt_dir, skip_existing_dirs=True)
+
+# show labels
+outdir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/labeled_panos'
+batch_visualize_preds(gt_dir, outdir, 150, 1.0, clip_val=4.5, preds_filename=pred_file_name)
