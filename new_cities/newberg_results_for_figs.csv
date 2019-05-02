@@ -1,0 +1,5 @@
+Model,Overall,Curb Ramp,Missing Ramp,Obstruction,Sfc Problem,Null
+Trained on DC,48.59,90.48,73.81,77.78,62.86,29.47
+Trained on DC+Newberg,75.93,90.48,69.05,66.67,48.57,74.25
+Trained on Newberg,88.26,87.76,76.19,77.78,57.14,92.58
+"Trained on Newberg, init with DC",90.19,87.07,78.57,88.89,65.71,94.43
