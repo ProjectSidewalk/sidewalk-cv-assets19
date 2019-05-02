@@ -399,7 +399,7 @@ def show_predictions_on_image(pano_root, correct, incorrect, out_img, predicted_
         return count
 
     # gt colors
-    true_color = ImageColor.getrgb('lightseagreen')
+    true_color = ImageColor.getrgb('lime')
     miss_color = ImageColor.getrgb('red')
 
     # prediction colors
@@ -585,8 +585,8 @@ pred_file_name = model_name + ".csv"
 #make_sliding_window_crops(ground_truth_panos, gt_dir, skip_existing_dirs=True)
 
 # show labels
-outdir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/labeled_gt_panos'
-batch_visualize_preds(gt_dir, outdir, 150, 1.0, clip_val=4.5, preds_filename=pred_file_name)
+#outdir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/labeled_gt_panos'
+#batch_visualize_preds(gt_dir, outdir, 150, 1.0, clip_val=4.5, preds_filename=pred_file_name)
 
 # fetch panos
 #outdir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/unlabeled_gt_panos'
