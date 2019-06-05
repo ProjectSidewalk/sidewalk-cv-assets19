@@ -1,6 +1,6 @@
 # Overview
 
-This repository provides tools to train a neural network to detect sidewalk features in Google Streetview imagery, and tools to use a trained network. Everything is implemented in Python and Pytorch. For the purposes of our 2019 ASSETS submission, the sidewalk features we focus on detecting are:
+This repository provides tools to train a neural network to detect sidewalk features in Google Streetview imagery, and tools to use a trained network. Everything is implemented in Python and Pytorch. For the purposes of our [2019 ASSETS submission](https://drive.google.com/file/d/1vElcQ8yniixH_kKBhDOeci7K49efKfXv/view?usp=sharing), which you might want to read (but please don't share since it's still under review), the sidewalk features we focus on detecting are:
 - Curb Ramp
 - Missing Curb
 - Surface Problem
