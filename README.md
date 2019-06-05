@@ -53,7 +53,162 @@ If the model you would like to use requires additional features, then you must u
 
 ## Using a Model for Validation
 
-Pass
+### Setup
+
+As mentioned above, if you're planning on using a model that requires additional features, you should use the `TwoFileFolder` dataloader provided by  `pytorch_pretrained/TwoFileFolder.py`.
+The dataloader expects your files to be organized with the following directory structure:
+```
+root/
+     label1/
+            file1.jpg
+            file1.json
+            file2.jpg
+            file2.json
+     label2/
+            file3.jpg
+            file3.json
+            file4.jpg
+            file4.json
+```
+
+Where the `.jpg` files are square crops (of any resolution) and the `.json` files contain the following fields:
+```
+{"dist to cbd": 4.094305012075221, "bearing to cbd": 64.74029765051874, "crop size": 1492.1348109969322, "sv_x": 9300.0, "sv_y": -1500.0, "longitude": -76.967779, "pano id": "__1c3_5IArbrml1--v7meQ", "dist to intersection": 23.45792342820621, "block middleness": 42.95327159437733, "latitude": 38.872448, "pano yaw": -179.67633056640602, "crop_y": 4828.0, "crop_x": 2655.9685763888974}
+```
+
+These crops and `.json` files can be produced easily and simulataneously using the `bulk_extract_crops` function from `GSVutils/utils.py`.
+This function takes as input a `.csv` with the following columns:
+```
+Pano ID, SV_x, SV_y, Label, Photog Heading, Heading, Label ID 
+```
+
+### Using the Model
+
+Once you've got your crops and additional feature `.json` files, you're ready to go. First, define your data transforms, and build the dataset from your crop directory using `TwoFileFolder`:
+
+```python
+data_transform = transforms.Compose([
+    transforms.Resize(256),
+    transforms.CenterCrop(224),
+    transforms.ToTensor(),
+    transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+    ])
+
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+# the dataset loads the files into pytorch vectors
+image_dataset = TwoFileFolder(dir_containing_crops, meta_to_tensor_version=2, transform=data_transform)
+
+# the dataloader takes these vectors and batches them together for parallelization, increasing performance
+dataloader    = torch.utils.data.DataLoader(image_dataset, batch_size=4, shuffle=True, num_workers=4)
+
+# this is the number of additional features provided by the dataset
+len_ex_feats = image_dataset.len_ex_feats
+dataset_size = len(image_dataset)
+```
+
+With this done, we can load the model itself. First, we load the architecture, then we load the weights from the `.pt` file onto the architecture:
+
+```python
+model_ft = extended_resnet18(len_ex_feats=len_ex_feats)
+
+try:
+    model_ft.load_state_dict(torch.load(model_path))
+except RuntimeError as e:
+    model_ft.load_state_dict(torch.load(model_path, map_location='cpu'))
+model_ft = model_ft.to( device )
+optimizer_ft = optim.SGD(model_ft.parameters(), lr=0.001, momentum=0.9)
+
+# this tells pytorch to not change the weights, since we're using the model to get predictions, not training
+model_ft.eval()
+```
+
+Now, we can actually compute the predictions. We do this by looping over all the data in the dataloader, and computing the predictions. We accumulate these predictions in `pred_out`, and for simplicity, we accumulate the paths in `paths_out`:
+
+```python
+for inputs, labels, paths in dataloader:
+    inputs = inputs.to(device)
+    labels = labels.to(device)
+
+    # zero the parameter gradients
+    optimizer_ft.zero_grad()
+
+    with torch.set_grad_enabled(False):
+        outputs = model_ft(inputs)
+        _, preds = torch.max(outputs, 1)
+
+        paths_out += list(paths)
+        pred_out  += list(outputs.tolist())
+```
+
+With this finished, we now have our predictions (in integer form), and the corresponding image paths in `paths_out`. For example, if `paths_out[0]`is `/example_dir/example_label/example_img.jpg`, then `preds_out[0]` will be the integer prediction for `example_img.jpg`. What do I mean by integer prediction? To save memory, PyTorch assigns each string label an integer index, and stores those indices instead of the strings. Our labels are `('Missing Cut', "Null", 'Obstruction', "Curb Cut", "Sfc Problem")`, so if `paths_out[0]` is 0, then the model assigned a prediction of `Missing Curb Ramp` to the image `example_img.jpg`.
+
+Now we're pretty much finished! We can wrap this all into a single easy function for you to use for whatever purpose you like. This returns a list of (img_path, predicted_label) tuples.:
+
+```python
+def predict_from_crops(dir_containing_crops, model_path):
+    ''' use the TwoFileFolder dataloader to load images and feed them
+        through the model
+        a list of (img_path, predicted_label) tuples
+    '''
+    data_transform = transforms.Compose([
+        transforms.Resize(256),
+        transforms.CenterCrop(224),
+        transforms.ToTensor(),
+        transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
+        ])
+
+    print "Building dataset and loading model..."
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
+
+    image_dataset = TwoFileFolder(dir_containing_crops, meta_to_tensor_version=2, transform=data_transform)
+    dataloader    = torch.utils.data.DataLoader(image_dataset, batch_size=4, shuffle=True, num_workers=4)
+
+    len_ex_feats = image_dataset.len_ex_feats
+    dataset_size = len(image_dataset)
+
+    panos = image_dataset.classes
+
+    print("Using dataloader that supplies {} extra features.".format(len_ex_feats))
+    print("")
+    print("Finished loading data. Got crops from {} panos.".format(len(panos)))
+
+
+    model_ft = extended_resnet18(len_ex_feats=len_ex_feats)
+
+    try:
+        model_ft.load_state_dict(torch.load(model_path))
+    except RuntimeError as e:
+        model_ft.load_state_dict(torch.load(model_path, map_location='cpu'))
+    model_ft = model_ft.to( device )
+    optimizer_ft = optim.SGD(model_ft.parameters(), lr=0.001, momentum=0.9)
+
+    model_ft.eval()
+
+    paths_out = []
+    pred_out  = []
+
+    print "Computing predictions...."
+    for inputs, labels, paths in dataloader:
+        inputs = inputs.to(device)
+        labels = labels.to(device)
+
+        # zero the parameter gradients
+        optimizer_ft.zero_grad()
+
+        with torch.set_grad_enabled(False):
+            outputs = model_ft(inputs)
+            _, preds = torch.max(outputs, 1)
+
+            paths_out += list(paths)
+            pred_out  += list(outputs.tolist())
+
+    print "Finished!"
+    pytorch_label_from_int = ('Missing Cut', "Null", 'Obstruction', "Curb Cut", "Sfc Problem")
+    str_predictions = [pytorch_label_from_int[x] for x in pred_out]
+
+    return zip(paths_out, str_predictions)
+```
 
 ## Using a Model for Labeling
 
