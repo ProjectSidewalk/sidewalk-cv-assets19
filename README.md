@@ -6,7 +6,7 @@ This repository provides tools to train a neural network to detect sidewalk feat
 - Surface Problem
 - Obstruction
 
-We add a fifth feature, **Null**, to these categories to enable the network to detect the __absence__ of sidewalk features.
+We add a fifth feature, **Null**, to these categories to enable the network to detect the *absence* of sidewalk features.
 
 ## Network Architecture
 
