@@ -37,6 +37,10 @@ To do so, install anaconda, then `cd` into the `pytorch_pretrained` directory, a
 ```
 conda env create -f environment.yml
 ```
+Once this is done, activate the environment with:
+```
+conda activate sidewalk_pytorch
+```
 
 # Training a Model
 
@@ -205,7 +209,7 @@ def predict_from_crops(dir_containing_crops, model_path):
 
     print "Finished!"
     pytorch_label_from_int = ('Missing Cut', "Null", 'Obstruction', "Curb Cut", "Sfc Problem")
-    str_predictions = [pytorch_label_from_int[x] for x in pred_out]
+    str_predictions = [pytorch_label_from_int[np.argmax(x)] for x in pred_out]
 
     return zip(paths_out, str_predictions)
 ```
