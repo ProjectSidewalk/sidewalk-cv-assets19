@@ -12,12 +12,12 @@ try:
 except ImportError as e:
 	from xml.etree import ElementTree as ET
 
-GSV_IMAGE_WIDTH  = 13312
-GSV_IMAGE_HEIGHT = 6656
+#GSV_IMAGE_WIDTH  = 13312
+#GSV_IMAGE_HEIGHT = 6656
 
 #special values for Seattle scrapes:
-#GSV_IMAGE_WIDTH  = 16384
-#GSV_IMAGE_HEIGHT = 8192
+GSV_IMAGE_WIDTH  = 16384
+GSV_IMAGE_HEIGHT = 8192
 
 label_from_int   = ('Curb Cut', 'Missing Cut', 'Obstruction', 'Sfc Problem')
 

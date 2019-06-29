@@ -1,6 +1,10 @@
 # Galen Weld, April 2019
 # Use this to add metadata to existing sidecars
 
+# before running, make sure to check:
+# 1) that you have the correct city center point defined
+# 2) that you have the correct shapefile for that city loaded into the label-intersection-proximity code
+
 import sys
 import os
 label_intersection_dir = '/mnt/c/Users/gweld/sidewalk/label-intersection-proximity'
@@ -19,7 +23,10 @@ dc_lat, dc_lng = 38.8977, -77.0366
 # DEFINE THE CENTER OF NEWBERG HERE
 nb_lat, nb_lng = 45.3003, -122.9755
 
-center = (nb_lat, nb_lng)
+# DEFINTE THE CENTER OF SEATTLE HERE
+sea_lat, sea_lng = 	47.6062, -122.3350
+
+center = (sea_lat, sea_lng)
 
 
 def calc_bearing_and_distance_between_points(lat1, lng1, lat2=center[0], lng2=center[1]):
@@ -58,7 +65,7 @@ def helper(input_dict):
 	err = False
 
 	try:
-		lat, lng = extract_pano_lat_lng(pano_id, '/mnt/g/scrapes_dump_newberg')
+		lat, lng = extract_pano_lat_lng(pano_id, '/mnt/g/scrapes_dump_seattle')
 	except Exception as e:
 		print(e)
 		lat = float('nan')
@@ -90,9 +97,10 @@ def helper(input_dict):
 
 #add_metadata('/mnt/c/Users/gweld/sidewalk/sidewalk_ml/baby_ds', helper)
 #add_metadata('/mnt/e/new_old_dataset', helper, "/mnt/e/new_metadata_files_for_cc")
+add_metadata('/mnt/g/seattle_center_crops_researchers/', helper, verbose=True)
 
 # let's do this for ground truth
 #add_metadata('/mnt/c/Users/gweld/sidewalk/sidewalk_ml/sliding_window/ground_truth_crops', helper)
-if not os.path.isdir('/mnt/g/newberg_new_cc_meta/partitioned/'):
-	os.mkdir('/mnt/g/newberg_new_cc_meta/partitioned/')
-add_metadata('/mnt/g/newberg_cc_researchers_partitioned', helper, '/mnt/g/newberg_new_cc_meta/partitioned')
+# if not os.path.isdir('/mnt/g/newberg_new_cc_meta/partitioned/'):
+# 	os.mkdir('/mnt/g/newberg_new_cc_meta/partitioned/')
+# add_metadata('/mnt/g/newberg_cc_researchers_partitioned', helper, '/mnt/g/newberg_new_cc_meta/partitioned')
