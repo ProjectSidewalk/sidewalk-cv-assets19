@@ -1,0 +1,6 @@
+Label            Train   Test
+sfc_problem        479    126
+null              3047    806
+ramp               907    227
+obstruction        329     85
+missing_ramp       784    197
