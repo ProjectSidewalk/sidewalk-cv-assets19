@@ -35,7 +35,7 @@ data_dir = '/home/gweld/seattle_cc_researchers_partitioned/test'
 #data_dir = '/home/gweld/newberg_center_crops_researchers'
 
 
-model_basename  = '20ep_cc_re18_2ff2'
+model_basename  = 'seattle_pt_20ep_re18_2ff2'
 #model_basename   = '20ep_cc_re18_2ff2'
 model_to_load ='models/{}.pt'.format(model_basename)
 ouput_path = '{}.csv'.format(model_basename)
