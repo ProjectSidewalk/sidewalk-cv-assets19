@@ -203,6 +203,8 @@ class TwoFileFolder(data.Dataset):
         if second_root is not None:
             print('Computing second dataset directory {}'.format(second_root))
             snd_clss, snd_2_idx = self._find_classes(second_root)
+            print( "Main classes:{}".format(classes) )
+            print( "Secondary classes:{}".format(snd_clss) )
             assert snd_clss == classes
 
             snd_samples = make_dataset(second_root, class_to_idx)
