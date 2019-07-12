@@ -12,12 +12,13 @@ try:
 except ImportError as e:
 	from xml.etree import ElementTree as ET
 
-#GSV_IMAGE_WIDTH  = 13312
-#GSV_IMAGE_HEIGHT = 6656
+GSV_IMAGE_WIDTH  = 13312
+GSV_IMAGE_HEIGHT = 6656
 
-#special values for Seattle scrapes:
-GSV_IMAGE_WIDTH  = 16384
-GSV_IMAGE_HEIGHT = 8192
+##### VERY IMPORTANT #######
+# THIS IS CURRENTLY SET UP TO CREATE CROPS FOR SCALED SEATTLE PANOES
+# CHANGE THIS BEFORE USING ON OTHER PANOS!!!!!
+############################
 
 label_from_int   = ('Curb Cut', 'Missing Cut', 'Obstruction', 'Sfc Problem')
 
@@ -258,21 +259,31 @@ def make_single_crop(pano_id, sv_image_x, sv_image_y, PanoYawDeg, output_filebas
 	cropped_square = None
 	try:
 		predicted_crop_size = predict_crop_size(x, y, im_width, im_height, path_to_depth)
-		crop_width = predicted_crop_size
-		crop_height = predicted_crop_size
-		#print(x, y)
-		top_left_x = x - crop_width / 2
-		top_left_y = y - crop_height / 2
-		cropped_square = im.crop((top_left_x, top_left_y, top_left_x + crop_width, top_left_y + crop_height))
 	except (ValueError, IndexError) as e:
-
 		predicted_crop_size = predict_crop_size_by_position(x, y, im_width, im_height)
-		crop_width = predicted_crop_size
-		crop_height = predicted_crop_size
-		#print(x, y)
-		top_left_x = x - crop_width / 2
-		top_left_y = y - crop_height / 2
-		cropped_square = im.crop((top_left_x, top_left_y, top_left_x + crop_width, top_left_y + crop_height))
+
+
+	#### REMOVE THIS IF NOT DOING SEATTLE STUFF ####
+
+	ratio = 16384.0/13312
+
+	sv_image_x *= ratio
+	sv_image_y *= ratio
+	predicted_crop_size *= ratio
+
+	x = ((float(PanoYawDeg) / 360) * 16384 + sv_image_x) % 16384
+	y = 8192 / 2 - sv_image_y
+
+
+
+	################################################
+
+	crop_width = predicted_crop_size
+	crop_height = predicted_crop_size
+	#print(x, y)
+	top_left_x = x - crop_width / 2
+	top_left_y = y - crop_height / 2
+	cropped_square = im.crop((top_left_x, top_left_y, top_left_x + crop_width, top_left_y + crop_height))
 	cropped_square.save(img_filename)
 
 	# write metadata
