@@ -24,8 +24,8 @@ import os
 #bulk_extract_crops('new_cities/newberg-labels-null.csv', '/mnt/g/newberg_center_crops_researchers/', '/mnt/g/scrapes_dump_newberg')
 
 # use this to make seattle centered dataset
-bulk_extract_crops('new_cities/seattle-labels-researcher-plus-validated.csv', '/mnt/g/seattle_center_crops_researchers/', '/mnt/g/scrapes_dump_seattle')
-#bulk_extract_crops('new_cities/seattle-labels-null.csv', '/mnt/g/seattle_center_crops_researchers/', '/mnt/g/scrapes_dump_seattle')
+#bulk_extract_crops('new_cities/seattle-labels-researcher-plus-validated.csv', '/mnt/g/seattle_center_crops_researchers/', '/mnt/g/scrapes_dump_seattle')
+bulk_extract_crops('new_cities/seattle-labels-null.csv', '/mnt/g/seattle_center_crops_researchers/', '/mnt/g/scrapes_dump_seattle')
 
 
 

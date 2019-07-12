@@ -301,7 +301,7 @@ def make_single_crop(pano_id, sv_image_x, sv_image_y, PanoYawDeg, output_filebas
 
 	return
 
-def bulk_extract_crops(path_to_crop_csv, destination_dir, path_to_gsv_scrapes=path_to_gsv_scrapes):
+def bulk_extract_crops(path_to_crop_csv, destination_dir, path_to_gsv_scrapes=path_to_gsv_scrapes, skip_existing=True):
 	'''
 	takes a csv of rows:
 	Pano ID, SV_x, SV_y, Label, Photog Heading, Heading, Label ID 
@@ -316,6 +316,7 @@ def bulk_extract_crops(path_to_crop_csv, destination_dir, path_to_gsv_scrapes=pa
 	success = 0
 	crop_fail = 0
 	no_pano_fail = 0
+	existing_skip = 0
 
 	for row in csv_f:
 
@@ -345,6 +346,14 @@ def bulk_extract_crops(path_to_crop_csv, destination_dir, path_to_gsv_scrapes=pa
 			destination_basename = '{}crop{},{}'.format(pano_id, sv_image_x, sv_image_y)
 
 			crop_destination = os.path.join(destination_dir, str(label_type), destination_basename)
+
+			if skip_existing:
+				if os.path.isfile( crop_destination+'.jpg'):
+					# checking only images and not .json for speed
+					print( "skipping exisiting {}".format(destination_basename) )
+					existing_skip += 1
+					continue
+
 			try:
 				make_single_crop(pano_id, sv_image_x, sv_image_y, pano_yaw_deg, crop_destination, path_to_gsv_scrapes)
 				print( "Successfully extracted crop to {}".format( destination_basename ) )
@@ -355,12 +364,18 @@ def bulk_extract_crops(path_to_crop_csv, destination_dir, path_to_gsv_scrapes=pa
 				crop_fail += 1
 		else:
 			no_pano_fail += 1
+			counter += 1
 			print( "Panorama image not found for {} at {}".format(pano_id, pano_img_path) )
 			missing_panos.add(pano_id)
+
+		# print out our progress every 100 crops:
+		if counter % 100 == 1:
+			print( "Progress: {} so far.".format(counter) )
 
 	print("Finished.")
 	print( str(no_pano_fail) + " extractions failed because panorama image was not found." )
 	print( str(crop_fail) + " extractions failed because metadata was not found." )
+	print( "{} crops skipped because they already existed.".format(existing_skip) )
 	print( "{} crops extracted successfully.".format(success) )
 
 	with open('missing_panos.txt', 'w') as f:
