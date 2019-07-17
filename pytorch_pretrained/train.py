@@ -28,8 +28,8 @@ from resnet_extended1 import extended_resnet18
 
 #data_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/full_ds/'
 #data_dir = '/home/gweld/sliding_window_dataset/'
-data_dir  = '/home/gweld/centered_crops_subset_with_meta'
-#data_dir  = '/home/gweld/seattle_cc_researchers_partitioned'
+#data_dir  = '/home/gweld/centered_crops_subset_with_meta'
+data_dir  = '/home/gweld/seattle_cc_researchers_partitioned'
 
 
 
@@ -38,10 +38,10 @@ num_epochs=20
 # full ds is ~370k
 downsample= None
 
-file_to_save_to='seattle_dc_20ep_re18_2ff2.pt'
+file_to_save_to='seattle_pt_20ep_re18_2ff2.pt'
 file_to_load_from='models/20ep_cc_re18_2ff2.pt' # leave none to use save path
 
-resume_training =False
+resume_training = True
 if resume_training: print("Resuming Training")
 
 
@@ -63,7 +63,7 @@ data_transforms = {
 
 print("Building datasets...")
 
-image_datasets = {x:TwoFileFolder(os.path.join(data_dir, x), meta_to_tensor_version=2, transform=data_transforms[x], downsample=downsample, second_root='/home/gweld/seattle_cc_researchers_partitioned/train/')
+image_datasets = {x:TwoFileFolder(os.path.join(data_dir, x), meta_to_tensor_version=2, transform=data_transforms[x], downsample=downsample, second_root=None)
                    for x in ['train', 'test']}
 #image_datasets = {x:datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
 #                  for x in ['train', 'test']}

@@ -1,0 +1,259 @@
+Resuming Training
+Building datasets...
+Finished loading data. Discovered 5 classes:
+missing_ramp, null, obstruction, ramp, sfc_problem
+
+Using dataloader that supplies 12 extra features.
+
+Beginning Training on 5603 train and 1373 test images.
+Epoch 0/19
+----------
+train Loss: 2.2995 Acc: 0.6687
+test Loss: 3.4835 Acc: 0.7524
+Class Precision and Recall on Test Data
+ramp                084.26% 070.64%
+null                082.62% 082.96%
+sfc_problem         047.22% 059.65%
+missing_ramp        081.35% 074.06%
+obstruction         037.72% 047.78%
+Best model so far. Saving to seattle_pt_20ep_re18_2ff2.pt
+
+
+Epoch 1/19
+----------
+train Loss: 1.8029 Acc: 0.7275
+test Loss: 2.1527 Acc: 0.7691
+Class Precision and Recall on Test Data
+null                084.70% 082.83%
+sfc_problem         052.99% 054.39%
+obstruction         054.55% 053.33%
+missing_ramp        067.34% 078.77%
+ramp                084.58% 077.02%
+Best model so far. Saving to seattle_pt_20ep_re18_2ff2.pt
+
+
+Epoch 2/19
+----------
+train Loss: 1.4847 Acc: 0.7580
+test Loss: 1.1025 Acc: 0.8135
+Class Precision and Recall on Test Data
+sfc_problem         063.55% 059.65%
+null                084.88% 090.17%
+obstruction         061.11% 048.89%
+ramp                080.40% 085.53%
+missing_ramp        086.44% 072.17%
+Best model so far. Saving to seattle_pt_20ep_re18_2ff2.pt
+
+
+Epoch 3/19
+----------
+train Loss: 1.5093 Acc: 0.7742
+test Loss: 1.4415 Acc: 0.8034
+Class Precision and Recall on Test Data
+ramp                073.52% 089.79%
+missing_ramp        082.01% 073.11%
+null                088.63% 085.32%
+obstruction         062.16% 051.11%
+sfc_problem         058.59% 065.79%
+
+
+Epoch 4/19
+----------
+train Loss: 1.5430 Acc: 0.7758
+test Loss: 1.7432 Acc: 0.8157
+Class Precision and Recall on Test Data
+null                088.16% 087.67%
+missing_ramp        079.72% 079.72%
+ramp                074.20% 089.36%
+sfc_problem         070.33% 056.14%
+obstruction         063.77% 048.89%
+Best model so far. Saving to seattle_pt_20ep_re18_2ff2.pt
+
+
+Epoch 5/19
+----------
+train Loss: 1.8620 Acc: 0.7851
+test Loss: 1.9424 Acc: 0.8077
+Class Precision and Recall on Test Data
+null                084.24% 089.61%
+missing_ramp        081.91% 076.89%
+ramp                085.27% 081.28%
+obstruction         055.68% 054.44%
+sfc_problem         062.77% 051.75%
+
+
+Epoch 6/19
+----------
+train Loss: 1.5671 Acc: 0.7931
+test Loss: 1.8405 Acc: 0.7779
+Class Precision and Recall on Test Data
+null                083.62% 086.29%
+missing_ramp        094.56% 065.57%
+ramp                064.69% 092.77%
+obstruction         054.65% 052.22%
+sfc_problem         070.69% 035.96%
+
+
+Epoch 7/19
+----------
+train Loss: 0.9217 Acc: 0.8067
+test Loss: 0.6951 Acc: 0.8208
+Class Precision and Recall on Test Data
+missing_ramp        084.00% 079.25%
+null                086.74% 088.78%
+sfc_problem         069.15% 057.02%
+obstruction         056.52% 057.78%
+ramp                081.05% 085.53%
+Best model so far. Saving to seattle_pt_20ep_re18_2ff2.pt
+
+
+Epoch 8/19
+----------
+train Loss: 0.6046 Acc: 0.8117
+test Loss: 0.6139 Acc: 0.8179
+Class Precision and Recall on Test Data
+null                085.98% 089.20%
+missing_ramp        083.74% 080.19%
+ramp                086.34% 083.40%
+sfc_problem         068.42% 057.02%
+obstruction         048.48% 053.33%
+
+
+Epoch 9/19
+----------
+train Loss: 0.5728 Acc: 0.8140
+test Loss: 0.5961 Acc: 0.8267
+Class Precision and Recall on Test Data
+null                084.97% 090.86%
+missing_ramp        087.23% 077.36%
+sfc_problem         068.42% 057.02%
+ramp                085.23% 085.96%
+obstruction         059.26% 053.33%
+Best model so far. Saving to seattle_pt_20ep_re18_2ff2.pt
+
+
+Epoch 10/19
+----------
+train Loss: 0.5858 Acc: 0.8155
+test Loss: 0.5639 Acc: 0.8274
+Class Precision and Recall on Test Data
+null                084.47% 091.14%
+missing_ramp        085.05% 077.83%
+ramp                085.96% 085.96%
+obstruction         063.51% 052.22%
+sfc_problem         070.33% 056.14%
+Best model so far. Saving to seattle_pt_20ep_re18_2ff2.pt
+
+
+Epoch 11/19
+----------
+train Loss: 0.5937 Acc: 0.8130
+test Loss: 0.5675 Acc: 0.8223
+Class Precision and Recall on Test Data
+ramp                084.81% 085.53%
+null                086.84% 088.64%
+missing_ramp        079.91% 082.55%
+obstruction         056.82% 055.56%
+sfc_problem         068.48% 055.26%
+
+
+Epoch 12/19
+----------
+train Loss: 0.5683 Acc: 0.8106
+test Loss: 0.5583 Acc: 0.8252
+Class Precision and Recall on Test Data
+missing_ramp        086.15% 079.25%
+null                086.61% 089.61%
+obstruction         060.26% 052.22%
+ramp                079.30% 086.38%
+sfc_problem         070.10% 059.65%
+
+
+Epoch 13/19
+----------
+train Loss: 0.5553 Acc: 0.8222
+test Loss: 0.5119 Acc: 0.8259
+Class Precision and Recall on Test Data
+null                086.81% 089.34%
+sfc_problem         069.79% 058.77%
+obstruction         062.03% 054.44%
+missing_ramp        079.91% 080.66%
+ramp                083.82% 085.96%
+
+
+Epoch 14/19
+----------
+train Loss: 0.5072 Acc: 0.8212
+test Loss: 0.5132 Acc: 0.8194
+Class Precision and Recall on Test Data
+null                087.11% 087.95%
+missing_ramp        080.00% 083.02%
+ramp                082.72% 085.53%
+sfc_problem         067.71% 057.02%
+obstruction         056.47% 053.33%
+
+
+Epoch 15/19
+----------
+train Loss: 0.5070 Acc: 0.8206
+test Loss: 0.4995 Acc: 0.8208
+Class Precision and Recall on Test Data
+null                086.93% 089.34%
+sfc_problem         069.23% 055.26%
+obstruction         053.85% 054.44%
+ramp                081.12% 085.96%
+missing_ramp        084.00% 079.25%
+
+
+Epoch 16/19
+----------
+train Loss: 0.5038 Acc: 0.8246
+test Loss: 0.5050 Acc: 0.8186
+Class Precision and Recall on Test Data
+obstruction         055.42% 051.11%
+null                084.32% 090.86%
+ramp                084.12% 083.40%
+missing_ramp        085.05% 077.83%
+sfc_problem         071.76% 053.51%
+
+
+Epoch 17/19
+----------
+train Loss: 0.4941 Acc: 0.8281
+test Loss: 0.4894 Acc: 0.8274
+Class Precision and Recall on Test Data
+missing_ramp        083.57% 081.60%
+null                086.88% 089.89%
+ramp                084.58% 086.38%
+obstruction         055.17% 053.33%
+sfc_problem         068.48% 055.26%
+
+
+Epoch 18/19
+----------
+train Loss: 0.5082 Acc: 0.8231
+test Loss: 0.4987 Acc: 0.8281
+Class Precision and Recall on Test Data
+null                087.18% 089.47%
+missing_ramp        082.46% 082.08%
+ramp                084.68% 084.68%
+sfc_problem         069.15% 057.02%
+obstruction         057.61% 058.89%
+Best model so far. Saving to seattle_pt_20ep_re18_2ff2.pt
+
+
+Epoch 19/19
+----------
+train Loss: 0.5070 Acc: 0.8221
+test Loss: 0.4960 Acc: 0.8259
+Class Precision and Recall on Test Data
+ramp                084.39% 085.11%
+obstruction         056.52% 057.78%
+null                085.73% 090.72%
+missing_ramp        084.34% 078.77%
+sfc_problem         073.17% 052.63%
+
+
+
+Training complete in 74m 39s
+Best test Acc: 0.828114
