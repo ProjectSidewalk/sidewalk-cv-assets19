@@ -66,7 +66,7 @@ data_transform = transforms.Compose([
 
 print("Building datasets...")
 
-image_dataset = TwoFileFolder(data_dir, meta_to_tensor_version=2, transform=data_transform, downsample=downsample)
+image_dataset = TwoFileFolder([data_dir], meta_to_tensor_version=2, transform=data_transform, downsample=downsample)
 #image_datasets = {x:datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
 #                  for x in ['train', 'test']}
 
