@@ -27,18 +27,20 @@ from resnet_extended1 import extended_resnet18
 
 
 #data_dir = '/mnt/c/Users/gweld/sidewalk/sidewalk_ml/full_ds/'
-#data_dir = '/home/gweld/sliding_window_dataset/'
-#data_dir  = '/home/gweld/centered_crops_subset_with_meta'
-data_dir  = '/home/gweld/seattle_cc_researchers_partitioned'
+dc_sw_dir   = '/home/gweld/sliding_window_dataset/'
+dc_cc_dir   = '/home/gweld/centered_crops_subset_with_meta'
+seattle_dir = '/home/gweld/seattle_cc_researchers_partitioned'
+newberg_dir = '/home/gweld/newberg_cc_researchers_partitioned'
+data_dirs   = [dc_cc_dir, seattle_dir, newberg_dir]
 
 
 
 num_epochs=20
 
-# full ds is ~370k
+# full dc ds is ~370k
 downsample= None
 
-file_to_save_to='seattle_pt_20ep_re18_2ff2.pt'
+file_to_save_to='three_cities_20ep_re18_2ff2.pt'
 file_to_load_from='models/20ep_cc_re18_2ff2.pt' # leave none to use save path
 
 resume_training = True
@@ -61,9 +63,12 @@ data_transforms = {
     ]),
 }
 
+def make_roots(x):
+    return [os.path.join(data_dir, x) for data_dir in data_dirs]
+
 print("Building datasets...")
 
-image_datasets = {x:TwoFileFolder(os.path.join(data_dir, x), meta_to_tensor_version=2, transform=data_transforms[x], downsample=downsample, second_root=None)
+image_datasets = {x:TwoFileFolder(make_roots(x), meta_to_tensor_version=2, transform=data_transforms[x], downsample=downsample)
                    for x in ['train', 'test']}
 #image_datasets = {x:datasets.ImageFolder(os.path.join(data_dir, x), data_transforms[x])
 #                  for x in ['train', 'test']}

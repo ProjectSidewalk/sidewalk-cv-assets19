@@ -178,7 +178,8 @@ class TwoFileFolder(data.Dataset):
     Where each sample has two associated files, an image, and a .json metadata file
 
     Args:
-        root (string): Root directory path.
+        roots (list of string): Root directory path.
+            If multiple are given, classes must match exactly
         loader (callable): A function to load a sample given its path.
         extensions (list[string]): A list of allowed extensions.
         transform (callable, optional): A function/transform that takes in
@@ -187,8 +188,6 @@ class TwoFileFolder(data.Dataset):
         target_transform (callable, optional): A function/transform that takes
             in the target and transforms it.
         downsample: randomly downsample the the dataset to the provided size
-        second_root is used to make a singele dataset from two roots. classes must match
-        identically
      Attributes:
         classes (list): List of the class names.
         class_to_idx (dict): Dict with items (class_name, class_index).
@@ -196,18 +195,17 @@ class TwoFileFolder(data.Dataset):
         targets (list): The class_index value for each image in the dataset
     """
 
-    def __init__(self, root, meta_to_tensor_version, transform=None, target_transform=None, downsample=None, second_root=None):
-        classes, class_to_idx = self._find_classes(root)
-        samples = make_dataset(root, class_to_idx)
+    def __init__(self, roots, meta_to_tensor_version, transform=None, target_transform=None, downsample=None):
+        print("Computing initial dataset directory 0 of {} at {}".format(len(roots), roots[0]))
+        classes, class_to_idx = self._find_classes(roots[0])
+        samples = make_dataset(roots[0], class_to_idx)
 
-        if second_root is not None:
-            print('Computing second dataset directory {}'.format(second_root))
-            snd_clss, snd_2_idx = self._find_classes(second_root)
-            print( "Main classes:{}".format(classes) )
-            print( "Secondary classes:{}".format(snd_clss) )
+        for num, root in enumerate(roots[1:]):
+            print('Computing additional dataset directory {} of {} at {}'.format(num+1, len(roots), root))
+            snd_clss, snd_2_idx = self._find_classes(root)
             assert snd_clss == classes
 
-            snd_samples = make_dataset(second_root, class_to_idx)
+            snd_samples = make_dataset(root, class_to_idx)
 
             print('Found {} additional images.'.format(len(snd_samples)))
 
