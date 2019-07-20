@@ -220,7 +220,7 @@ class TwoFileFolder(data.Dataset):
         if downsample is not None and len(samples) > downsample:
             samples = random.sample(samples, downsample)
 
-        self.root = root
+        self.root = roots[0]
         self.loader = default_loader
         self.extensions = ('.jpg', '.json')
 
