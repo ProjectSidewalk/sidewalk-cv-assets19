@@ -31,13 +31,15 @@ from resnet_extended1 import extended_resnet18 #extended_resnet34, extended_resn
 #data_dir = '/home/gweld/sliding_window_dataset/'
 #data_dir  = '/home/gweld/centered_crops_subset_with_meta'
 #data_dir  = '/home/gweld/seattle_center_crops_researchers'
-data_dir = '/home/gweld/seattle_cc_researchers_partitioned/test'
-#data_dir = '/home/gweld/newberg_center_crops_researchers'
+#data_dir = '/home/gweld/seattle_cc_researchers_partitioned/test'
+data_dir = '/home/gweld/newberg_cc_researchers_partitioned/test'
 
 
-model_basename  = 'seattle_20ep_re18_2ff2'
+#model_basename  = 'seattle_20ep_re18_2ff2'
+model_basename = 'nb_pt_20ep_re18_2ff2'
 #model_basename   = '20ep_cc_re18_2ff2'
-model_to_load ='models/{}.pt'.format(model_basename)
+#model_to_load ='models/{}.pt'.format(model_basename)
+model_to_load = '../new_cities/models/{}.pt'.format(model_basename)
 ouput_path = '{}.csv'.format(model_basename)
 
 downsample = None
@@ -45,8 +47,8 @@ downsample = None
 # testing on a new city?
 testing_on_new_city = True
 
-cityname = 'seattle'
-
+#cityname = 'seattle'
+cityname = 'newberg'
 
 
 
