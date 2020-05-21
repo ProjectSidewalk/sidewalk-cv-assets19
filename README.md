@@ -1,3 +1,18 @@
+# FAQ
+
+## Can we use your dataset?
+
+Our data is most certainly available, with some caveats. Unfortunately, due to licensing restrictions with Google, we can't share the actual crops from Google Streetview imagery, but we can share the X,Y coordinates of our labels, as well as the panorama ID.
+
+Then, using code we provide, you can download the panorama from Google's servers, and make crops from it.
+
+CSVs containing labels this information are [here](https://github.com/ProjectSidewalk/sidewalk-cv-assets19/tree/master/dataset_csvs).
+
+The code to download panoramas and crop them is [here](https://github.com/ProjectSidewalk/sidewalk-panorama-tools). You want the "DownloadRunner" and "CropRunner" scripts, respectively.
+
+Read on for more information...
+
+
 # Overview
 
 This repository provides tools to train a neural network to detect sidewalk features in Google Streetview imagery, and tools to use a trained network. Everything is implemented in Python and Pytorch. For the purposes of our [2019 ASSETS submission](https://drive.google.com/file/d/1spidyhQpg-_FjRwTUeC_QSH1F1-AojPE/view?usp=sharing), which you might want to read, the sidewalk features we focus on detecting are:
